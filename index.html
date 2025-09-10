@@ -60,6 +60,8 @@
                             <option>MSC</option>
                             <option>Royal Caribbean</option>
                             <option>Norwegian Cruise Line</option>
+                            <option>CELEBRITY</option>
+                            <option>COSTA</option>
                         </select>
                     </div>
                     <div>
@@ -216,44 +218,110 @@
         // --- DATA (Simulating Excel file) ---
         const cruiseData = {
             "MSC": [
-                "MSC Preziosa", "MSC World America", "MSC Splendida", "MSC World Asia",
-                "MSC Magnifica", "MSC World Europa", "MSC Musica", "MSC Seashore",
-                "MSC Orchestra", "MSC Seaside", "MSC Poesia", "MSC Seascape",
-                "MSC Armonia", "MSC Seaview", "MSC Lirica", "MSC Bellissima",
-                "MSC Opera", "MSC Euribia", "MSC Sinfonia", "MSC Grandiosa",
-                "MSC Divina", "MSC Meraviglia", "MSC Fantasia", "MSC Virtuosa"
+                {name: "MSC Preziosa", year: 2013},
+                {name: "MSC World America", year: 2025},
+                {name: "MSC Splendida", year: 2009},
+                {name: "MSC World Asia", year: 2026},
+                {name: "MSC Magnifica", year: 2010},
+                {name: "MSC World Europa", year: 2022},
+                {name: "MSC Musica", year: 2006},
+                {name: "MSC Seashore", year: 2021},
+                {name: "MSC Orchestra", year: 2007},
+                {name: "MSC Seaside", year: 2017},
+                {name: "MSC Poesia", year: 2008},
+                {name: "MSC Seascape", year: 2022},
+                {name: "MSC Armonia", year: 2001},
+                {name: "MSC Seaview", year: 2018},
+                {name: "MSC Lirica", year: 2003},
+                {name: "MSC Bellissima", year: 2019},
+                {name: "MSC Opera", year: 2004},
+                {name: "MSC Euribia", year: 2023},
+                {name: "MSC Sinfonia", year: 2002},
+                {name: "MSC Grandiosa", year: 2019},
+                {name: "MSC Divina", year: 2012},
+                {name: "MSC Meraviglia", year: 2017},
+                {name: "MSC Fantasia", year: 2008},
+                {name: "MSC Virtuosa", year: 2021}
             ],
             "Royal Caribbean": [
-                "Adventure of the Seas", "Allure of the Seas", "Anthem of the Seas",
-                "Brilliance of the Seas", "Enchantment of the Seas", "Explorer of the Seas",
-                "Freedom of the Seas", "Grandeur of the Seas", "Harmony of the Seas",
-                "Icon of the Seas", "Independence of the Seas", "Jewel of the Seas",
-                "Legend of the Seas", "Liberty of the Seas", "Mariner of the Seas",
-                "Navigator of the Seas", "Oasis of the Seas", "Odyssey of the Seas",
-                "Ovation of the Seas", "Quantum of the Seas", "Radiance of the Seas",
-                "Rhapsody of the Seas", "Serenade of the Seas", "Spectrum of the Seas",
-                "Star of the Seas", "Symphony of the Seas", "Utopia of the Seas"
+                {name: "Adventure of the Seas", year: 2001},
+                {name: "Allure of the Seas", year: 2010},
+                {name: "Anthem of the Seas", year: 2015},
+                {name: "Brilliance of the Seas", year: 2002},
+                {name: "Enchantment of the Seas", year: 1997},
+                {name: "Explorer of the Seas", year: 2000},
+                {name: "Freedom of the Seas", year: 2006},
+                {name: "Grandeur of the Seas", year: 1996},
+                {name: "Harmony of the Seas", year: 2016},
+                {name: "Icon of the Seas", year: 2024},
+                {name: "Independence of the Seas", year: 2008},
+                {name: "Jewel of the Seas", year: 2004},
+                {name: "Legend of the Seas", year: 1995},
+                {name: "Liberty of the Seas", year: 2007},
+                {name: "Mariner of the Seas", year: 2003},
+                {name: "Navigator of the Seas", year: 2002},
+                {name: "Oasis of the Seas", year: 2009},
+                {name: "Odyssey of the Seas", year: 2021},
+                {name: "Ovation of the Seas", year: 2016},
+                {name: "Quantum of the Seas", year: 2014},
+                {name: "Radiance of the Seas", year: 2001},
+                {name: "Rhapsody of the Seas", year: 1997},
+                {name: "Serenade of the Seas", year: 2003},
+                {name: "Spectrum of the Seas", year: 2019},
+                {name: "Star of the Seas", year: 2025},
+                {name: "Symphony of the Seas", year: 2018},
+                {name: "Utopia of the Seas", year: 2024}
             ],
             "Norwegian Cruise Line": [
-                "Norwegian Aqua", "Norwegian Bliss", "Norwegian Breakaway",
-                "Norwegian Dawn", "Norwegian Encore", "Norwegian Epic",
-                "Norwegian Escape", "Norwegian Getaway", "Norwegian Jade",
-                "Norwegian Jewel", "Norwegian Joy", "Norwegian Luna",
-                "Norwegian Pearl", "Norwegian Prima", "Norwegian Sky",
-                "Norwegian Spirit", "Norwegian Star", "Norwegian Sun",
-                "Norwegian Viva", "Norwegian Gem", "Pride of America"
+                {name: "Norwegian Aqua", year: 2025},
+                {name: "Norwegian Bliss", year: 2018},
+                {name: "Norwegian Breakaway", year: 2013},
+                {name: "Norwegian Dawn", year: 2002},
+                {name: "Norwegian Encore", year: 2019},
+                {name: "Norwegian Epic", year: 2010},
+                {name: "Norwegian Escape", year: 2015},
+                {name: "Norwegian Getaway", year: 2014},
+                {name: "Norwegian Jade", year: 2006},
+                {name: "Norwegian Jewel", year: 2005},
+                {name: "Norwegian Joy", year: 2017},
+                {name: "Norwegian Luna", year: 2026},
+                {name: "Norwegian Pearl", year: 2006},
+                {name: "Norwegian Prima", year: 2022},
+                {name: "Norwegian Sky", year: 1999},
+                {name: "Norwegian Spirit", year: 1998},
+                {name: "Norwegian Star", year: 2001},
+                {name: "Norwegian Sun", year: 2001},
+                {name: "Norwegian Viva", year: 2023},
+                {name: "Norwegian Gem", year: 2007},
+                {name: "Pride of America", year: 2005}
             ],
             "CELEBRITY": [
-                "Celebrity Apex", "Celebrity Ascent", "Celebrity Beyond",
-                "Celebrity Constellation", "Celebrity Eclipse", "Celebrity Edge",
-                "Celebrity Equinox", "Celebrity Flora", "Celebrity Infinity",
-                "Celebrity Millennium", "Celebrity Reflection", "Celebrity Silhouette",
-                "Celebrity Solstice", "Celebrity Summit", "Celebrity Xce"
+                {name: "Celebrity Apex", year: 2020},
+                {name: "Celebrity Ascent", year: 2023},
+                {name: "Celebrity Beyond", year: 2022},
+                {name: "Celebrity Constellation", year: 2002},
+                {name: "Celebrity Eclipse", year: 2010},
+                {name: "Celebrity Edge", year: 2018},
+                {name: "Celebrity Equinox", year: 2009},
+                {name: "Celebrity Flora", year: 2019},
+                {name: "Celebrity Infinity", year: 2001},
+                {name: "Celebrity Millennium", year: 2000},
+                {name: "Celebrity Reflection", year: 2012},
+                {name: "Celebrity Silhouette", year: 2011},
+                {name: "Celebrity Solstice", year: 2008},
+                {name: "Celebrity Summit", year: 2001},
+                {name: "Celebrity Xce", year: 2025}
             ],
             "COSTA": [
-                "Costa Deliziosa", "Costa Diadema", "Costa Fascinosa", "Costa Favolosa",
-                "Costa Fortuna", "Costa Pacifica", "Costa Serena", "Costa Smeralda",
-                "Costa Toscana"
+                {name: "Costa Deliziosa", year: 2010},
+                {name: "Costa Diadema", year: 2014},
+                {name: "Costa Fascinosa", year: 2012},
+                {name: "Costa Favolosa", year: 2011},
+                {name: "Costa Fortuna", year: 2003},
+                {name: "Costa Pacifica", year: 2009},
+                {name: "Costa Serena", year: 2007},
+                {name: "Costa Smeralda", year: 2019},
+                {name: "Costa Toscana", year: 2021}
             ]
         };
 
@@ -320,8 +388,8 @@
             if (cruiseData[cruiseLine]) {
                 cruiseData[cruiseLine].forEach(ship => {
                     const option = document.createElement('option');
-                    option.value = ship;
-                    option.textContent = ship;
+                    option.value = ship.name;
+                    option.textContent = `${ship.name} (${ship.year})`;
                     shipSelect.appendChild(option);
                 });
             }
