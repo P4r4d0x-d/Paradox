@@ -214,11 +214,84 @@
     </template>
     <script>
         // --- DATA (Simulating Excel file) ---
-        const cruiseData = {
-            "MSC": ["World Europa", "Grandiosa", "Seaview", "Fantasia"],
-            "Royal Caribbean": ["Icon of the Seas", "Wonder of the Seas", "Symphony of the Seas"],
-            "Norwegian Cruise Line": ["Prima", "Encore", "Bliss"]
-        };
+      # מאגר הנתונים המלא של חברות ואוניות
+ships_by_company = {
+    "MSC": [
+        "MSC Preziosa", "MSC World America", "MSC Splendida", "MSC World Asia",
+        "MSC Magnifica", "MSC World Europa", "MSC Musica", "MSC Seashore",
+        "MSC Orchestra", "MSC Seaside", "MSC Poesia", "MSC Seascape",
+        "MSC Armonia", "MSC Seaview", "MSC Lirica", "MSC Bellissima",
+        "MSC Opera", "MSC Euribia", "MSC Sinfonia", "MSC Grandiosa",
+        "MSC Divina", "MSC Meraviglia", "MSC Fantasia", "MSC Virtuosa"
+    ],
+    "NCL": [
+        "Norwegian Aqua", "Norwegian Bliss", "Norwegian Breakaway",
+        "Norwegian Dawn", "Norwegian Encore", "Norwegian Epic",
+        "Norwegian Escape", "Norwegian Getaway", "Norwegian Jade",
+        "Norwegian Jewel", "Norwegian Joy", "Norwegian Luna",
+        "Norwegian Pearl", "Norwegian Prima", "Norwegian Sky",
+        "Norwegian Spirit", "Norwegian Star", "Norwegian Sun",
+        "Norwegian Viva", "Norwegian Gem", "Pride of America"
+    ],
+    "ROYAL CARIBBEAN": [
+        "Adventure of the Seas", "Allure of the Seas", "Anthem of the Seas",
+        "Brilliance of the Seas", "Enchantment of the Seas", "Explorer of the Seas",
+        "Freedom of the Seas", "Grandeur of the Seas", "Harmony of the Seas",
+        "Icon of the Seas", "Independence of the Seas", "Jewel of the Seas",
+        "Legend of the Seas", "Liberty of the Seas", "Mariner of the Seas",
+        "Navigator of the Seas", "Oasis of the Seas", "Odyssey of the Seas",
+        "Ovation of the Seas", "Quantum of the Seas", "Radiance of the Seas",
+        "Rhapsody of the Seas", "Serenade of the Seas", "Spectrum of the Seas",
+        "Star of the Seas", "Symphony of the Seas", "Utopia of the Seas"
+    ],
+    "CELEBRITY": [
+        "Celebrity Apex", "Celebrity Ascent", "Celebrity Beyond",
+        "Celebrity Constellation", "Celebrity Eclipse", "Celebrity Edge",
+        "Celebrity Equinox", "Celebrity Flora", "Celebrity Infinity",
+        "Celebrity Millennium", "Celebrity Reflection", "Celebrity Silhouette",
+        "Celebrity Solstice", "Celebrity Summit", "Celebrity Xce"
+    ],
+    "COSTA": [
+        "Costa Deliziosa", "Costa Diadema", "Costa Fascinosa", "Costa Favolosa",
+        "Costa Fortuna", "Costa Pacifica", "Costa Serena", "Costa Smeralda",
+        "Costa Toscana"
+    ]
+}
+
+def find_or_add_company(company_name):
+    """
+    מחפשת חברת שייט. אם היא קיימת, מדפיסה את האוניות שלה.
+    אם לא, שואלת את המשתמש אם הוא רוצה להוסיף אותה ידנית.
+    """
+    # נהפוך את שם החברה לאותיות גדולות כדי למנוע כפילויות
+    company_key = company_name.upper()
+
+    # בדיקה אם החברה כבר קיימת במאגר
+    if company_key in ships_by_company:
+        print(f"✅ החברה '{company_name}' נמצאה במאגר.")
+        print("אוניות החברה:")
+        for ship in ships_by_company[company_key]:
+            print(f"- {ship}")
+    else:
+        # אם החברה לא קיימת, נשאל אם להוסיף אותה
+        print(f"❌ החברה '{company_name}' לא נמצאה במאגר.")
+        add_new = input(f"האם תרצה להוסיף אותה? (כן/לא): ")
+
+        if add_new.lower() == 'כן':
+            # קבלת שמות האוניות מהמשתמש
+            ships_input = input("נא הזן את שמות האוניות, מופרדים בפסיק (,): ")
+            
+            # פיצול המחרוזת לרשימה והסרת רווחים מיותרים
+            new_ships_list = [ship.strip() for ship in ships_input.split(',')]
+            
+            # הוספת החברה והאוניות החדשות למאגר הראשי
+            ships_by_company[company_key] = new_ships_list
+            print(f"\n🎉 החברה '{company_name}' והאוניות שלה נוספו בהצלחה למאגר!")
+            print("המאגר המעודכן:")
+            print(ships_by_company)
+        else:
+            print("החברה לא נוספה. חוזרים לתפריט הראשי.")
+            };
         // --- ADVISORS DATA ---
         const advisors = {
             "lior": "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il",
@@ -457,3 +530,4 @@
     </script>
 </body>
 </html>
+
