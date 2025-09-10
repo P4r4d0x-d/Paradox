@@ -44,7 +44,7 @@
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-               
+              
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -92,7 +92,7 @@
                         <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
-               
+              
                 <!-- Ship Image Paste Area -->
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700">תמונת אונייה</label>
@@ -166,7 +166,7 @@
                                  <!-- Preview rooms will be added here -->
                              </div>
                          </div>
-                        
+                       
                          <div class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
                              סה"כ עלות: $<span id="previewTotalPrice">0</span>
                          </div>
@@ -214,84 +214,49 @@
     </template>
     <script>
         // --- DATA (Simulating Excel file) ---
-      # מאגר הנתונים המלא של חברות ואוניות
-ships_by_company = {
-    "MSC": [
-        "MSC Preziosa", "MSC World America", "MSC Splendida", "MSC World Asia",
-        "MSC Magnifica", "MSC World Europa", "MSC Musica", "MSC Seashore",
-        "MSC Orchestra", "MSC Seaside", "MSC Poesia", "MSC Seascape",
-        "MSC Armonia", "MSC Seaview", "MSC Lirica", "MSC Bellissima",
-        "MSC Opera", "MSC Euribia", "MSC Sinfonia", "MSC Grandiosa",
-        "MSC Divina", "MSC Meraviglia", "MSC Fantasia", "MSC Virtuosa"
-    ],
-    "NCL": [
-        "Norwegian Aqua", "Norwegian Bliss", "Norwegian Breakaway",
-        "Norwegian Dawn", "Norwegian Encore", "Norwegian Epic",
-        "Norwegian Escape", "Norwegian Getaway", "Norwegian Jade",
-        "Norwegian Jewel", "Norwegian Joy", "Norwegian Luna",
-        "Norwegian Pearl", "Norwegian Prima", "Norwegian Sky",
-        "Norwegian Spirit", "Norwegian Star", "Norwegian Sun",
-        "Norwegian Viva", "Norwegian Gem", "Pride of America"
-    ],
-    "ROYAL CARIBBEAN": [
-        "Adventure of the Seas", "Allure of the Seas", "Anthem of the Seas",
-        "Brilliance of the Seas", "Enchantment of the Seas", "Explorer of the Seas",
-        "Freedom of the Seas", "Grandeur of the Seas", "Harmony of the Seas",
-        "Icon of the Seas", "Independence of the Seas", "Jewel of the Seas",
-        "Legend of the Seas", "Liberty of the Seas", "Mariner of the Seas",
-        "Navigator of the Seas", "Oasis of the Seas", "Odyssey of the Seas",
-        "Ovation of the Seas", "Quantum of the Seas", "Radiance of the Seas",
-        "Rhapsody of the Seas", "Serenade of the Seas", "Spectrum of the Seas",
-        "Star of the Seas", "Symphony of the Seas", "Utopia of the Seas"
-    ],
-    "CELEBRITY": [
-        "Celebrity Apex", "Celebrity Ascent", "Celebrity Beyond",
-        "Celebrity Constellation", "Celebrity Eclipse", "Celebrity Edge",
-        "Celebrity Equinox", "Celebrity Flora", "Celebrity Infinity",
-        "Celebrity Millennium", "Celebrity Reflection", "Celebrity Silhouette",
-        "Celebrity Solstice", "Celebrity Summit", "Celebrity Xce"
-    ],
-    "COSTA": [
-        "Costa Deliziosa", "Costa Diadema", "Costa Fascinosa", "Costa Favolosa",
-        "Costa Fortuna", "Costa Pacifica", "Costa Serena", "Costa Smeralda",
-        "Costa Toscana"
-    ]
-}
+        const cruiseData = {
+            "MSC": [
+                "MSC Preziosa", "MSC World America", "MSC Splendida", "MSC World Asia",
+                "MSC Magnifica", "MSC World Europa", "MSC Musica", "MSC Seashore",
+                "MSC Orchestra", "MSC Seaside", "MSC Poesia", "MSC Seascape",
+                "MSC Armonia", "MSC Seaview", "MSC Lirica", "MSC Bellissima",
+                "MSC Opera", "MSC Euribia", "MSC Sinfonia", "MSC Grandiosa",
+                "MSC Divina", "MSC Meraviglia", "MSC Fantasia", "MSC Virtuosa"
+            ],
+            "Royal Caribbean": [
+                "Adventure of the Seas", "Allure of the Seas", "Anthem of the Seas",
+                "Brilliance of the Seas", "Enchantment of the Seas", "Explorer of the Seas",
+                "Freedom of the Seas", "Grandeur of the Seas", "Harmony of the Seas",
+                "Icon of the Seas", "Independence of the Seas", "Jewel of the Seas",
+                "Legend of the Seas", "Liberty of the Seas", "Mariner of the Seas",
+                "Navigator of the Seas", "Oasis of the Seas", "Odyssey of the Seas",
+                "Ovation of the Seas", "Quantum of the Seas", "Radiance of the Seas",
+                "Rhapsody of the Seas", "Serenade of the Seas", "Spectrum of the Seas",
+                "Star of the Seas", "Symphony of the Seas", "Utopia of the Seas"
+            ],
+            "Norwegian Cruise Line": [
+                "Norwegian Aqua", "Norwegian Bliss", "Norwegian Breakaway",
+                "Norwegian Dawn", "Norwegian Encore", "Norwegian Epic",
+                "Norwegian Escape", "Norwegian Getaway", "Norwegian Jade",
+                "Norwegian Jewel", "Norwegian Joy", "Norwegian Luna",
+                "Norwegian Pearl", "Norwegian Prima", "Norwegian Sky",
+                "Norwegian Spirit", "Norwegian Star", "Norwegian Sun",
+                "Norwegian Viva", "Norwegian Gem", "Pride of America"
+            ],
+            "CELEBRITY": [
+                "Celebrity Apex", "Celebrity Ascent", "Celebrity Beyond",
+                "Celebrity Constellation", "Celebrity Eclipse", "Celebrity Edge",
+                "Celebrity Equinox", "Celebrity Flora", "Celebrity Infinity",
+                "Celebrity Millennium", "Celebrity Reflection", "Celebrity Silhouette",
+                "Celebrity Solstice", "Celebrity Summit", "Celebrity Xce"
+            ],
+            "COSTA": [
+                "Costa Deliziosa", "Costa Diadema", "Costa Fascinosa", "Costa Favolosa",
+                "Costa Fortuna", "Costa Pacifica", "Costa Serena", "Costa Smeralda",
+                "Costa Toscana"
+            ]
+        };
 
-def find_or_add_company(company_name):
-    """
-    מחפשת חברת שייט. אם היא קיימת, מדפיסה את האוניות שלה.
-    אם לא, שואלת את המשתמש אם הוא רוצה להוסיף אותה ידנית.
-    """
-    # נהפוך את שם החברה לאותיות גדולות כדי למנוע כפילויות
-    company_key = company_name.upper()
-
-    # בדיקה אם החברה כבר קיימת במאגר
-    if company_key in ships_by_company:
-        print(f"✅ החברה '{company_name}' נמצאה במאגר.")
-        print("אוניות החברה:")
-        for ship in ships_by_company[company_key]:
-            print(f"- {ship}")
-    else:
-        # אם החברה לא קיימת, נשאל אם להוסיף אותה
-        print(f"❌ החברה '{company_name}' לא נמצאה במאגר.")
-        add_new = input(f"האם תרצה להוסיף אותה? (כן/לא): ")
-
-        if add_new.lower() == 'כן':
-            # קבלת שמות האוניות מהמשתמש
-            ships_input = input("נא הזן את שמות האוניות, מופרדים בפסיק (,): ")
-            
-            # פיצול המחרוזת לרשימה והסרת רווחים מיותרים
-            new_ships_list = [ship.strip() for ship in ships_input.split(',')]
-            
-            # הוספת החברה והאוניות החדשות למאגר הראשי
-            ships_by_company[company_key] = new_ships_list
-            print(f"\n🎉 החברה '{company_name}' והאוניות שלה נוספו בהצלחה למאגר!")
-            print("המאגר המעודכן:")
-            print(ships_by_company)
-        else:
-            print("החברה לא נוספה. חוזרים לתפריט הראשי.")
-            };
         // --- ADVISORS DATA ---
         const advisors = {
             "lior": "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il",
@@ -308,7 +273,7 @@ def find_or_add_company(company_name):
             setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
         });
-       
+      
         // --- IMAGE PASTE LOGIC ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
@@ -319,10 +284,10 @@ def find_or_add_company(company_name):
         function handlePaste(event, previewImageId, pasteTargetElement) {
             // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-           
+          
             // Get the clipboard data
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-           
+          
             // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
@@ -333,7 +298,7 @@ def find_or_add_company(company_name):
                             // Update the src of the corresponding preview image
                             const imgElement = document.getElementById(previewImageId);
                             imgElement.src = e.target.result;
-                           
+                          
                             // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
@@ -352,12 +317,14 @@ def find_or_add_company(company_name):
             const cruiseLine = document.getElementById('cruiseLine').value;
             const shipSelect = document.getElementById('shipName');
             shipSelect.innerHTML = '';
-            cruiseData[cruiseLine].forEach(ship => {
-                const option = document.createElement('option');
-                option.value = ship;
-                option.textContent = ship;
-                shipSelect.appendChild(option);
-            });
+            if (cruiseData[cruiseLine]) {
+                cruiseData[cruiseLine].forEach(ship => {
+                    const option = document.createElement('option');
+                    option.value = ship;
+                    option.textContent = ship;
+                    shipSelect.appendChild(option);
+                });
+            }
             updatePreview();
         }
         function addRoom() {
@@ -374,7 +341,7 @@ def find_or_add_company(company_name):
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-           
+          
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
@@ -385,24 +352,24 @@ def find_or_add_company(company_name):
             document.getElementById('previewShipName').textContent = document.getElementById('shipName').value;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-           
+          
             // Advisor
             const selectedAdvisor = document.getElementById('advisor').value;
             document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
-           
+          
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
-           
+          
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const desc = room.querySelector('input[name="roomDesc"]').value;
                 const cost = room.querySelector('input[name="roomCost"]').value;
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-               
+              
                 if (desc || cost) {
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
@@ -412,7 +379,7 @@ def find_or_add_company(company_name):
                 }
             });
             document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-           
+          
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -528,6 +495,8 @@ def find_or_add_company(company_name):
             element.classList.add('shadow-lg');
         }
     </script>
+    <footer class="text-center mt-8 text-xs text-gray-500">
+        פותח על ידי ליאור דובינובסקי
+    </footer>
 </body>
 </html>
-
