@@ -35,19 +35,16 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
     <div class="container mx-auto p-4 lg:p-8">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-blue-800">מחולל הצעות מחיר לקרוזים</h1>
             <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעת מחיר מקצועית בפורמט PDF.</p>
         </header>
-
         <div class="flex flex-col lg:flex-row gap-8">
-
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-                
+               
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -77,8 +74,17 @@
                         <label for="cruiseDate" class="block text-sm font-medium text-gray-700">תאריכי הפלגה</label>
                         <input type="text" id="cruiseDate" placeholder="לדוגמה: 01.01.2026 - 08.01.2026" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
+                    <div>
+                        <label for="advisor" class="block text-sm font-medium text-gray-700">יועץ שייט</label>
+                        <select id="advisor" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="lior">ליאור דובינובסקי</option>
+                            <option value="tatiana">טטיאנה לאונוב</option>
+                            <option value="koren">קורן אבסעיד</option>
+                            <option value="yarden">ירדן שקד</option>
+                            <option value="nir">ניר</option>
+                        </select>
+                    </div>
                 </div>
-
                 <!-- Itinerary Image Paste Area -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700">תמונת מסלול</label>
@@ -86,7 +92,7 @@
                         <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
-                
+               
                 <!-- Ship Image Paste Area -->
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700">תמונת אונייה</label>
@@ -94,14 +100,12 @@
                         <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
-
                 <!-- Rooms Section -->
                 <div id="roomsContainer" class="mt-6">
                     <h3 class="text-xl font-bold mb-3">חדרים</h3>
                     <!-- Room template will be cloned here -->
                 </div>
                 <button onclick="addRoom()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
-
                 <!-- Inclusions -->
                 <div class="mt-6">
                      <h3 class="text-xl font-bold mb-3">מה כלול</h3>
@@ -120,14 +124,12 @@
                         <textarea id="customInclusions" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                 </div>
-
                 <div class="mt-8 flex justify-center">
                     <button onclick="generatePDF()" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                         הורד PDF
                     </button>
                 </div>
             </div>
-
             <!-- Live Preview -->
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg min-h-[1123px] w-full max-w-[794px] mx-auto preview-container">
@@ -138,13 +140,11 @@
                          </div>
                          <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
-
                     <!-- Offer Details -->
                     <main class="mt-8">
                         <p class="mb-4"><span id="previewDate" class="font-semibold"></span></p>
                         <p class="text-xl mb-6">לכבוד <span id="previewClientName" class="font-bold"></span>,</p>
                         <p class="mb-6">בהמשך לבקשתך, מצורפת הצעת מחיר להפלגת החלומות שלכם:</p>
-
                         <div class="bg-blue-50 rounded-lg p-4 mb-6">
                              <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
                              <div class="grid grid-cols-2 gap-4 text-md">
@@ -154,13 +154,11 @@
                                  <p><strong>תאריכים:</strong> <span id="previewCruiseDate"></span></p>
                              </div>
                         </div>
-
                         <!-- Itinerary Image -->
                         <div class="my-6">
                             <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
-
                         <!-- Rooms Details -->
                          <div class="my-6">
                              <h3 class="text-xl font-bold mb-3">פרטי החדרים:</h3>
@@ -168,16 +166,14 @@
                                  <!-- Preview rooms will be added here -->
                              </div>
                          </div>
-                         
+                        
                          <div class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
                              סה"כ עלות: $<span id="previewTotalPrice">0</span>
                          </div>
-
                         <!-- Ship Image -->
                         <div class="my-8">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
-
                         <!-- Inclusions & Terms -->
                         <div class="mt-8 text-sm space-y-3">
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
@@ -190,19 +186,16 @@
                                  <p class="text-xs text-gray-500 mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
                             </div>
                         </div>
-
                     </main>
-
                     <!-- Footer -->
                     <footer class="text-center mt-12 border-t-2 pt-6 border-gray-200">
                         <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
-                        <p>ליאור דובינובסקי | יועץ שייט | 03-3106454 | lior@balicruise.co.il</p>
+                        <p id="previewAdvisor">ליאור דובינובסקי | יועץ שייט | 03-3106454 | lior@balicruise.co.il</p>
                     </footer>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- Room HTML Template (for cloning) -->
     <template id="roomTemplate">
         <div class="room-entry border p-4 rounded-lg mt-2 bg-gray-50 relative">
@@ -219,7 +212,6 @@
             </div>
         </div>
     </template>
-
     <script>
         // --- DATA (Simulating Excel file) ---
         const cruiseData = {
@@ -227,7 +219,14 @@
             "Royal Caribbean": ["Icon of the Seas", "Wonder of the Seas", "Symphony of the Seas"],
             "Norwegian Cruise Line": ["Prima", "Encore", "Bliss"]
         };
-
+        // --- ADVISORS DATA ---
+        const advisors = {
+            "lior": "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il",
+            "tatiana": "טטיאנה לאונוב/Tatyana Leonov | יועצת שייט | 03-3106454 | tatiana@balicruise.co.il",
+            "koren": "קורן אבסעיד | Koren avsaid | מנהל מחלקת שייט | 03-3106454 | Koren@balicruise.co.il",
+            "yarden": "ירדן שקד | Yarden shaked | יועץ שייט | 03-3106454 | Yarden@balicruise.co.il",
+            "nir": "ניר | Nir | יועץ שייט | 03-3106454 | nir@balicruise.co.il"
+        };
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('offerDate').valueAsDate = new Date();
@@ -236,23 +235,21 @@
             setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
         });
-        
+       
         // --- IMAGE PASTE LOGIC ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
             const shipTarget = document.getElementById('shipPasteTarget');
-
             itineraryTarget.addEventListener('paste', (e) => handlePaste(e, 'previewItineraryImage', itineraryTarget));
             shipTarget.addEventListener('paste', (e) => handlePaste(e, 'previewShipImage', shipTarget));
         }
-
         function handlePaste(event, previewImageId, pasteTargetElement) {
             // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-            
+           
             // Get the clipboard data
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-            
+           
             // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
@@ -263,7 +260,7 @@
                             // Update the src of the corresponding preview image
                             const imgElement = document.getElementById(previewImageId);
                             imgElement.src = e.target.result;
-                            
+                           
                             // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
@@ -273,11 +270,10 @@
                         reader.readAsDataURL(blob);
                     }
                     // Stop after handling the first image found
-                    return; 
+                    return;
                 }
             }
         }
-
         // --- DYNAMIC FORM LOGIC ---
         function populateShips() {
             const cruiseLine = document.getElementById('cruiseLine').value;
@@ -291,49 +287,49 @@
             });
             updatePreview();
         }
-
         function addRoom() {
             const template = document.getElementById('roomTemplate');
             const clone = template.content.cloneNode(true);
             document.getElementById('roomsContainer').appendChild(clone);
             updatePreview();
         }
-
         function removeRoom(button) {
             button.closest('.room-entry').remove();
             updatePreview();
         }
-
         // --- PREVIEW UPDATE LOGIC ---
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-            
+           
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
             } else {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date().toLocaleDateString('he-IL')}`;
             }
-
             document.getElementById('previewCruiseLine').textContent = document.getElementById('cruiseLine').value;
             document.getElementById('previewShipName').textContent = document.getElementById('shipName').value;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-            
+           
+            // Advisor
+            const selectedAdvisor = document.getElementById('advisor').value;
+            document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
+           
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
-            
+           
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const desc = room.querySelector('input[name="roomDesc"]').value;
                 const cost = room.querySelector('input[name="roomCost"]').value;
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-                
+               
                 if (desc || cost) {
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
@@ -342,9 +338,8 @@
                     previewRoomsContainer.appendChild(roomDiv);
                 }
             });
-
             document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-            
+           
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -358,41 +353,34 @@
                 li.textContent = 'כולל תשלום טיפים מראש.';
                 inclusionsList.appendChild(li);
             }
-
             const customInclusionsText = document.getElementById('customInclusions').value;
             if (customInclusionsText.trim() !== '') {
                 const li = document.createElement('li');
                 li.textContent = customInclusionsText;
                 inclusionsList.appendChild(li);
             }
-
              if (inclusionsList.innerHTML === '') {
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
              }
         }
-
         // --- PDF GENERATION ---
         async function generatePDF() {
             const element = document.getElementById('preview');
             const clientName = document.getElementById('clientName').value || 'הצעה';
             const shipName = document.getElementById('shipName').value;
-
             // Temporarily remove shadow for a cleaner PDF edge
             element.classList.remove('shadow-lg');
-
             // Create temporary container for clones
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
             tempContainer.style.left = '-9999px';
             document.body.appendChild(tempContainer);
-
             // Clone for page 1 (up to total cost)
             const clone1 = element.cloneNode(true);
             clone1.style.width = element.offsetWidth + 'px';
             clone1.style.minHeight = '0';
             clone1.style.height = 'auto'; // Allow natural height
             tempContainer.appendChild(clone1);
-
             // Remove elements after total in clone1
             const main1 = clone1.querySelector('main');
             const total1 = main1.querySelector('.mt-6.text-2xl.font-bold.text-right.text-blue-900.bg-gray-100.p-4.rounded-lg');
@@ -405,18 +393,15 @@
             // Remove footer from page 1
             const footer1 = clone1.querySelector('footer');
             if (footer1) footer1.remove();
-
             // Clone for page 2 (from ship image onwards)
             const clone2 = element.cloneNode(true);
             clone2.style.width = element.offsetWidth + 'px';
             clone2.style.minHeight = '0';
             clone2.style.height = 'auto';
             tempContainer.appendChild(clone2);
-
             // Remove header from page 2
             const header2 = clone2.querySelector('header');
             if (header2) header2.remove();
-
             // Remove elements up to and including total from main in page 2
             const main2 = clone2.querySelector('main');
             let child2 = main2.firstElementChild;
@@ -428,7 +413,6 @@
                 }
                 child2 = next;
             }
-
             // Canvas options
             const canvasOptions = {
                 scale: 2,
@@ -436,11 +420,9 @@
                 letterRendering: true,
                 windowWidth: element.scrollWidth,
             };
-
             // Generate canvases
             const canvas1 = await html2canvas(clone1, { ...canvasOptions, windowHeight: clone1.scrollHeight });
             const canvas2 = await html2canvas(clone2, { ...canvasOptions, windowHeight: clone2.scrollHeight });
-
             // jsPDF setup
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
@@ -448,10 +430,8 @@
                 unit: 'pt',
                 format: 'a4'
             });
-
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-
             // Function to add canvas to PDF, scaled to fit one page
             const addCanvasToPdf = (canvas) => {
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
@@ -460,26 +440,20 @@
                 const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
                 const finalWidth = imgWidth * ratio;
                 const finalHeight = imgHeight * ratio;
-
                 pdf.addImage(imgData, 'JPEG', 0, 0, finalWidth, finalHeight);
                 // No multi-page logic; fit to one page
             };
-
             // Add page 1
             addCanvasToPdf(canvas1);
-
             // Add page 2
             pdf.addPage();
             addCanvasToPdf(canvas2);
-
             // Save PDF
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
-
             // Cleanup
             tempContainer.remove();
             element.classList.add('shadow-lg');
         }
-
     </script>
 </body>
 </html>
