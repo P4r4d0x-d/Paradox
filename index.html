@@ -44,7 +44,7 @@
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-              
+             
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -94,7 +94,7 @@
                         <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
-              
+             
                 <!-- Ship Image Paste Area -->
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700">תמונת אונייה</label>
@@ -122,7 +122,7 @@
                          </div>
                      </div>
                      <div class="mt-4">
-                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (יופיע כסעיף)</label>
+                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
                         <textarea id="customInclusions" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
                                  <!-- Preview rooms will be added here -->
                              </div>
                          </div>
-                       
+                      
                          <div class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
                              סה"כ עלות: $<span id="previewTotalPrice">0</span>
                          </div>
@@ -186,7 +186,7 @@
                                  <p><strong>אפשרויות תשלום:</strong> כרטיס אשראי (עד 3 תשלומים), העברה בנקאית, או מזומן במשרדנו.</p>
                                  <p><strong>תנאי ביטול:</strong> בהתאם לתנאי חברת השייט המצורפים בנפרד.</p>
                                  <p class="text-xs text-gray-500 mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
-                                <p class="text-xs text-gray-500 mt-2">ט.ל.ח</p>
+                                <p class="text-xs text-gray-500 mt-2">טל"ח</p>
                                 <p class="text-xs text-gray-500 mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
                             </div>
                         </div>
@@ -326,7 +326,6 @@
                 {name: "Costa Toscana", year: 2021}
             ]
         };
-
         // --- ADVISORS DATA ---
         const advisors = {
             "lior": "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il",
@@ -343,7 +342,7 @@
             setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
         });
-      
+     
         // --- IMAGE PASTE LOGIC ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
@@ -354,10 +353,10 @@
         function handlePaste(event, previewImageId, pasteTargetElement) {
             // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-          
+         
             // Get the clipboard data
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-          
+         
             // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
@@ -368,7 +367,7 @@
                             // Update the src of the corresponding preview image
                             const imgElement = document.getElementById(previewImageId);
                             imgElement.src = e.target.result;
-                          
+                         
                             // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
@@ -411,7 +410,7 @@
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-          
+         
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
@@ -422,24 +421,24 @@
             document.getElementById('previewShipName').textContent = document.getElementById('shipName').value;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-          
+         
             // Advisor
             const selectedAdvisor = document.getElementById('advisor').value;
             document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
-          
+         
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
-          
+         
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const desc = room.querySelector('input[name="roomDesc"]').value;
                 const cost = room.querySelector('input[name="roomCost"]').value;
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-              
+             
                 if (desc || cost) {
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
@@ -449,7 +448,7 @@
                 }
             });
             document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-          
+         
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -462,12 +461,19 @@
                  const li = document.createElement('li');
                 li.textContent = 'כולל תשלום טיפים מראש.';
                 inclusionsList.appendChild(li);
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'לא כולל תשלום טיפים מראש.';
+                inclusionsList.appendChild(li);
             }
             const customInclusionsText = document.getElementById('customInclusions').value;
             if (customInclusionsText.trim() !== '') {
-                const li = document.createElement('li');
-                li.textContent = customInclusionsText;
-                inclusionsList.appendChild(li);
+                const lines = customInclusionsText.split('\n').filter(line => line.trim() !== '');
+                lines.forEach(line => {
+                    const li = document.createElement('li');
+                    li.textContent = line;
+                    inclusionsList.appendChild(li);
+                });
             }
              if (inclusionsList.innerHTML === '') {
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
@@ -570,4 +576,3 @@
     </footer>
 </body>
 </html>
-
