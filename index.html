@@ -44,7 +44,7 @@
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-             
+            
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -94,7 +94,7 @@
                         <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
-             
+            
                 <!-- Ship Image Paste Area -->
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700">תמונת אונייה</label>
@@ -145,6 +145,7 @@
                     <!-- Offer Details -->
                     <main class="mt-8">
                         <p class="mb-4"><span id="previewDate" class="font-semibold"></span></p>
+                        <p class="mb-4 text-sm text-gray-600"><strong>מספר הצעה:</strong> <span id="previewQuoteNumber">0</span></p>
                         <p class="text-xl mb-6">לכבוד <span id="previewClientName" class="font-bold"></span>,</p>
                         <p class="mb-6">בהמשך לבקשתך, מצורפת הצעת מחיר להפלגת החלומות שלכם:</p>
                         <div class="bg-blue-50 rounded-lg p-4 mb-6">
@@ -168,7 +169,7 @@
                                  <!-- Preview rooms will be added here -->
                              </div>
                          </div>
-                      
+                     
                          <div class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
                              סה"כ עלות: $<span id="previewTotalPrice">0</span>
                          </div>
@@ -258,7 +259,7 @@
                 {name: "Icon of the Seas", year: 2024},
                 {name: "Independence of the Seas", year: 2008},
                 {name: "Jewel of the Seas", year: 2004},
-                {name: "Legend of the Seas", year: 1995},
+                {name: "Legend of the Seas", year: 2026},
                 {name: "Liberty of the Seas", year: 2007},
                 {name: "Mariner of the Seas", year: 2003},
                 {name: "Navigator of the Seas", year: 2002},
@@ -342,7 +343,7 @@
             setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
         });
-     
+    
         // --- IMAGE PASTE LOGIC ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
@@ -353,10 +354,10 @@
         function handlePaste(event, previewImageId, pasteTargetElement) {
             // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-         
+        
             // Get the clipboard data
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-         
+        
             // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
@@ -367,7 +368,7 @@
                             // Update the src of the corresponding preview image
                             const imgElement = document.getElementById(previewImageId);
                             imgElement.src = e.target.result;
-                         
+                        
                             // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
@@ -410,7 +411,7 @@
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-         
+        
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
@@ -421,24 +422,24 @@
             document.getElementById('previewShipName').textContent = document.getElementById('shipName').value;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-         
+        
             // Advisor
             const selectedAdvisor = document.getElementById('advisor').value;
             document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
-         
+        
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
-         
+        
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const desc = room.querySelector('input[name="roomDesc"]').value;
                 const cost = room.querySelector('input[name="roomCost"]').value;
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-             
+            
                 if (desc || cost) {
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
@@ -448,7 +449,7 @@
                 }
             });
             document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-         
+        
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -479,8 +480,22 @@
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
              }
         }
+        // --- COUNTER LOGIC ---
+        function getQuoteCounter() {
+            return localStorage.getItem('quoteCounter') ? parseInt(localStorage.getItem('quoteCounter')) : 0;
+        }
+        function incrementQuoteCounter() {
+            let counter = getQuoteCounter();
+            counter++;
+            localStorage.setItem('quoteCounter', counter);
+            return counter;
+        }
         // --- PDF GENERATION ---
         async function generatePDF() {
+            // Increment counter and update preview
+            const quoteNumber = incrementQuoteCounter();
+            document.getElementById('previewQuoteNumber').textContent = quoteNumber;
+
             const element = document.getElementById('preview');
             const clientName = document.getElementById('clientName').value || 'הצעה';
             const shipName = document.getElementById('shipName').value;
@@ -565,7 +580,7 @@
             pdf.addPage();
             addCanvasToPdf(canvas2);
             // Save PDF
-            pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
+            pdf.save(`הצעת מחיר ${shipName} - ${clientName} - מספר ${quoteNumber}.pdf`);
             // Cleanup
             tempContainer.remove();
             element.classList.add('shadow-lg');
