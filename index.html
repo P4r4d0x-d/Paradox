@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js"></script>
     <style>
         body {
             font-family: 'Assistant', sans-serif;
@@ -39,6 +42,7 @@
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-blue-800">מחולל הצעות מחיר לקרוזים</h1>
             <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעת מחיר מקצועית בפורמט PDF.</p>
+            <p class="text-gray-600 mt-2">מספר הצעות שהופקו: <span id="globalCounter">0</span></p>
         </header>
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Input Form -->
@@ -145,7 +149,6 @@
                     <!-- Offer Details -->
                     <main class="mt-8">
                         <p class="mb-4"><span id="previewDate" class="font-semibold"></span></p>
-                        <p class="mb-4 text-sm text-gray-600"><strong>מספר הצעה:</strong> <span id="previewQuoteNumber">0</span></p>
                         <p class="text-xl mb-6">לכבוד <span id="previewClientName" class="font-bold"></span>,</p>
                         <p class="mb-6">בהמשך לבקשתך, מצורפת הצעת מחיר להפלגת החלומות שלכם:</p>
                         <div class="bg-blue-50 rounded-lg p-4 mb-6">
@@ -218,6 +221,21 @@
         </div>
     </template>
     <script>
+        // --- Firebase Config ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyD-hVwQyl98ZcmEhWNtd11vGQDUu7sRMQQ",
+          authDomain: "balicruise-app.firebaseapp.com",
+          databaseURL: "https://balicruise-app-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "balicruise-app",
+          storageBucket: "balicruise-app.firebasestorage.app",
+          messagingSenderId: "462889164981",
+          appId: "1:462889164981:web:7ac797503b917a2350defc",
+          measurementId: "G-DB5Q6VLWX6"
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+
         // --- DATA (Simulating Excel file) ---
         const cruiseData = {
             "MSC": [
@@ -259,7 +277,7 @@
                 {name: "Icon of the Seas", year: 2024},
                 {name: "Independence of the Seas", year: 2008},
                 {name: "Jewel of the Seas", year: 2004},
-                {name: "Legend of the Seas", year: 2026},
+                {name: "Legend of the Seas", year: 1995},
                 {name: "Liberty of the Seas", year: 2007},
                 {name: "Mariner of the Seas", year: 2003},
                 {name: "Navigator of the Seas", year: 2002},
@@ -342,7 +360,29 @@
             addRoom();
             setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
+            setupGlobalCounter();
         });
+
+        // --- GLOBAL COUNTER LOGIC ---
+        function setupGlobalCounter() {
+            const counterRef = database.ref('proposalCounter');
+            // Listen for changes and update display
+            counterRef.on('value', (snapshot) => {
+                const count = snapshot.val() || 0;
+                document.getElementById('globalCounter').textContent = count;
+            });
+        }
+
+        function incrementGlobalCounter() {
+            const counterRef = database.ref('proposalCounter');
+            counterRef.transaction((current) => {
+                return (current || 0) + 1;
+            }).then(() => {
+                console.log('Counter incremented');
+            }).catch((error) => {
+                console.error('Error incrementing counter:', error);
+            });
+        }
     
         // --- IMAGE PASTE LOGIC ---
         function setupPasteListeners() {
@@ -480,22 +520,8 @@
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
              }
         }
-        // --- COUNTER LOGIC ---
-        function getQuoteCounter() {
-            return localStorage.getItem('quoteCounter') ? parseInt(localStorage.getItem('quoteCounter')) : 0;
-        }
-        function incrementQuoteCounter() {
-            let counter = getQuoteCounter();
-            counter++;
-            localStorage.setItem('quoteCounter', counter);
-            return counter;
-        }
         // --- PDF GENERATION ---
         async function generatePDF() {
-            // Increment counter and update preview
-            const quoteNumber = incrementQuoteCounter();
-            document.getElementById('previewQuoteNumber').textContent = quoteNumber;
-
             const element = document.getElementById('preview');
             const clientName = document.getElementById('clientName').value || 'הצעה';
             const shipName = document.getElementById('shipName').value;
@@ -580,7 +606,9 @@
             pdf.addPage();
             addCanvasToPdf(canvas2);
             // Save PDF
-            pdf.save(`הצעת מחיר ${shipName} - ${clientName} - מספר ${quoteNumber}.pdf`);
+            pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
+            // Increment global counter after successful PDF generation
+            incrementGlobalCounter();
             // Cleanup
             tempContainer.remove();
             element.classList.add('shadow-lg');
