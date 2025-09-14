@@ -100,46 +100,32 @@
                     <!-- Room template will be cloned here -->
                 </div>
                 <button onclick="addRoom()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
+                <!-- Inclusions -->
+                <div class="mt-6">
+                     <h3 class="text-xl font-bold mb-3">מה כלול</h3>
+                     <div class="space-y-2">
+                         <div class="flex items-start">
+                             <input id="includeTips" type="checkbox" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
+                             <label for="includeTips" class="ml-2 block text-sm text-gray-900">כולל תשלום טיפים מראש</label>
+                         </div>
+                         <div class="flex items-start">
+                             <input id="includeMeals" type="checkbox" onchange="updatePreview()" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
+                             <label for="includeMeals" class="ml-2 block text-sm text-gray-900">כולל 3 ארוחות מלאות ביום + מיסים + בופה עשיר</label>
+                         </div>
+                     </div>
+                     <div class="mt-4">
+                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
+                        <textarea id="customInclusions" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                </div>
                 <!-- Flights Section -->
                 <div class="mt-6">
                     <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="outboundDest" class="block text-sm font-medium text-gray-700">יעד טיסת הלוך</label>
-                                <input type="text" id="outboundDest" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="outboundDate" class="block text-sm font-medium text-gray-700">תאריך טיסת הלוך</label>
-                                <input type="text" id="outboundDate" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="outboundTakeoff" class="block text-sm font-medium text-gray-700">שעת המראה הלוך</label>
-                                <input type="text" id="outboundTakeoff" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="outboundLanding" class="block text-sm font-medium text-gray-700">שעת נחיתה הלוך</label>
-                                <input type="text" id="outboundLanding" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
+                        <div id="flightsContainer" class="space-y-4">
+                            <!-- Flight templates will be cloned here -->
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="returnDest" class="block text-sm font-medium text-gray-700">יעד טיסת חזור</label>
-                                <input type="text" id="returnDest" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="returnDate" class="block text-sm font-medium text-gray-700">תאריך טיסת חזור</label>
-                                <input type="text" id="returnDate" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="returnTakeoff" class="block text-sm font-medium text-gray-700">שעת המראה חזור</label>
-                                <input type="text" id="returnTakeoff" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                            <div>
-                                <label for="returnLanding" class="block text-sm font-medium text-gray-700">שעת נחיתה חזור</label>
-                                <input type="text" id="returnLanding" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            </div>
-                        </div>
+                        <button onclick="addFlight()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף טיסה</button>
                         <div>
                             <label for="airline" class="block text-sm font-medium text-gray-700">חברת תעופה</label>
                             <input type="text" id="airline" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
@@ -160,9 +146,14 @@
                             <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
                             <div class="space-y-2">
                                 <div class="flex items-center">
-                                    <input type="checkbox" id="flightCancelWithFee" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="flightCancelWithFee" class="ml-2">עם 72 שעות (דמי ביטול)</label>
+                                    <input type="checkbox" id="flightCancellable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="flightCancellable" class="ml-2">ניתן לביטול עם דמי</label>
                                     <input type="text" id="flightCancelFee" placeholder="דמי ביטול לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="flightChangeable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="flightChangeable" class="ml-2">ניתן לשינוי עם דמי</label>
+                                    <input type="text" id="flightChangeFee" placeholder="דמי שינוי לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
                                 </div>
                                 <div class="flex items-center">
                                     <input type="checkbox" id="flightNoCancel" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -202,9 +193,14 @@
                             <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
                             <div class="space-y-2">
                                 <div class="flex items-center">
-                                    <input type="checkbox" id="hotelCancelWithFee" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelCancelWithFee" class="ml-2">עם 72 שעות (דמי ביטול)</label>
+                                    <input type="checkbox" id="hotelCancellable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="hotelCancellable" class="ml-2">ניתן לביטול עם דמי</label>
                                     <input type="text" id="hotelCancelFee" placeholder="דמי ביטול לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="hotelChangeable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="hotelChangeable" class="ml-2">ניתן לשינוי עם דמי</label>
+                                    <input type="text" id="hotelChangeFee" placeholder="דמי שינוי לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
                                 </div>
                                 <div class="flex items-center">
                                     <input type="checkbox" id="hotelNoCancel" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -218,38 +214,38 @@
                 <div class="mt-6">
                     <h3 class="text-xl font-bold mb-3">העברות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div>
-                            <label for="transfersDesc" class="block text-sm font-medium text-gray-700">תיאור העברות</label>
-                            <textarea id="transfersDesc" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                        <div id="transfersContainer" class="space-y-4">
+                            <!-- Transfer templates will be cloned here -->
                         </div>
+                        <button onclick="addTransfer()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף העברה</button>
                         <div>
-                            <label for="transfersCost" class="block text-sm font-medium text-gray-700">עלות העברות ($)</label>
+                            <label for="transfersCost" class="block text-sm font-medium text-gray-700">עלות כל ההעברות ($)</label>
                             <input type="number" id="transfersCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" id="transfersNoCancel" name="transfersCancelType" onchange="toggleTransfersCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="transfersNoCancel" class="ml-2">ללא אפשרות ביטול / שינוי</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="transfersCancellable" name="transfersCancelType" onchange="toggleTransfersCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="transfersCancellable" class="ml-2">ניתן לביטול</label>
+                                </div>
+                                <div id="transfersCancelDetails" class="hidden space-y-2 ml-6">
+                                    <div>
+                                        <label for="transfersCancelDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
+                                        <input type="text" id="transfersCancelDate" oninput="updatePreview()" placeholder="לדוגמה: 01.01.2026" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label for="transfersCancelFee" class="block text-sm font-medium text-gray-700">דמי ביטול</label>
+                                        <input type="text" id="transfersCancelFee" oninput="updatePreview()" placeholder="לדוגמה: $50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <!-- Inclusions -->
-                <div class="mt-6">
-                     <h3 class="text-xl font-bold mb-3">מה כלול</h3>
-                     <div class="space-y-2">
-                         <div class="flex items-start">
-                             <input id="includeTips" type="checkbox" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
-                             <label for="includeTips" class="ml-2 block text-sm text-gray-900">כולל תשלום טיפים מראש</label>
-                         </div>
-                         <div class="flex items-start">
-                             <input id="includeMeals" type="checkbox" onchange="updatePreview()" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
-                             <label for="includeMeals" class="ml-2 block text-sm text-gray-900">כולל 3 ארוחות מלאות ביום + מיסים + בופה עשיר</label>
-                         </div>
-                     </div>
-                     <div class="mt-4">
-                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
-                        <textarea id="customInclusions" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                </div>
-                <!-- Total Display Option -->
-                <div class="mt-6 flex items-center">
-                    <input id="hideTotal" type="checkbox" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                    <label for="hideTotal" class="ml-2 block text-sm text-gray-900">הסתר מחיר כולל (להצעות מרובות)</label>
                 </div>
                 <div class="mt-8 flex justify-center">
                     <button onclick="generatePDF()" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
@@ -263,7 +259,7 @@
                     <!-- Header -->
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                          <div class="text-right">
-                             <h1 class="text-4xl font-bold" style="color: #3f3c66;">באלי <span style="color: #ed1c24;">קרוז</span></h1>
+                             <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
                          </div>
                          <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
@@ -293,12 +289,17 @@
                                  <!-- Preview rooms will be added here -->
                              </div>
                          </div>
+                         <!-- Inclusions & Terms -->
+                        <div class="mt-8 text-sm space-y-3">
+                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
+                                <!-- Inclusions will be added dynamically -->
+                            </ul>
+                        </div>
                          <!-- Flights Details -->
                          <div id="previewFlightsContainer" class="my-6 hidden">
                              <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
                              <div class="border p-3 rounded-lg bg-white space-y-2">
-                                 <p id="previewOutboundFlight"></p>
-                                 <p id="previewReturnFlight"></p>
+                                 <div id="previewFlightsList" class="space-y-2"></div>
                                  <p id="previewAirline"></p>
                                  <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
                                  <p id="previewFlightFreeText"></p>
@@ -321,8 +322,9 @@
                          <div id="previewTransfersContainer" class="my-6 hidden">
                              <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
                              <div class="border p-3 rounded-lg bg-white space-y-2">
-                                 <p id="previewTransfersDesc"></p>
+                                 <div id="previewTransfersList" class="space-y-2"></div>
                                  <p class="font-semibold text-right" id="previewTransfersCost"></p>
+                                 <div id="previewTransfersConditions" class="text-sm"></div>
                              </div>
                          </div>
                          <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
@@ -332,11 +334,8 @@
                         <div class="my-8">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
-                        <!-- Inclusions & Terms -->
+                        <!-- Terms -->
                         <div class="mt-8 text-sm space-y-3">
-                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
-                                <!-- Inclusions will be added dynamically -->
-                            </ul>
                             <div class="border-t pt-4 mt-4">
                                  <h4 class="font-bold">תנאי תשלום וביטול:</h4>
                                  <p><strong>אפשרויות תשלום:</strong></p>
@@ -425,6 +424,56 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">עלות ($)</label>
                     <input type="number" name="roomCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- Flight HTML Template (for cloning) -->
+    <template id="flightTemplate">
+        <div class="flight-entry border p-4 rounded-lg bg-gray-50 relative">
+             <button onclick="removeFlight(this)" class="absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">מוצא</label>
+                    <input type="text" name="from" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">יעד</label>
+                    <input type="text" name="to" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תאריך</label>
+                    <input type="text" name="date" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שעת המראה</label>
+                    <input type="text" name="takeoff" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שעת נחיתה</label>
+                    <input type="text" name="landing" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- Transfer HTML Template (for cloning) -->
+    <template id="transferTemplate">
+        <div class="transfer-entry border p-4 rounded-lg bg-gray-50 relative">
+             <button onclick="removeTransfer(this)" class="absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">סוג העברה</label>
+                    <select name="transferType" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">בחר סוג</option>
+                        <option value="שדה תעופה - מלון">שדה תעופה - מלון</option>
+                        <option value="מלון - נמל קרוזים">מלון - נמל קרוזים</option>
+                        <option value="נמל קרוזים - מלון">נמל קרוזים - מלון</option>
+                        <option value="מלון - שדה תעופה">מלון - שדה תעופה</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">מלל חופשי</label>
+                    <textarea name="transferFreeText" oninput="updatePreview()" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                 </div>
             </div>
         </div>
@@ -562,7 +611,8 @@
             document.getElementById('offerDate').valueAsDate = new Date();
             populateShips();
             addRoom();
-            setupPasteListeners(); // Set up the new paste functionality
+            addFlight(); // Add first flight by default
+            setupPasteListeners();
             updatePreview();
         });
    
@@ -572,32 +622,22 @@
             itineraryTarget.addEventListener('paste', (e) => handlePaste(e, 'previewItineraryImage', itineraryTarget));
         }
         function handlePaste(event, previewImageId, pasteTargetElement) {
-            // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-       
-            // Get the clipboard data
             const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-       
-            // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
                     const blob = item.getAsFile();
                     if (blob) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            // Update the src of the corresponding preview image
                             const imgElement = document.getElementById(previewImageId);
                             imgElement.src = e.target.result;
-                       
-                            // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
                             pasteTargetElement.classList.add('border-green-500');
                         };
-                        // Read the image file as a Base64 string
                         reader.readAsDataURL(blob);
                     }
-                    // Stop after handling the first image found
                     return;
                 }
             }
@@ -625,6 +665,44 @@
         }
         function removeRoom(button) {
             button.closest('.room-entry').remove();
+            updatePreview();
+        }
+        function addFlight() {
+            const template = document.getElementById('flightTemplate');
+            const clone = template.content.cloneNode(true);
+            const container = document.getElementById('flightsContainer');
+            container.appendChild(clone);
+            const newEntry = container.lastChild;
+            const count = container.children.length;
+            if (count === 1) {
+                newEntry.querySelector('input[name="from"]').value = "תל אביב";
+            } else if (count === 2) {
+                newEntry.querySelector('input[name="to"]').value = "תל אביב";
+            }
+            updatePreview();
+        }
+        function removeFlight(button) {
+            button.closest('.flight-entry').remove();
+            updatePreview();
+        }
+        function addTransfer() {
+            const template = document.getElementById('transferTemplate');
+            const clone = template.content.cloneNode(true);
+            document.getElementById('transfersContainer').appendChild(clone);
+            updatePreview();
+        }
+        function removeTransfer(button) {
+            button.closest('.transfer-entry').remove();
+            updatePreview();
+        }
+        function toggleTransfersCancelDetails() {
+            const cancellable = document.getElementById('transfersCancellable').checked;
+            const detailsDiv = document.getElementById('transfersCancelDetails');
+            if (cancellable) {
+                detailsDiv.classList.remove('hidden');
+            } else {
+                detailsDiv.classList.add('hidden');
+            }
             updatePreview();
         }
         function toggleRoomDetails(selectElement) {
@@ -704,106 +782,6 @@
                 }
             });
 
-            // Flights
-            const previewFlightsContainer = document.getElementById('previewFlightsContainer');
-            const outboundDest = document.getElementById('outboundDest').value;
-            const outboundDate = document.getElementById('outboundDate').value;
-            const outboundTakeoff = document.getElementById('outboundTakeoff').value;
-            const outboundLanding = document.getElementById('outboundLanding').value;
-            const returnDest = document.getElementById('returnDest').value;
-            const returnDate = document.getElementById('returnDate').value;
-            const returnTakeoff = document.getElementById('returnTakeoff').value;
-            const returnLanding = document.getElementById('returnLanding').value;
-            const airline = document.getElementById('airline').value;
-            const flightIncludes = document.getElementById('flightIncludes').value;
-            const flightFreeText = document.getElementById('flightFreeText').value;
-            const flightCost = parseFloat(document.getElementById('flightCost').value) || 0;
-            const flightCancelWithFee = document.getElementById('flightCancelWithFee').checked;
-            const flightCancelFee = document.getElementById('flightCancelFee').value;
-            const flightNoCancel = document.getElementById('flightNoCancel').checked;
-
-            if (outboundDest || outboundDate || airline || flightCost > 0) {
-                previewFlightsContainer.classList.remove('hidden');
-                document.getElementById('previewOutboundFlight').textContent = `טיסת הלוך ל ${outboundDest || '___'} בתאריך ${outboundDate || '___'} המראה ${outboundTakeoff || '___'} נחיתה ${outboundLanding || '___'}`;
-                document.getElementById('previewReturnFlight').textContent = `טיסת חזור ל ${returnDest || '___'} בתאריך ${returnDate || '___'} המראה ${returnTakeoff || '___'} נחיתה ${returnLanding || '___'}`;
-                document.getElementById('previewAirline').textContent = `טיסה בחברת תעופה ${airline || '___'}`;
-                const includesList = document.getElementById('previewFlightIncludes');
-                includesList.innerHTML = '';
-                flightIncludes.split('\n').forEach(line => {
-                    if (line.trim()) {
-                        const li = document.createElement('li');
-                        li.textContent = line.trim();
-                        includesList.appendChild(li);
-                    }
-                });
-                document.getElementById('previewFlightFreeText').textContent = flightFreeText || '';
-                document.getElementById('previewFlightCost').textContent = `עלות: $${flightCost.toLocaleString()}`;
-                const conditionsDiv = document.getElementById('previewFlightConditions');
-                conditionsDiv.innerHTML = '';
-                if (flightCancelWithFee && flightCancelFee) {
-                    conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב ${flightCancelFee} לנוסע</p><p>שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב ${flightCancelFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
-                }
-                if (flightNoCancel) {
-                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
-                }
-                totalPrice += flightCost;
-            } else {
-                previewFlightsContainer.classList.add('hidden');
-            }
-
-            // Hotel
-            const previewHotelContainer = document.getElementById('previewHotelContainer');
-            const hotelName = document.getElementById('hotelName').value;
-            const hotelRoomDesc = document.getElementById('hotelRoomDesc').value;
-            const hotelPension = document.getElementById('hotelPension').value;
-            const hotelCost = parseFloat(document.getElementById('hotelCost').value) || 0;
-            const hotelCancelWithFee = document.getElementById('hotelCancelWithFee').checked;
-            const hotelCancelFee = document.getElementById('hotelCancelFee').value;
-            const hotelNoCancel = document.getElementById('hotelNoCancel').checked;
-
-            if (hotelName || hotelCost > 0) {
-                previewHotelContainer.classList.remove('hidden');
-                document.getElementById('previewHotelName').textContent = `שם המלון: ${hotelName || '___'}`;
-                document.getElementById('previewHotelRoomDesc').textContent = `חדר, הרכב ומחיר: ${hotelRoomDesc || '___'}`;
-                document.getElementById('previewHotelPension').textContent = `פנסיון: ${hotelPension || '___'}`;
-                document.getElementById('previewHotelCost').textContent = `עלות: $${hotelCost.toLocaleString()}`;
-                const conditionsDiv = document.getElementById('previewHotelConditions');
-                conditionsDiv.innerHTML = '';
-                if (hotelCancelWithFee && hotelCancelFee) {
-                    conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההגעה ב ${hotelCancelFee} לנוסע</p><p>שינוי – ניתן לשינוי עד 72 שעות לפני ההגעה ב ${hotelCancelFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
-                }
-                if (hotelNoCancel) {
-                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
-                }
-                totalPrice += hotelCost;
-            } else {
-                previewHotelContainer.classList.add('hidden');
-            }
-
-            // Transfers
-            const previewTransfersContainer = document.getElementById('previewTransfersContainer');
-            const transfersDesc = document.getElementById('transfersDesc').value;
-            const transfersCost = parseFloat(document.getElementById('transfersCost').value) || 0;
-
-            if (transfersDesc || transfersCost > 0) {
-                previewTransfersContainer.classList.remove('hidden');
-                document.getElementById('previewTransfersDesc').textContent = transfersDesc || '___';
-                document.getElementById('previewTransfersCost').textContent = `עלות: $${transfersCost.toLocaleString()}`;
-                totalPrice += transfersCost;
-            } else {
-                previewTransfersContainer.classList.add('hidden');
-            }
-
-            // Total
-            const previewTotalContainer = document.getElementById('previewTotalContainer');
-            const hideTotal = document.getElementById('hideTotal').checked;
-            if (hideTotal) {
-                previewTotalContainer.classList.add('hidden');
-            } else {
-                previewTotalContainer.classList.remove('hidden');
-                document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-            }
-       
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -833,6 +811,148 @@
              if (inclusionsList.innerHTML === '') {
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
              }
+
+            // Flights
+            const previewFlightsContainer = document.getElementById('previewFlightsContainer');
+            const previewFlightsList = document.getElementById('previewFlightsList');
+            previewFlightsList.innerHTML = '';
+            const flightsContainer = document.getElementById('flightsContainer');
+            const flightEntries = flightsContainer.querySelectorAll('.flight-entry');
+            let hasFlights = false;
+            flightEntries.forEach((flight) => {
+                const from = flight.querySelector('input[name="from"]').value || '___';
+                const to = flight.querySelector('input[name="to"]').value || '___';
+                const date = flight.querySelector('input[name="date"]').value || '___';
+                const takeoff = flight.querySelector('input[name="takeoff"]').value || '___';
+                const landing = flight.querySelector('input[name="landing"]').value || '___';
+                if (from !== '___' || to !== '___' || date !== '___' || takeoff !== '___' || landing !== '___') {
+                    hasFlights = true;
+                }
+                const p = document.createElement('p');
+                p.textContent = `טיסה מ ${from} ל ${to} בתאריך ${date} המראה ${takeoff} נחיתה ${landing}`;
+                previewFlightsList.appendChild(p);
+            });
+            const airline = document.getElementById('airline').value;
+            const flightIncludes = document.getElementById('flightIncludes').value;
+            const flightFreeText = document.getElementById('flightFreeText').value;
+            const flightCost = parseFloat(document.getElementById('flightCost').value) || 0;
+            const flightCancellable = document.getElementById('flightCancellable').checked;
+            const flightCancelFee = document.getElementById('flightCancelFee').value;
+            const flightChangeable = document.getElementById('flightChangeable').checked;
+            const flightChangeFee = document.getElementById('flightChangeFee').value;
+            const flightNoCancel = document.getElementById('flightNoCancel').checked;
+
+            if (hasFlights || airline || flightIncludes.trim() || flightFreeText || flightCost > 0) {
+                previewFlightsContainer.classList.remove('hidden');
+                document.getElementById('previewAirline').textContent = `טיסה בחברת תעופה ${airline || '___'}`;
+                const includesList = document.getElementById('previewFlightIncludes');
+                includesList.innerHTML = '';
+                flightIncludes.split('\n').forEach(line => {
+                    if (line.trim()) {
+                        const li = document.createElement('li');
+                        li.textContent = line.trim();
+                        includesList.appendChild(li);
+                    }
+                });
+                document.getElementById('previewFlightFreeText').textContent = flightFreeText || '';
+                document.getElementById('previewFlightCost').textContent = `עלות: $${flightCost.toLocaleString()}`;
+                const conditionsDiv = document.getElementById('previewFlightConditions');
+                conditionsDiv.innerHTML = '';
+                if (flightCancellable && flightCancelFee) {
+                    conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב ${flightCancelFee} לנוסע</p>`;
+                }
+                if (flightChangeable && flightChangeFee) {
+                    conditionsDiv.innerHTML += `<p>שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב ${flightChangeFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
+                }
+                if (flightNoCancel) {
+                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
+                }
+                totalPrice += flightCost;
+            } else {
+                previewFlightsContainer.classList.add('hidden');
+            }
+
+            // Hotel
+            const previewHotelContainer = document.getElementById('previewHotelContainer');
+            const hotelName = document.getElementById('hotelName').value;
+            const hotelRoomDesc = document.getElementById('hotelRoomDesc').value;
+            const hotelPension = document.getElementById('hotelPension').value;
+            const hotelCost = parseFloat(document.getElementById('hotelCost').value) || 0;
+            const hotelCancellable = document.getElementById('hotelCancellable').checked;
+            const hotelCancelFee = document.getElementById('hotelCancelFee').value;
+            const hotelChangeable = document.getElementById('hotelChangeable').checked;
+            const hotelChangeFee = document.getElementById('hotelChangeFee').value;
+            const hotelNoCancel = document.getElementById('hotelNoCancel').checked;
+
+            if (hotelName || hotelCost > 0) {
+                previewHotelContainer.classList.remove('hidden');
+                document.getElementById('previewHotelName').textContent = `שם המלון: ${hotelName || '___'}`;
+                document.getElementById('previewHotelRoomDesc').textContent = `חדר, הרכב ומחיר: ${hotelRoomDesc || '___'}`;
+                document.getElementById('previewHotelPension').textContent = `פנסיון: ${hotelPension || '___'}`;
+                document.getElementById('previewHotelCost').textContent = `עלות: $${hotelCost.toLocaleString()}`;
+                const conditionsDiv = document.getElementById('previewHotelConditions');
+                conditionsDiv.innerHTML = '';
+                if (hotelCancellable && hotelCancelFee) {
+                    conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההגעה ב ${hotelCancelFee} לנוסע</p>`;
+                }
+                if (hotelChangeable && hotelChangeFee) {
+                    conditionsDiv.innerHTML += `<p>שינוי – ניתן לשינוי עד 72 שעות לפני ההגעה ב ${hotelChangeFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
+                }
+                if (hotelNoCancel) {
+                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
+                }
+                totalPrice += hotelCost;
+            } else {
+                previewHotelContainer.classList.add('hidden');
+            }
+
+            // Transfers
+            const previewTransfersContainer = document.getElementById('previewTransfersContainer');
+            const previewTransfersList = document.getElementById('previewTransfersList');
+            previewTransfersList.innerHTML = '';
+            const transfersContainer = document.getElementById('transfersContainer');
+            const transferEntries = transfersContainer.querySelectorAll('.transfer-entry');
+            let hasTransfers = false;
+            transferEntries.forEach((transfer, index) => {
+                const type = transfer.querySelector('select[name="transferType"]').value || '___';
+                const freeText = transfer.querySelector('textarea[name="transferFreeText"]').value || '';
+                if (type !== '___' || freeText) {
+                    hasTransfers = true;
+                }
+                const p = document.createElement('p');
+                p.textContent = `${index + 1}. ${type}${freeText ? ` - ${freeText}` : ''}`;
+                previewTransfersList.appendChild(p);
+            });
+            const transfersCost = parseFloat(document.getElementById('transfersCost').value) || 0;
+            const transfersNoCancel = document.getElementById('transfersNoCancel').checked;
+            const transfersCancellable = document.getElementById('transfersCancellable').checked;
+            const transfersCancelDate = document.getElementById('transfersCancelDate').value;
+            const transfersCancelFee = document.getElementById('transfersCancelFee').value;
+
+            if (hasTransfers || transfersCost > 0) {
+                previewTransfersContainer.classList.remove('hidden');
+                document.getElementById('previewTransfersCost').textContent = `עלות: $${transfersCost.toLocaleString()}`;
+                const conditionsDiv = document.getElementById('previewTransfersConditions');
+                conditionsDiv.innerHTML = '';
+                if (transfersNoCancel) {
+                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול / שינוי</p>`;
+                } else if (transfersCancellable && transfersCancelDate && transfersCancelFee) {
+                    conditionsDiv.innerHTML += `<p>ניתן לביטול עד לתאריך ${transfersCancelDate} בדמי ביטול בסך ${transfersCancelFee}</p>`;
+                }
+                totalPrice += transfersCost;
+            } else {
+                previewTransfersContainer.classList.add('hidden');
+            }
+
+            // Total
+            const previewTotalContainer = document.getElementById('previewTotalContainer');
+            const hideTotal = document.getElementById('hideTotal').checked;
+            if (hideTotal) {
+                previewTotalContainer.classList.add('hidden');
+            } else {
+                previewTotalContainer.classList.remove('hidden');
+                document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
+            }
 
              // Set ship image automatically based on selection
              const cruiseLine = document.getElementById('cruiseLine').value;
