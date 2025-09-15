@@ -1152,87 +1152,56 @@
         async function generatePDF() {
             elements.previewElement.classList.remove('shadow-lg');
             const { jsPDF } = window.jspdf;
+        
+            // Clone the preview element to a temporary container for rendering
+            const previewClone = elements.previewElement.cloneNode(true);
+            previewClone.style.position = 'absolute';
+            previewClone.style.left = '-9999px';
+            previewClone.style.width = '794px'; // A4 width in px for rendering
+            document.body.appendChild(previewClone);
+        
+            // Remove any dynamic buttons that shouldn't be in the PDF
+            previewClone.querySelectorAll('.remove-room-btn, .remove-flight-btn, .remove-transfer-btn').forEach(btn => btn.remove());
+        
+            // Ensure all images are loaded before rendering to canvas
+            const images = previewClone.querySelectorAll('img');
+            const promises = Array.from(images).map(img => new Promise(resolve => {
+                if (img.complete) {
+                    resolve();
+                } else {
+                    img.onload = resolve;
+                    img.onerror = resolve; // Handle errors gracefully
+                }
+            }));
+            await Promise.all(promises);
+        
+            const canvas = await html2canvas(previewClone, {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true
+            });
+        
+            // Remove the clone after rendering
+            previewClone.remove();
+        
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const margin = 10;
+            const imgHeight = canvas.height * pdfWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
         
-            // Clone the preview element to a temporary container to manipulate it
-            const previewClone = elements.previewElement.cloneNode(true);
-            previewClone.style.width = `${pdfWidth - 2 * margin}mm`;
-            previewClone.style.position = 'absolute';
-            previewClone.style.left = '-9999px';
-            document.body.appendChild(previewClone);
-
-            // Hide main content temporarily to render header/footer separately
-            const mainContent = previewClone.querySelector('#preview-main');
-            const header = previewClone.querySelector('header');
-            const footer = previewClone.querySelector('footer');
-
-            mainContent.style.visibility = 'hidden';
-            
-            // Render header
-            const headerCanvas = await html2canvas(header, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
-            const headerImgData = headerCanvas.toDataURL('image/jpeg', 1.0);
-            const headerHeight = headerCanvas.height * (pdfWidth / headerCanvas.width) / 3.78; // px to mm
-            pdf.addImage(headerImgData, 'JPEG', margin, margin, pdfWidth - 2 * margin, headerHeight);
-
-            // Render footer
-            const footerCanvas = await html2canvas(footer, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
-            const footerImgData = footerCanvas.toDataURL('image/jpeg', 1.0);
-            const footerHeight = footerCanvas.height * (pdfWidth / footerCanvas.width) / 3.78;
-            
-            // Show main content again
-            mainContent.style.visibility = 'visible';
-
-            // Now, handle the main content page by page
-            const mainChildren = Array.from(mainContent.children);
-            let currentY = margin + headerHeight;
-            let pageBreakNeeded = false;
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
         
-            for (const child of mainChildren) {
-                const childHeight = child.offsetHeight;
-                
-                // Check if the current element will fit on the page
-                if (currentY + childHeight + footerHeight + margin > pdfHeight) {
-                    if (!pageBreakNeeded) {
-                        pdf.addPage();
-                        currentY = margin;
-                    }
-                    pageBreakNeeded = true;
-                } else {
-                    pageBreakNeeded = false;
-                }
-
-                // Append the child to the temporary clone to render it
-                const tempDiv = document.createElement('div');
-                tempDiv.style.width = '100%';
-                tempDiv.appendChild(child.cloneNode(true));
-                previewClone.appendChild(tempDiv);
-                
-                // Render the current element to a new canvas
-                const elementCanvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
-                const elementImgData = elementCanvas.toDataURL('image/jpeg', 1.0);
-                const elementImgHeight = elementCanvas.height * (pdfWidth / elementCanvas.width) / 3.78;
-
-                if (pageBreakNeeded) {
-                    pdf.addImage(headerImgData, 'JPEG', margin, margin, pdfWidth - 2 * margin, headerHeight);
-                }
-                
-                pdf.addImage(elementImgData, 'JPEG', margin, currentY, pdfWidth - 2 * margin, elementImgHeight);
-                currentY += elementImgHeight;
-
-                if (pageBreakNeeded || currentY + footerHeight + margin > pdfHeight) {
-                    pdf.addImage(footerImgData, 'JPEG', margin, pdfHeight - footerHeight - margin, pdfWidth - 2 * margin, footerHeight);
-                }
-                
-                // Remove the temp div to clean up for the next element
-                tempDiv.remove();
+            while (heightLeft > 0) {
+                position -= pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
             }
-
-            // Remove the temporary clone from the body
-            previewClone.remove();
-
+        
             const clientName = elements.clientName.value || 'הצעה';
             const shipName = elements.shipName.value || 'קרוז';
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
