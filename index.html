@@ -25,6 +25,13 @@
         .preview-container * {
             pointer-events: none;
         }
+        /* New styles for PDF splitting */
+        .pdf-section {
+            break-after: page;
+        }
+        .no-split {
+            break-inside: avoid;
+        }
         @media print {
             .no-print {
                 display: none;
@@ -274,11 +281,11 @@
                         <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
                     <!-- Offer Details -->
-                    <main class="mt-8">
+                    <main id="preview-main" class="mt-8">
                         <p class="mb-4 text-left"><span id="previewDate" class="font-semibold"></span></p>
                         <p class="text-xl mb-6">לכבוד <span id="previewClientName" class="font-bold"></span>,</p>
                         <p class="mb-6">בהמשך לבקשתך, מצורפת הצעת מחיר להפלגת החלומות שלכם:</p>
-                        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <div class="bg-blue-50 rounded-lg p-4 mb-6 no-split">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
                             <div class="grid grid-cols-2 gap-4 text-md">
                                 <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
@@ -288,28 +295,28 @@
                             </div>
                         </div>
                         <!-- Itinerary Image -->
-                        <div class="my-6">
+                        <div class="my-6 no-split">
                             <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
                         <!-- Rooms Details -->
                         <div class="my-6">
-                            <h3 class="text-xl font-bold mb-3">פרטי החדרים:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-split">פרטי החדרים:</h3>
                             <div id="previewRoomsContainer" class="space-y-4">
                             </div>
-                            <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden">
+                            <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden no-split">
                                 חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>💡 חשוב לדעת!<br>חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
                             </div>
                         </div>
                         <!-- Inclusions & Terms -->
-                        <div class="mt-8 text-sm space-y-3">
+                        <div class="mt-8 text-sm space-y-3 no-split">
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
                             </ul>
                         </div>
                         <!-- Flights Details -->
                         <div id="previewFlightsContainer" class="my-6 hidden">
                             <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
-                            <div class="border p-3 rounded-lg bg-white space-y-2">
+                            <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewFlightsList" class="space-y-2"></div>
                                 <p id="previewAirline"></p>
                                 <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
@@ -321,7 +328,7 @@
                         <!-- Hotel Details -->
                         <div id="previewHotelContainer" class="my-6 hidden">
                             <h3 class="text-xl font-bold mb-3">פרטי מלון:</h3>
-                            <div class="border p-3 rounded-lg bg-white space-y-2">
+                            <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <p id="previewHotelName"></p>
                                 <p id="previewHotelRoomDesc"></p>
                                 <p id="previewHotelPension"></p>
@@ -332,22 +339,22 @@
                         <!-- Transfers Details -->
                         <div id="previewTransfersContainer" class="my-6 hidden">
                             <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
-                            <div class="border p-3 rounded-lg bg-white space-y-2">
+                            <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewTransfersList" class="space-y-2"></div>
                                 <p class="font-semibold text-right" id="previewTransfersCost"></p>
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
+                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <!-- Ship Image -->
-                        <div class="my-8">
+                        <div class="my-8 no-split">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
                         <!-- Terms -->
                         <div class="mt-8 text-sm space-y-3">
-                            <div class="border-t pt-4 mt-4">
+                            <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold">תנאי תשלום וביטול:</h4>
                                 <p><strong>אפשרויות תשלום:</strong></p>
                                 <ul class="list-disc list-inside">
@@ -697,6 +704,7 @@
             previewShipImage: document.getElementById('previewShipImage'),
             previewAdvisor: document.getElementById('previewAdvisor'),
             previewElement: document.getElementById('preview'),
+            previewMain: document.getElementById('preview-main'),
             inputForm: document.getElementById('inputForm')
         };
         
@@ -993,7 +1001,7 @@
                     if (extraDesc) roomDetails.push(`<strong>נוסף:</strong> ${extraDesc}`);
         
                     const roomDiv = document.createElement('div');
-                    roomDiv.className = 'border p-3 rounded-lg bg-white';
+                    roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
                     roomDiv.innerHTML = `
                         <p><strong>חדר ${index + 1}:</strong></p>
                         <p class="space-y-1 my-2">${roomDetails.join(' | ')}</p>
@@ -1144,60 +1152,87 @@
         async function generatePDF() {
             elements.previewElement.classList.remove('shadow-lg');
             const { jsPDF } = window.jspdf;
-            
-            // To ensure all images are loaded before rendering to canvas
-            const previewImage = elements.previewShipImage;
-            const itineraryImage = elements.previewItineraryImage;
-            const logoImage = elements.previewElement.querySelector('header img');
-
-            const allImagesLoaded = new Promise((resolve) => {
-                let imagesToLoad = [previewImage, itineraryImage, logoImage];
-                let loadedCount = 0;
-                const checkCompletion = () => {
-                    loadedCount++;
-                    if (loadedCount === imagesToLoad.length) {
-                        resolve();
-                    }
-                };
-                imagesToLoad.forEach(img => {
-                    if (img.complete) {
-                        checkCompletion();
-                    } else {
-                        img.onload = checkCompletion;
-                        img.onerror = checkCompletion; // Handle errors gracefully
-                    }
-                });
-            });
-
-            await allImagesLoaded;
-
-            const canvas = await html2canvas(elements.previewElement, {
-                scale: 2,
-                useCORS: true,
-                letterRendering: true,
-                allowTaint: true
-            });
-        
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgWidth = canvas.width / 3.78; // Convert px to mm (approx)
-            const imgHeight = canvas.height / 3.78;
+            const margin = 10;
         
-            let heightLeft = imgHeight;
-            let position = 0;
-        
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfWidth * imgHeight / imgWidth);
-            heightLeft -= pdfHeight;
+            // Clone the preview element to a temporary container to manipulate it
+            const previewClone = elements.previewElement.cloneNode(true);
+            previewClone.style.width = `${pdfWidth - 2 * margin}mm`;
+            previewClone.style.position = 'absolute';
+            previewClone.style.left = '-9999px';
+            document.body.appendChild(previewClone);
+
+            // Hide main content temporarily to render header/footer separately
+            const mainContent = previewClone.querySelector('#preview-main');
+            const header = previewClone.querySelector('header');
+            const footer = previewClone.querySelector('footer');
+
+            mainContent.style.visibility = 'hidden';
             
-            while (heightLeft > 0) {
-                position -= pdfHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfWidth * imgHeight / imgWidth);
-                heightLeft -= pdfHeight;
-            }
+            // Render header
+            const headerCanvas = await html2canvas(header, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
+            const headerImgData = headerCanvas.toDataURL('image/jpeg', 1.0);
+            const headerHeight = headerCanvas.height * (pdfWidth / headerCanvas.width) / 3.78; // px to mm
+            pdf.addImage(headerImgData, 'JPEG', margin, margin, pdfWidth - 2 * margin, headerHeight);
+
+            // Render footer
+            const footerCanvas = await html2canvas(footer, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
+            const footerImgData = footerCanvas.toDataURL('image/jpeg', 1.0);
+            const footerHeight = footerCanvas.height * (pdfWidth / footerCanvas.width) / 3.78;
+            
+            // Show main content again
+            mainContent.style.visibility = 'visible';
+
+            // Now, handle the main content page by page
+            const mainChildren = Array.from(mainContent.children);
+            let currentY = margin + headerHeight;
+            let pageBreakNeeded = false;
         
+            for (const child of mainChildren) {
+                const childHeight = child.offsetHeight;
+                
+                // Check if the current element will fit on the page
+                if (currentY + childHeight + footerHeight + margin > pdfHeight) {
+                    if (!pageBreakNeeded) {
+                        pdf.addPage();
+                        currentY = margin;
+                    }
+                    pageBreakNeeded = true;
+                } else {
+                    pageBreakNeeded = false;
+                }
+
+                // Append the child to the temporary clone to render it
+                const tempDiv = document.createElement('div');
+                tempDiv.style.width = '100%';
+                tempDiv.appendChild(child.cloneNode(true));
+                previewClone.appendChild(tempDiv);
+                
+                // Render the current element to a new canvas
+                const elementCanvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, letterRendering: true, allowTaint: true });
+                const elementImgData = elementCanvas.toDataURL('image/jpeg', 1.0);
+                const elementImgHeight = elementCanvas.height * (pdfWidth / elementCanvas.width) / 3.78;
+
+                if (pageBreakNeeded) {
+                    pdf.addImage(headerImgData, 'JPEG', margin, margin, pdfWidth - 2 * margin, headerHeight);
+                }
+                
+                pdf.addImage(elementImgData, 'JPEG', margin, currentY, pdfWidth - 2 * margin, elementImgHeight);
+                currentY += elementImgHeight;
+
+                if (pageBreakNeeded || currentY + footerHeight + margin > pdfHeight) {
+                    pdf.addImage(footerImgData, 'JPEG', margin, pdfHeight - footerHeight - margin, pdfWidth - 2 * margin, footerHeight);
+                }
+                
+                // Remove the temp div to clean up for the next element
+                tempDiv.remove();
+            }
+
+            // Remove the temporary clone from the body
+            previewClone.remove();
+
             const clientName = elements.clientName.value || 'הצעה';
             const shipName = elements.shipName.value || 'קרוז';
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
