@@ -1175,27 +1175,26 @@
                 scale: 2,
                 useCORS: true,
                 letterRendering: true,
+                allowTaint: true
             });
         
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgWidth = canvas.width / 2;
-            const imgHeight = canvas.height / 2;
+            const imgWidth = canvas.width / 3.78; // Convert px to mm (approx)
+            const imgHeight = canvas.height / 3.78;
         
             let heightLeft = imgHeight;
             let position = 0;
-            const margin = 10;
         
-            pdf.addImage(imgData, 'JPEG', margin, position + margin, pdfWidth - 2 * margin, (pdfWidth - 2 * margin) * imgHeight / imgWidth);
-            heightLeft -= (pdfWidth - 2 * margin) * imgHeight / imgWidth;
-            position -= (pdfWidth - 2 * margin) * imgHeight / imgWidth;
-        
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfWidth * imgHeight / imgWidth);
+            heightLeft -= pdfHeight;
+            
             while (heightLeft > 0) {
                 position -= pdfHeight;
                 pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', margin, position + margin, pdfWidth - 2 * margin, (pdfWidth - 2 * margin) * imgHeight / imgWidth);
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfWidth * imgHeight / imgWidth);
                 heightLeft -= pdfHeight;
             }
         
@@ -1204,7 +1203,6 @@
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
             elements.previewElement.classList.add('shadow-lg');
         }
-
     </script>
     <footer class="text-center mt-8 text-xs text-gray-500">
         פותח על ידי ליאור דובינובסקי
