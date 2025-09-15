@@ -90,8 +90,9 @@
                 <!-- Itinerary Image Paste Area -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700">תמונת מסלול</label>
+                    <input type="file" accept="image/*" id="itineraryFile" class="mt-1 block w-full">
                     <div id="itineraryPasteTarget" contenteditable="true" tabindex="0" class="mt-1 flex justify-center items-center w-full h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-500 p-2 text-center transition-colors">
-                        <span>הדבק תמונה כאן (Ctrl+V)</span>
+                        <span>או הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
                 <!-- Rooms Section -->
@@ -627,9 +628,10 @@
             addRoom();
             addFlight(); // Add first flight by default
             setupPasteListeners();
+            setupFileUpload();
             updatePreview();
         });
-        // --- IMAGE PASTE LOGIC (only for itinerary) ---
+        // --- IMAGE PASTE LOGIC (for itinerary) ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
             itineraryTarget.addEventListener('paste', (e) => handlePaste(e, 'previewItineraryImage', itineraryTarget));
@@ -652,12 +654,33 @@
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
                             pasteTargetElement.classList.add('border-green-500');
+                            updatePreview();
                         };
                         reader.readAsDataURL(blob);
                     }
                     return;
                 }
             }
+        }
+        // --- IMAGE FILE UPLOAD LOGIC ---
+        function setupFileUpload() {
+            const fileInput = document.getElementById('itineraryFile');
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const pasteTargetElement = document.getElementById('itineraryPasteTarget');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgElement = document.getElementById('previewItineraryImage');
+                        imgElement.src = e.target.result;
+                        pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
+                        pasteTargetElement.classList.remove('border-gray-300');
+                        pasteTargetElement.classList.add('border-green-500');
+                        updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
         // --- DYNAMIC FORM LOGIC ---
         function populateShips() {
