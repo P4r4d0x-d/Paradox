@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js"></script>
     <style>
         body {
             font-family: 'Assistant', sans-serif;
@@ -39,12 +42,13 @@
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-blue-800">מחולל הצעות מחיר לקרוזים</h1>
             <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעת מחיר מקצועית בפורמט PDF.</p>
+            <p class="text-gray-600 mt-2">מספר הצעות שהופקו: <span id="globalCounter">0</span></p>
         </header>
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-        
+         
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -66,7 +70,7 @@
                     </div>
                     <div>
                         <label for="shipName" class="block text-sm font-medium text-gray-700">שם האונייה</label>
-                        <select id="shipName" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
+                        <select id="shipName" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
                     </div>
                     <div>
                         <label for="cruiseDuration" class="block text-sm font-medium text-gray-700">משך ההפלגה (לילות)</label>
@@ -90,9 +94,16 @@
                 <!-- Itinerary Image Paste Area -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700">תמונת מסלול</label>
-                    <input type="file" accept="image/*" id="itineraryFile" class="mt-1 block w-full">
-                    <div id="itineraryPasteTarget" contenteditable="true" tabindex="0" class="mt-1 flex justify-center items-center w-full h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-500 p-2 text-center transition-colors">
-                        <span>או הדבק תמונה כאן (Ctrl+V)</span>
+                    <div id="itineraryPasteTarget" class="mt-1 flex justify-center items-center w-full h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-500 p-2 text-center transition-colors">
+                        <span>הדבק תמונה כאן (Ctrl+V)</span>
+                    </div>
+                </div>
+         
+                <!-- Ship Image Paste Area -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700">תמונת אונייה</label>
+                    <div id="shipPasteTarget" class="mt-1 flex justify-center items-center w-full h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-500 p-2 text-center transition-colors">
+                        <span>הדבק תמונה כאן (Ctrl+V)</span>
                     </div>
                 </div>
                 <!-- Rooms Section -->
@@ -113,150 +124,10 @@
                              <input id="includeMeals" type="checkbox" onchange="updatePreview()" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
                              <label for="includeMeals" class="ml-2 block text-sm text-gray-900">כולל 3 ארוחות מלאות ביום + מיסים + בופה עשיר</label>
                          </div>
-                         <div class="flex items-start">
-                             <input id="hideTotal" type="checkbox" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
-                             <label for="hideTotal" class="ml-2 block text-sm text-gray-900">הסתר סה"כ עלות</label>
-                         </div>
                      </div>
                      <div class="mt-4">
                         <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
                         <textarea id="customInclusions" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                </div>
-                <!-- Flights Section -->
-                <div class="mt-6">
-                    <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
-                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div id="flightsContainer" class="space-y-4">
-                            <!-- Flight templates will be cloned here -->
-                        </div>
-                        <button onclick="addFlight()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף טיסה</button>
-                        <div>
-                            <label for="airline" class="block text-sm font-medium text-gray-700">חברת תעופה</label>
-                            <input type="text" id="airline" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="flightIncludes" class="block text-sm font-medium text-gray-700">הכרטיס כולל (ניתן לערוך)</label>
-                            <textarea id="flightIncludes" oninput="updatePreview()" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">מזוודה 20 ק"ג\nטרולי 7 ק"ג</textarea>
-                        </div>
-                        <div>
-                            <label for="flightFreeText" class="block text-sm font-medium text-gray-700">מלל חופשי לטיסות</label>
-                            <textarea id="flightFreeText" oninput="updatePreview()" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                        </div>
-                        <div>
-                            <label for="flightCost" class="block text-sm font-medium text-gray-700">עלות טיסות ($)</label>
-                            <input type="number" id="flightCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="radio" id="flightNoCancel" name="flightCancelType" onchange="toggleFlightCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="flightNoCancel" class="ml-2">ללא אפשרות ביטול / שינוי</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="flightCancellable" name="flightCancelType" onchange="toggleFlightCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="flightCancellable" class="ml-2">ניתן לביטול / שינוי</label>
-                                </div>
-                                <div id="flightCancelDetails" class="hidden space-y-2 ml-6">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="flightCancelCheck" checked onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                        <label for="flightCancelCheck" class="ml-2">ניתן לביטול עם דמי</label>
-                                        <input type="text" id="flightCancelFee" placeholder="דמי ביטול לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="flightChangeCheck" checked onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                        <label for="flightChangeCheck" class="ml-2">ניתן לשינוי עם דמי</label>
-                                        <input type="text" id="flightChangeFee" placeholder="דמי שינוי לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Hotel Section -->
-                <div class="mt-6">
-                    <h3 class="text-xl font-bold mb-3">מלון (אופציונלי)</h3>
-                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div>
-                            <label for="hotelName" class="block text-sm font-medium text-gray-700">שם המלון</label>
-                            <input type="text" id="hotelName" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="hotelRoomDesc" class="block text-sm font-medium text-gray-700">חדר, הרכב ומחיר</label>
-                            <textarea id="hotelRoomDesc" oninput="updatePreview()" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                        </div>
-                        <div>
-                            <label for="hotelPension" class="block text-sm font-medium text-gray-700">פנסיון</label>
-                            <select id="hotelPension" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                <option value="">בחר</option>
-                                <option value="לינה בלבד">לינה בלבד</option>
-                                <option value="לינה וארוחת בוקר">לינה וארוחת בוקר</option>
-                                <option value="חצי פנסיון">חצי פנסיון</option>
-                                <option value="פנסיון מלא">פנסיון מלא</option>
-                                <option value="הכל כלול">הכל כלול</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="hotelCost" class="block text-sm font-medium text-gray-700">עלות מלון ($)</label>
-                            <input type="number" id="hotelCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelCancellable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelCancellable" class="ml-2">ניתן לביטול עם דמי</label>
-                                    <input type="text" id="hotelCancelFee" placeholder="דמי ביטול לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelChangeable" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelChangeable" class="ml-2">ניתן לשינוי עם דמי</label>
-                                    <input type="text" id="hotelChangeFee" placeholder="דמי שינוי לנוסע" oninput="updatePreview()" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelNoCancel" onchange="updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelNoCancel" class="ml-2">ללא אפשרות ביטול/שינוי</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Transfers Section -->
-                <div class="mt-6">
-                    <h3 class="text-xl font-bold mb-3">העברות (אופציונלי)</h3>
-                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div id="transfersContainer" class="space-y-4">
-                            <!-- Transfer templates will be cloned here -->
-                        </div>
-                        <button onclick="addTransfer()" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף העברה</button>
-                        <div>
-                            <label for="transfersCost" class="block text-sm font-medium text-gray-700">עלות כל ההעברות ($)</label>
-                            <input type="number" id="transfersCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="radio" id="transfersNoCancel" name="transfersCancelType" onchange="toggleTransfersCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="transfersNoCancel" class="ml-2">ללא אפשרות ביטול / שינוי</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="transfersCancellable" name="transfersCancelType" onchange="toggleTransfersCancelDetails(); updatePreview()" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="transfersCancellable" class="ml-2">ניתן לביטול</label>
-                                </div>
-                                <div id="transfersCancelDetails" class="hidden space-y-2 ml-6">
-                                    <div>
-                                        <label for="transfersCancelDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
-                                        <input type="text" id="transfersCancelDate" oninput="updatePreview()" placeholder="לדוגמה: 01.01.2026" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    </div>
-                                    <div>
-                                        <label for="transfersCancelFee" class="block text-sm font-medium text-gray-700">דמי ביטול</label>
-                                        <input type="text" id="transfersCancelFee" oninput="updatePreview()" placeholder="לדוגמה: $50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="mt-8 flex justify-center">
@@ -271,7 +142,7 @@
                     <!-- Header -->
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                          <div class="text-right">
-                             <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
+                             <h1 class="text-4xl font-bold" style="color: #3f3c66;">באלי <span style="color: #ed1c24;">קרוז</span></h1>
                          </div>
                          <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
@@ -300,70 +171,27 @@
                              <div id="previewRoomsContainer" class="space-y-4">
                                  <!-- Preview rooms will be added here -->
                              </div>
-                             <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden">
-                                 חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>💡 חשוב לדעת!<br>חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
-                             </div>
                          </div>
-                         <!-- Inclusions & Terms -->
-                        <div class="mt-8 text-sm space-y-3">
-                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
-                                <!-- Inclusions will be added dynamically -->
-                            </ul>
-                        </div>
-                         <!-- Flights Details -->
-                         <div id="previewFlightsContainer" class="my-6 hidden">
-                             <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
-                             <div class="border p-3 rounded-lg bg-white space-y-2">
-                                 <div id="previewFlightsList" class="space-y-2"></div>
-                                 <p id="previewAirline"></p>
-                                 <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
-                                 <p id="previewFlightFreeText"></p>
-                                 <p class="font-semibold text-right" id="previewFlightCost"></p>
-                                 <div id="previewFlightConditions" class="text-sm"></div>
-                             </div>
-                         </div>
-                         <!-- Hotel Details -->
-                         <div id="previewHotelContainer" class="my-6 hidden">
-                             <h3 class="text-xl font-bold mb-3">פרטי מלון:</h3>
-                             <div class="border p-3 rounded-lg bg-white space-y-2">
-                                 <p id="previewHotelName"></p>
-                                 <p id="previewHotelRoomDesc"></p>
-                                 <p id="previewHotelPension"></p>
-                                 <p class="font-semibold text-right" id="previewHotelCost"></p>
-                                 <div id="previewHotelConditions" class="text-sm"></div>
-                             </div>
-                         </div>
-                         <!-- Transfers Details -->
-                         <div id="previewTransfersContainer" class="my-6 hidden">
-                             <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
-                             <div class="border p-3 rounded-lg bg-white space-y-2">
-                                 <div id="previewTransfersList" class="space-y-2"></div>
-                                 <p class="font-semibold text-right" id="previewTransfersCost"></p>
-                                 <div id="previewTransfersConditions" class="text-sm"></div>
-                             </div>
-                         </div>
-                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
+                  
+                         <div class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg">
                              סה"כ עלות: $<span id="previewTotalPrice">0</span>
                          </div>
                         <!-- Ship Image -->
                         <div class="my-8">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
-                        <!-- Terms -->
+                        <!-- Inclusions & Terms -->
                         <div class="mt-8 text-sm space-y-3">
+                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
+                                <!-- Inclusions will be added dynamically -->
+                            </ul>
                             <div class="border-t pt-4 mt-4">
                                  <h4 class="font-bold">תנאי תשלום וביטול:</h4>
-                                 <p><strong>אפשרויות תשלום:</strong></p>
-                                 <ul class="list-disc list-inside">
-                                     <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
-                                     <li>העברה בנקאית שקל/דולר/יורו</li>
-                                     <li>מזומן לפי חוק המזומן במשרדנו</li>
-                                 </ul>
+                                 <p><strong>אפשרויות תשלום:</strong> כרטיס אשראי (עד 3 תשלומים), העברה בנקאית, או מזומן במשרדנו.</p>
                                  <p><strong>תנאי ביטול:</strong> בהתאם לתנאי חברת השייט המצורפים בנפרד.</p>
                                  <p class="text-xs text-gray-500 mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
-                                 <p class="text-xs text-gray-500 mt-2">טל"ח</p>
-                                 <p class="text-xs text-gray-500 mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
-                                 <p class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                                <p class="text-xs text-gray-500 mt-2">טל"ח</p>
+                                <p class="text-xs text-gray-500 mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
                             </div>
                         </div>
                     </main>
@@ -380,228 +208,140 @@
     <template id="roomTemplate">
         <div class="room-entry border p-4 rounded-lg mt-2 bg-gray-50 relative">
              <button onclick="removeRoom(this)" class="absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
-            <div class="space-y-4">
-                <!-- Composition -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">הרכב</label>
-                    <select name="composition" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">בחר הרכב</option>
-                        <option value="נוסע יחיד">נוסע יחיד</option>
-                        <option value="זוג">זוג</option>
-                        <option value="זוג + 1">זוג + 1</option>
-                        <option value="זוג + 2">זוג + 2</option>
-                        <option value="זוג + 3">זוג + 3</option>
-                        <option value="מבוגר + ילד">מבוגר + ילד</option>
-                        <option value="מבוגר + 2 ילדים">מבוגר + 2 ילדים</option>
-                        <option value="מבוגר + 3 ילדים">מבוגר + 3 ילדים</option>
-                        <option value="מבוגר + 4 ילדים">מבוגר + 4 ילדים</option>
-                        <option value="3 מבוגרים">3 מבוגרים</option>
-                        <option value="3 מבוגרים + 1">3 מבוגרים + 1</option>
-                        <option value="3 מבוגרים + 2">3 מבוגרים + 2</option>
-                        <option value="4 מבוגרים">4 מבוגרים</option>
-                        <option value="4 מבוגרים + 1">4 מבוגרים + 1</option>
-                        <option value="5 מבוגרים">5 מבוגרים</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700">תיאור החדר</label>
+                    <input type="text" name="roomDesc" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
-                <!-- Room Type -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">תיאור חדר</label>
-                    <select name="roomType" onchange="toggleRoomDetails(this); updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">בחר סוג חדר</option>
-                        <option value="פנימי גרנטי">פנימי גרנטי</option>
-                        <option value="פנימי עם בחירת מיקום">פנימי עם בחירת מיקום</option>
-                        <option value="חלון גרנטי">חלון גרנטי</option>
-                        <option value="חלון עם בחירת מיקום">חלון עם בחירת מיקום</option>
-                        <option value="מרפסת לים גרנטי">מרפסת לים גרנטי</option>
-                        <option value="מרפסת לפנים האונייה גרנטי">מרפסת לפנים האונייה גרנטי</option>
-                        <option value="מרפסת לים עם בחירת מיקום">מרפסת לים עם בחירת מיקום</option>
-                        <option value="מרפסת לפנים האונייה עם בחירת מיקום">מרפסת לפנים האונייה עם בחירת מיקום</option>
-                        <option value="סוויטה">סוויטה</option>
-                    </select>
-                </div>
-                <!-- Additional Room Details (Floor and Room Number) -->
-                <div class="room-details hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">קומה</label>
-                        <input type="text" name="floor" oninput="updatePreview()" placeholder="לדוגמה: 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">מספר חדר</label>
-                        <input type="text" name="roomNumber" oninput="updatePreview()" placeholder="לדוגמה: 1234" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-                <!-- Additional Description -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">תיאור נוסף (לא חובה)</label>
-                    <textarea name="extraDesc" oninput="updatePreview()" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="הוסף פרטים נוספים על החדר..."></textarea>
-                </div>
-                <!-- Price -->
-                <div>
+                 <div>
                     <label class="block text-sm font-medium text-gray-700">עלות ($)</label>
                     <input type="number" name="roomCost" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
             </div>
         </div>
     </template>
-    <!-- Flight HTML Template (for cloning) -->
-    <template id="flightTemplate">
-        <div class="flight-entry border p-4 rounded-lg bg-gray-50 relative">
-             <button onclick="removeFlight(this)" class="absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">מוצא</label>
-                    <input type="text" name="from" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">יעד</label>
-                    <input type="text" name="to" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">תאריך</label>
-                    <input type="text" name="date" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">שעת המראה</label>
-                    <input type="text" name="takeoff" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">שעת נחיתה</label>
-                    <input type="text" name="landing" oninput="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-            </div>
-        </div>
-    </template>
-    <!-- Transfer HTML Template (for cloning) -->
-    <template id="transferTemplate">
-        <div class="transfer-entry border p-4 rounded-lg bg-gray-50 relative">
-             <button onclick="removeTransfer(this)" class="absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">סוג העברה</label>
-                    <select name="transferType" onchange="updatePreview()" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">בחר סוג</option>
-                        <option value="שדה תעופה - מלון">שדה תעופה - מלון</option>
-                        <option value="מלון - נמל קרוזים">מלון - נמל קרוזים</option>
-                        <option value="נמל קרוזים - מלון">נמל קרוזים - מלון</option>
-                        <option value="מלון - שדה תעופה">מלון - שדה תעופה</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">מלל חופשי</label>
-                    <textarea name="transferFreeText" oninput="updatePreview()" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                </div>
-            </div>
-        </div>
-    </template>
     <script>
-        // --- DATA (Simulating Excel file with images integrated) ---
+        // --- Firebase Config ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyD-hVwQyl98ZcmEhWNtd11vGQDUu7sRMQQ",
+          authDomain: "balicruise-app.firebaseapp.com",
+          databaseURL: "https://balicruise-app-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "balicruise-app",
+          storageBucket: "balicruise-app.firebasestorage.app",
+          messagingSenderId: "462889164981",
+          appId: "1:462889164981:web:7ac797503b917a2350defc",
+          measurementId: "G-DB5Q6VLWX6"
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+        // --- DATA (Simulating Excel file) ---
         const cruiseData = {
             "MSC": [
-                {name: "MSC Preziosa", year: 2013, image: "https://i.postimg.cc/mrYsMd0L/MSC-300x225.webp"},
-                {name: "MSC World America", year: 2025, image: "https://i.postimg.cc/rwB97TQJ/MSC-World-America-main-300x225.webp"},
-                {name: "MSC Splendida", year: 2009, image: "https://i.postimg.cc/DwY9X9j3/MSC-300x225.webp"},
-                {name: "MSC World Asia", year: 2026, image: "https://i.postimg.cc/9F3QkF90/MSC-World-Asia.jpg"},
-                {name: "MSC Magnifica", year: 2010, image: "https://i.postimg.cc/s2rpwX0Y/MSC-300x225.webp"},
-                {name: "MSC World Europa", year: 2022, image: "https://i.postimg.cc/V6jZKvwn/MSC-World-Europa-main-300x225.webp"},
-                {name: "MSC Musica", year: 2006, image: "https://i.postimg.cc/K8LPPLQc/MSC-300x225.webp"},
-                {name: "MSC Seashore", year: 2021, image: "https://i.postimg.cc/PrX9FX0k/MSC-300x225.webp"},
-                {name: "MSC Orchestra", year: 2007, image: "https://i.postimg.cc/BQwpcHFR/MSC-main-300x225.webp"},
-                {name: "MSC Seaside", year: 2017, image: "https://i.postimg.cc/cHG570f2/MSC-300x225.webp"},
-                {name: "MSC Poesia", year: 2008, image: "https://i.postimg.cc/ZKJztFB2/MSC-300x225.webp"},
-                {name: "MSC Seascape", year: 2022, image: "https://i.postimg.cc/wBmGs7RD/MSC-300x225.webp"},
-                {name: "MSC Armonia", year: 2001, image: "https://i.postimg.cc/FsKGLDYj/MSC-main-300x225.webp"},
-                {name: "MSC Seaview", year: 2018, image: "https://i.postimg.cc/J4zY5TBr/MSC-300x225.webp"},
-                {name: "MSC Lirica", year: 2003, image: "https://i.postimg.cc/fbfYFN66/MSC-300x225.webp"},
-                {name: "MSC Bellissima", year: 2019, image: "https://i.postimg.cc/SNQ1GmvY/MSC-main-300x225.webp"},
-                {name: "MSC Opera", year: 2004, image: "https://i.postimg.cc/52Y3Pyqy/MSC-main-300x225.webp"},
-                {name: "MSC Euribia", year: 2023, image: "https://i.postimg.cc/3w2ZTqqH/MSC-Euribia-main-300x225.webp"},
-                {name: "MSC Sinfonia", year: 2002, image: "https://i.postimg.cc/2jwXvpy9/MSC-300x225.webp"},
-                {name: "MSC Grandiosa", year: 2019, image: "https://i.postimg.cc/yxjQzGkN/MSC-main-300x225.webp"},
-                {name: "MSC Divina", year: 2012, image: "https://i.postimg.cc/yxsQtK65/MSC-main-300x225.webp"},
-                {name: "MSC Meraviglia", year: 2017, image: "https://i.postimg.cc/J4S3HKNd/MSC-300x225.webp"},
-                {name: "MSC Fantasia", year: 2008, image: "https://i.postimg.cc/x877BHWp/MSC-300x225.webp"},
-                {name: "MSC Virtuosa", year: 2021, image: "https://i.postimg.cc/sXF0PSk3/MSC-300x225.webp"}
+                {name: "MSC Preziosa", year: 2013},
+                {name: "MSC World America", year: 2025},
+                {name: "MSC Splendida", year: 2009},
+                {name: "MSC World Asia", year: 2026},
+                {name: "MSC Magnifica", year: 2010},
+                {name: "MSC World Europa", year: 2022},
+                {name: "MSC Musica", year: 2006},
+                {name: "MSC Seashore", year: 2021},
+                {name: "MSC Orchestra", year: 2007},
+                {name: "MSC Seaside", year: 2017},
+                {name: "MSC Poesia", year: 2008},
+                {name: "MSC Seascape", year: 2022},
+                {name: "MSC Armonia", year: 2001},
+                {name: "MSC Seaview", year: 2018},
+                {name: "MSC Lirica", year: 2003},
+                {name: "MSC Bellissima", year: 2019},
+                {name: "MSC Opera", year: 2004},
+                {name: "MSC Euribia", year: 2023},
+                {name: "MSC Sinfonia", year: 2002},
+                {name: "MSC Grandiosa", year: 2019},
+                {name: "MSC Divina", year: 2012},
+                {name: "MSC Meraviglia", year: 2017},
+                {name: "MSC Fantasia", year: 2008},
+                {name: "MSC Virtuosa", year: 2021}
             ],
             "Royal Caribbean": [
-                {name: "Adventure of the Seas", year: 2001, image: "https://i.postimg.cc/gknzTbwr/Adventure-of-the-Seas-300x225.webp"},
-                {name: "Allure of the Seas", year: 2010, image: "https://i.postimg.cc/4xcJXvQg/Allure-of-the-Seas-300x225.webp"},
-                {name: "Anthem of the Seas", year: 2015, image: "https://i.postimg.cc/fbhMy380/Anthem-of-the-Seas-300x225.webp"},
-                {name: "Brilliance of the Seas", year: 2002, image: "https://i.postimg.cc/3wCYvKqf/Brilliance-of-the-Seas-300x225.webp"},
-                {name: "Enchantment of the Seas", year: 1997, image: "https://i.postimg.cc/NMsY83qs/Enchantment-of-the-Seas-300x225.webp"},
-                {name: "Explorer of the Seas", year: 2000, image: "https://i.postimg.cc/4xpTDfX4/Explorer-of-the-Seas-300x225.webp"},
-                {name: "Freedom of the Seas", year: 2006, image: "https://i.postimg.cc/Bvgfvm8d/Freedom-of-the-Seas-300x225.webp"},
-                {name: "Grandeur of the Seas", year: 1996, image: "https://i.postimg.cc/269pQ37G/Grandeur-of-the-Seas-300x225.webp"},
-                {name: "Harmony of the Seas", year: 2016, image: "https://i.postimg.cc/Y0v5bkXH/Harmony-of-the-Seas-300x225.webp"},
-                {name: "Icon of the Seas", year: 2024, image: "https://i.postimg.cc/ZYgt0BRK/Icon-of-the-Seas-300x225.webp"},
-                {name: "Independence of the Seas", year: 2008, image: "https://i.postimg.cc/2SxBzfwm/Independence-of-the-Seas-300x225.webp"},
-                {name: "Jewel of the Seas", year: 2004, image: "https://i.postimg.cc/nzXsY9tc/Jewel-of-the-Seas-300x225.webp"},
-                {name: "Legend of the Seas", year: 1995, image: "https://i.postimg.cc/C19RvMFC/LEGEND-OF-THE-SEAS-300x225.webp"},
-                {name: "Liberty of the Seas", year: 2007, image: "https://i.postimg.cc/ZYyBWNcw/Liberty-of-the-Seas-300x225.webp"},
-                {name: "Mariner of the Seas", year: 2003, image: "https://i.postimg.cc/QxQFbrv5/Mariner-of-the-Seas-300x225.webp"},
-                {name: "Navigator of the Seas", year: 2002, image: "https://i.postimg.cc/9Qcrgnjk/Navigator-of-the-Seas-300x225.webp"},
-                {name: "Oasis of the Seas", year: 2009, image: "https://i.postimg.cc/PrytJfB6/Oasis-of-the-Seas-300x225.webp"},
-                {name: "Odyssey of the Seas", year: 2021, image: "https://i.postimg.cc/Fzm4FwG5/Odyssey-of-the-Seas-300x225.webp"},
-                {name: "Ovation of the Seas", year: 2016, image: "https://i.postimg.cc/vTzd4XS1/Ovation-of-the-Seas-300x225.webp"},
-                {name: "Quantum of the Seas", year: 2014, image: "https://i.postimg.cc/SsgrjMfS/Quantum-of-the-Seas-300x225.webp"},
-                {name: "Radiance of the Seas", year: 2001, image: "https://i.postimg.cc/rsz94wfS/Radiance-of-the-Seas-300x225.webp"},
-                {name: "Rhapsody of the Seas", year: 1997, image: "https://i.postimg.cc/zXbjX3bN/Rhapsody-of-the-Seas-300x225.webp"},
-                {name: "Serenade of the Seas", year: 2003, image: "https://i.postimg.cc/02TC6xDw/Serenade-of-the-Seas-300x225.webp"},
-                {name: "Spectrum of the Seas", year: 2019, image: "https://i.postimg.cc/bv8HTT6Y/Spectrum-of-the-Seas-300x225.webp"},
-                {name: "Star of the Seas", year: 2025, image: "https://i.postimg.cc/284SNRdw/Star-of-the-Seas.jpg"},
-                {name: "Symphony of the Seas", year: 2018, image: "https://i.postimg.cc/0NfGHw3Y/Symphony-of-the-Seas-300x225.webp"},
-                {name: "Utopia of the Seas", year: 2024, image: "https://i.postimg.cc/Z54KT7Vh/Utopia-of-the-Seas.jpg"}
+                {name: "Adventure of the Seas", year: 2001},
+                {name: "Allure of the Seas", year: 2010},
+                {name: "Anthem of the Seas", year: 2015},
+                {name: "Brilliance of the Seas", year: 2002},
+                {name: "Enchantment of the Seas", year: 1997},
+                {name: "Explorer of the Seas", year: 2000},
+                {name: "Freedom of the Seas", year: 2006},
+                {name: "Grandeur of the Seas", year: 1996},
+                {name: "Harmony of the Seas", year: 2016},
+                {name: "Icon of the Seas", year: 2024},
+                {name: "Independence of the Seas", year: 2008},
+                {name: "Jewel of the Seas", year: 2004},
+                {name: "Legend of the Seas", year: 1995},
+                {name: "Liberty of the Seas", year: 2007},
+                {name: "Mariner of the Seas", year: 2003},
+                {name: "Navigator of the Seas", year: 2002},
+                {name: "Oasis of the Seas", year: 2009},
+                {name: "Odyssey of the Seas", year: 2021},
+                {name: "Ovation of the Seas", year: 2016},
+                {name: "Quantum of the Seas", year: 2014},
+                {name: "Radiance of the Seas", year: 2001},
+                {name: "Rhapsody of the Seas", year: 1997},
+                {name: "Serenade of the Seas", year: 2003},
+                {name: "Spectrum of the Seas", year: 2019},
+                {name: "Star of the Seas", year: 2025},
+                {name: "Symphony of the Seas", year: 2018},
+                {name: "Utopia of the Seas", year: 2024}
             ],
             "Norwegian Cruise Line": [
-                {name: "Norwegian Aqua", year: 2025, image: "https://i.postimg.cc/T3hRkwRy/NORWEIGAN-AQUA-300x202.png"},
-                {name: "Norwegian Bliss", year: 2018, image: "https://i.postimg.cc/jC05VYZV/Norwegian-Bliss-300x225.webp"},
-                {name: "Norwegian Breakaway", year: 2013, image: "https://i.postimg.cc/MHx6tmTx/Norwegian-Breakaway-300x225.webp"},
-                {name: "Norwegian Dawn", year: 2002, image: "https://i.postimg.cc/5yMB3TL0/Norwegian-Dawn-300x225.webp"},
-                {name: "Norwegian Encore", year: 2019, image: "https://i.postimg.cc/wxhcvxYs/Norwegian-Encore-300x225.webp"},
-                {name: "Norwegian Epic", year: 2010, image: "https://i.postimg.cc/VLm9byzZ/Norwegian-Epic-300x225.webp"},
-                {name: "Norwegian Escape", year: 2015, image: "https://i.postimg.cc/CL7GGv1h/Norwegian-Escape-300x225.webp"},
-                {name: "Norwegian Getaway", year: 2014, image: "https://i.postimg.cc/x8GFC77H/Norwegian-Getaway-300x225.webp"},
-                {name: "Norwegian Jade", year: 2006, image: "https://i.postimg.cc/4xxFfW17/Norwegian-Jade-300x225.webp"},
-                {name: "Norwegian Jewel", year: 2005, image: "https://i.postimg.cc/dtq565pH/Norwegian-Jewel-300x225.webp"},
-                {name: "Norwegian Joy", year: 2017, image: "https://i.postimg.cc/TPW01F5w/Norwegian-Joy-300x225.webp"},
-                {name: "Norwegian Luna", year: 2026, image: "https://i.postimg.cc/WzZb4xBs/NORWEGIAN-LUNA.jpg"},
-                {name: "Norwegian Pearl", year: 2006, image: "https://i.postimg.cc/sxK9bRqn/Norwegian-Pearl-300x225.webp"},
-                {name: "Norwegian Prima", year: 2022, image: "https://i.postimg.cc/xjPRXK8K/Norwegian-Prima-300x225.webp"},
-                {name: "Norwegian Sky", year: 1999, image: "https://i.postimg.cc/yYYTck32/Norwegian-Sky-300x225.webp"},
-                {name: "Norwegian Spirit", year: 1998, image: "https://i.postimg.cc/L8JBQwTT/Norwegian-Spirit-300x225.webp"},
-                {name: "Norwegian Star", year: 2001, image: "https://i.postimg.cc/qvWcPwDd/Norwegian-Star-300x225.webp"},
-                {name: "Norwegian Sun", year: 2001, image: "https://i.postimg.cc/FsB0SG4J/Norwegian-Sun-300x225.webp"},
-                {name: "Norwegian Viva", year: 2023, image: "https://i.postimg.cc/g09RSJrz/Norwegian-Viva-300x225.webp"},
-                {name: "Norwegian Gem", year: 2007, image: "https://i.postimg.cc/90fqRwgp/Norwegian-Gem-300x225.webp"},
-                {name: "Pride of America", year: 2005, image: "https://i.postimg.cc/59Pzcpjk/Pride-of-America-300x225.webp"}
+                {name: "Norwegian Aqua", year: 2025},
+                {name: "Norwegian Bliss", year: 2018},
+                {name: "Norwegian Breakaway", year: 2013},
+                {name: "Norwegian Dawn", year: 2002},
+                {name: "Norwegian Encore", year: 2019},
+                {name: "Norwegian Epic", year: 2010},
+                {name: "Norwegian Escape", year: 2015},
+                {name: "Norwegian Getaway", year: 2014},
+                {name: "Norwegian Jade", year: 2006},
+                {name: "Norwegian Jewel", year: 2005},
+                {name: "Norwegian Joy", year: 2017},
+                {name: "Norwegian Luna", year: 2026},
+                {name: "Norwegian Pearl", year: 2006},
+                {name: "Norwegian Prima", year: 2022},
+                {name: "Norwegian Sky", year: 1999},
+                {name: "Norwegian Spirit", year: 1998},
+                {name: "Norwegian Star", year: 2001},
+                {name: "Norwegian Sun", year: 2001},
+                {name: "Norwegian Viva", year: 2023},
+                {name: "Norwegian Gem", year: 2007},
+                {name: "Pride of America", year: 2005}
             ],
             "CELEBRITY": [
-                {name: "Celebrity Apex", year: 2020, image: "https://i.postimg.cc/76hB396G/Celebrity-Apex-300x225.webp"},
-                {name: "Celebrity Ascent", year: 2023, image: "https://i.postimg.cc/zvR0MfTq/Celebrity-Ascent-300x225.webp"},
-                {name: "Celebrity Beyond", year: 2022, image: "https://i.postimg.cc/JzmCNwWs/Celebrity-Beyond-300x225.webp"},
-                {name: "Celebrity Constellation", year: 2002, image: "https://i.postimg.cc/N0jhn1FY/Celebrity-Constellation-300x225.webp"},
-                {name: "Celebrity Eclipse", year: 2010, image: "https://i.postimg.cc/TwKzdfn4/Celebrity-Eclipse-300x225.webp"},
-                {name: "Celebrity Edge", year: 2018, image: "https://i.postimg.cc/1X6bFBC0/Celebrity-Edge-300x225.webp"},
-                {name: "Celebrity Equinox", year: 2009, image: "https://i.postimg.cc/L6tr6yZ2/Celebrity-Equinox-300x225.webp"},
-                {name: "Celebrity Flora", year: 2019, image: "https://i.postimg.cc/g2G1wvvR/Celebrity-Flora-300x225.webp"},
-                {name: "Celebrity Infinity", year: 2001, image: "https://i.postimg.cc/jj59ct3S/Celebrity-Infinity-300x225.webp"},
-                {name: "Celebrity Millennium", year: 2000, image: "https://i.postimg.cc/KYHWswCr/Celebrity-Millennium-300x225.webp"},
-                {name: "Celebrity Reflection", year: 2012, image: "https://i.postimg.cc/C5yQwDhR/Celebrity-Reflection-300x225.webp"},
-                {name: "Celebrity Silhouette", year: 2011, image: "https://i.postimg.cc/RhcbhFhX/Celebrity-Silhouette-300x225.webp"},
-                {name: "Celebrity Solstice", year: 2008, image: "https://i.postimg.cc/1R6dJWBw/Celebrity-Solstice-300x225.webp"},
-                {name: "Celebrity Summit", year: 2001, image: "https://i.postimg.cc/VL8VTjZT/Celebrity-Summit-300x225.webp"},
-                {name: "Celebrity Xce", year: 2025, image: "https://i.postimg.cc/ZKxMhC1q/Celebrity-Xcel-300x225.webp"}
+                {name: "Celebrity Apex", year: 2020},
+                {name: "Celebrity Ascent", year: 2023},
+                {name: "Celebrity Beyond", year: 2022},
+                {name: "Celebrity Constellation", year: 2002},
+                {name: "Celebrity Eclipse", year: 2010},
+                {name: "Celebrity Edge", year: 2018},
+                {name: "Celebrity Equinox", year: 2009},
+                {name: "Celebrity Flora", year: 2019},
+                {name: "Celebrity Infinity", year: 2001},
+                {name: "Celebrity Millennium", year: 2000},
+                {name: "Celebrity Reflection", year: 2012},
+                {name: "Celebrity Silhouette", year: 2011},
+                {name: "Celebrity Solstice", year: 2008},
+                {name: "Celebrity Summit", year: 2001},
+                {name: "Celebrity Xce", year: 2025}
             ],
             "COSTA": [
-                {name: "Costa Deliziosa", year: 2010, image: "https://i.postimg.cc/ryCJD7gn/Costa-Deliziosa-300x225.webp"},
-                {name: "Costa Diadema", year: 2014, image: "https://i.postimg.cc/Fsrx3GB9/Costa-Diadema-300x225.webp"},
-                {name: "Costa Fascinosa", year: 2012, image: "https://i.postimg.cc/TYtJ9mzn/Costa-Fascinosa-300x225.webp"},
-                {name: "Costa Favolosa", year: 2011, image: "https://i.postimg.cc/t4ft0bCT/Costa-Favolosa-300x225.webp"},
-                {name: "Costa Fortuna", year: 2003, image: "https://i.postimg.cc/Ssb6sG9b/Costa-Fortuna-300x225.webp"},
-                {name: "Costa Pacifica", year: 2009, image: "https://i.postimg.cc/bNwQsrZr/Costa-Pacifica-300x225.webp"},
-                {name: "Costa Serena", year: 2007, image: "https://i.postimg.cc/7Z9Pb3WJ/Costa-Serena.jpg"},
-                {name: "Costa Smeralda", year: 2019, image: "https://i.postimg.cc/YCgj9Bzj/Costa-Smeralda-300x225.webp"},
-                {name: "Costa Toscana", year: 2021, image: "https://i.postimg.cc/FRK90M3y/Costa-Toscana-300x225.webp"},
-                {name: "Costa Firenze", year: 2021, image: "https://i.postimg.cc/sgRsTQ5D/Costa-Firenze-300x225.webp"}
+                {name: "Costa Deliziosa", year: 2010},
+                {name: "Costa Diadema", year: 2014},
+                {name: "Costa Fascinosa", year: 2012},
+                {name: "Costa Favolosa", year: 2011},
+                {name: "Costa Fortuna", year: 2003},
+                {name: "Costa Pacifica", year: 2009},
+                {name: "Costa Serena", year: 2007},
+                {name: "Costa Smeralda", year: 2019},
+                {name: "Costa Toscana", year: 2021}
             ]
         };
         // --- ADVISORS DATA ---
@@ -612,117 +352,72 @@
             "yarden": "ירדן שקד | Yarden shaked | יועץ שייט | 03-3106454 | Yarden@balicruise.co.il",
             "nir": "ניר | Nir | יועץ שייט | 03-3106454 | nir@balicruise.co.il"
         };
-        // Guarantee message
-        const guaranteeMessage = "מיקום החדר ייקבע על ידי חברת השייט";
-        // Room types that require details
-        const detailRoomTypes = [
-            "פנימי עם בחירת מיקום",
-            "חלון עם בחירת מיקום",
-            "מרפסת לים עם בחירת מיקום",
-            "מרפסת לפנים האונייה עם בחירת מיקום"
-        ];
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('offerDate').valueAsDate = new Date();
             populateShips();
             addRoom();
-            addFlight(); // Add first flight by default
-            setupPasteListeners();
-            setupFileUpload();
+            setupPasteListeners(); // Set up the new paste functionality
             updatePreview();
+            setupGlobalCounter();
         });
-        // --- IMAGE RESIZE FUNCTION ---
-        function resizeImage(dataUrl, maxWidth = 800, maxHeight = 300, callback) {
-            const img = new Image();
-            img.src = dataUrl;
-            img.onload = () => {
-                let width = img.width;
-                let height = img.height;
-                if (width > maxWidth) {
-                    height *= maxWidth / width;
-                    width = maxWidth;
-                }
-                if (height > maxHeight) {
-                    width *= maxHeight / height;
-                    height = maxHeight;
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                callback(canvas.toDataURL('image/jpeg', 0.8));
-            };
-        }
-        // --- IMAGE PASTE LOGIC (for itinerary) ---
-        function setupPasteListeners() {
-            const itineraryTarget = document.getElementById('itineraryPasteTarget');
-            itineraryTarget.addEventListener('paste', (e) => handlePaste(e, 'previewItineraryImage', itineraryTarget));
-            // Ensure the div is focused when clicked
-            itineraryTarget.addEventListener('click', () => {
-                itineraryTarget.focus();
+        // --- GLOBAL COUNTER LOGIC ---
+        function setupGlobalCounter() {
+            const counterRef = database.ref('proposalCounter');
+            // Listen for changes and update display
+            counterRef.on('value', (snapshot) => {
+                const count = snapshot.val() || 0;
+                document.getElementById('globalCounter').textContent = count;
             });
         }
+        function incrementGlobalCounter() {
+            const counterRef = database.ref('proposalCounter');
+            counterRef.transaction((current) => {
+                return (current || 0) + 1;
+            }).then(() => {
+                console.log('Counter incremented');
+            }).catch((error) => {
+                console.error('Error incrementing counter:', error);
+            });
+        }
+ 
+        // --- IMAGE PASTE LOGIC ---
+        function setupPasteListeners() {
+            const itineraryTarget = document.getElementById('itineraryPasteTarget');
+            const shipTarget = document.getElementById('shipPasteTarget');
+            itineraryTarget.addEventListener('paste', (e) => handlePaste(e, 'previewItineraryImage', itineraryTarget));
+            shipTarget.addEventListener('paste', (e) => handlePaste(e, 'previewShipImage', shipTarget));
+        }
         function handlePaste(event, previewImageId, pasteTargetElement) {
+            // Prevent the default paste action to stop the image from being inserted into the div
             event.preventDefault();
-            const items = (event.clipboardData || window.clipboardData || event.originalEvent.clipboardData).items;
+     
+            // Get the clipboard data
+            const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+     
+            // Find and process the first image item from the clipboard
             for (const item of items) {
                 if (item.type.startsWith('image/')) {
                     const blob = item.getAsFile();
                     if (blob) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            resizeImage(e.target.result, 800, 300, (resizedUrl) => {
-                                const imgElement = document.getElementById(previewImageId);
-                                imgElement.src = resizedUrl;
-                                pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
-                                pasteTargetElement.classList.remove('border-gray-300');
-                                pasteTargetElement.classList.add('border-green-500');
-                                updatePreview();
-                            });
-                        };
-                        reader.readAsDataURL(blob);
-                    }
-                    return;
-                }
-            }
-        }
-        // --- IMAGE FILE UPLOAD LOGIC ---
-        function setupFileUpload() {
-            const fileInput = document.getElementById('itineraryFile');
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                const pasteTargetElement = document.getElementById('itineraryPasteTarget');
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        resizeImage(e.target.result, 800, 300, (resizedUrl) => {
-                            const imgElement = document.getElementById('previewItineraryImage');
-                            imgElement.src = resizedUrl;
+                            // Update the src of the corresponding preview image
+                            const imgElement = document.getElementById(previewImageId);
+                            imgElement.src = e.target.result;
+                     
+                            // Update the UI of the paste box to give user feedback
                             pasteTargetElement.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה בהצלחה!</span>`;
                             pasteTargetElement.classList.remove('border-gray-300');
                             pasteTargetElement.classList.add('border-green-500');
-                            updatePreview();
-                        });
-                    };
-                    reader.readAsDataURL(file);
+                        };
+                        // Read the image file as a Base64 string
+                        reader.readAsDataURL(blob);
+                    }
+                    // Stop after handling the first image found
+                    return;
                 }
-            });
-        }
-        // --- LOAD IMAGES FUNCTION ---
-        async function loadImages(element) {
-            const images = element.querySelectorAll('img');
-            const promises = Array.from(images).map(img => {
-                if (img.complete && img.naturalHeight !== 0) {
-                    return Promise.resolve();
-                }
-                return new Promise((resolve) => {
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                    img.src = img.src; // trigger load
-                });
-            });
-            await Promise.all(promises);
+            }
         }
         // --- DYNAMIC FORM LOGIC ---
         function populateShips() {
@@ -749,71 +444,11 @@
             button.closest('.room-entry').remove();
             updatePreview();
         }
-        function addFlight() {
-            const template = document.getElementById('flightTemplate');
-            const clone = template.content.cloneNode(true);
-            const container = document.getElementById('flightsContainer');
-            container.appendChild(clone);
-            const newEntry = container.lastChild;
-            const count = container.children.length;
-            if (count === 1) {
-                newEntry.querySelector('input[name="from"]').value = "תל אביב";
-            } else if (count === 2) {
-                newEntry.querySelector('input[name="to"]').value = "תל אביב";
-            }
-            updatePreview();
-        }
-        function removeFlight(button) {
-            button.closest('.flight-entry').remove();
-            updatePreview();
-        }
-        function addTransfer() {
-            const template = document.getElementById('transferTemplate');
-            const clone = template.content.cloneNode(true);
-            document.getElementById('transfersContainer').appendChild(clone);
-            updatePreview();
-        }
-        function removeTransfer(button) {
-            button.closest('.transfer-entry').remove();
-            updatePreview();
-        }
-        function toggleTransfersCancelDetails() {
-            const cancellable = document.getElementById('transfersCancellable').checked;
-            const detailsDiv = document.getElementById('transfersCancelDetails');
-            if (cancellable) {
-                detailsDiv.classList.remove('hidden');
-            } else {
-                detailsDiv.classList.add('hidden');
-            }
-            updatePreview();
-        }
-        function toggleFlightCancelDetails() {
-            const cancellable = document.getElementById('flightCancellable').checked;
-            const detailsDiv = document.getElementById('flightCancelDetails');
-            if (cancellable) {
-                detailsDiv.classList.remove('hidden');
-            } else {
-                detailsDiv.classList.add('hidden');
-            }
-            updatePreview();
-        }
-        function toggleRoomDetails(selectElement) {
-            const roomEntry = selectElement.closest('.room-entry');
-            const detailsDiv = roomEntry.querySelector('.room-details');
-            if (detailsDiv) {
-                if (detailRoomTypes.includes(selectElement.value)) {
-                    detailsDiv.classList.remove('hidden');
-                } else {
-                    detailsDiv.classList.add('hidden');
-                }
-            }
-            updatePreview();
-        }
         // --- PREVIEW UPDATE LOGIC ---
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-    
+     
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
@@ -821,63 +456,37 @@
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date().toLocaleDateString('he-IL')}`;
             }
             document.getElementById('previewCruiseLine').textContent = document.getElementById('cruiseLine').value;
-            const shipName = document.getElementById('shipName').value;
-            document.getElementById('previewShipName').textContent = shipName;
+            document.getElementById('previewShipName').textContent = document.getElementById('shipName').value;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-    
+     
             // Advisor
             const selectedAdvisor = document.getElementById('advisor').value;
             document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
-    
+     
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
-            let hasGuarantee = false;
-    
+     
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
-                const composition = room.querySelector('select[name="composition"]').value;
-                const roomType = room.querySelector('select[name="roomType"]').value;
-                const floor = room.querySelector('input[name="floor"]').value;
-                const roomNumber = room.querySelector('input[name="roomNumber"]').value;
-                const extraDesc = room.querySelector('textarea[name="extraDesc"]').value;
-                const costInput = room.querySelector('input[name="roomCost"]');
-                const cost = costInput ? costInput.value : '';
+                const desc = room.querySelector('input[name="roomDesc"]').value;
+                const cost = room.querySelector('input[name="roomCost"]').value;
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-        
-                if (roomType && roomType.includes('גרנטי')) {
-                    hasGuarantee = true;
-                }
-                if (composition || roomType || cost) {
-                    let roomDesc = '';
-                    if (composition) {
-                        roomDesc += `הרכב: ${composition}`;
-                    }
-                    if (roomType) {
-                        let typePart = roomType;
-                        if (roomType.includes('גרנטי')) {
-                            typePart += ` - ${guaranteeMessage}`;
-                        } else if (floor || roomNumber) {
-                            typePart += ` (קומה: ${floor || ''}${floor && roomNumber ? ', ' : ''}חדר: ${roomNumber || ''})`;
-                        }
-                        roomDesc += ` | תיאור: ${typePart}`;
-                    }
-                    if (extraDesc) {
-                        roomDesc += ` | נוסף: ${extraDesc}`;
-                    }
-        
+         
+                if (desc || cost) {
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
-                    roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong> ${roomDesc || 'לא צוין תיאור'}</p>
+                    roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong> ${desc || 'לא צוין תיאור'}</p>
                                          <p class="font-semibold text-right">עלות: $${costValue.toLocaleString()}</p>`;
                     previewRoomsContainer.appendChild(roomDiv);
                 }
             });
-            document.getElementById('previewGuaranteeNote').classList.toggle('hidden', !hasGuarantee);
+            document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
+     
             // Inclusions
             const inclusionsList = document.getElementById('previewInclusions');
             inclusionsList.innerHTML = '';
@@ -907,151 +516,6 @@
              if (inclusionsList.innerHTML === '') {
                  inclusionsList.innerHTML = '<li>אין הכללות מיוחדות.</li>';
              }
-            // Flights
-            const previewFlightsContainer = document.getElementById('previewFlightsContainer');
-            const previewFlightsList = document.getElementById('previewFlightsList');
-            previewFlightsList.innerHTML = '';
-            const flightsContainer = document.getElementById('flightsContainer');
-            const flightEntries = flightsContainer.querySelectorAll('.flight-entry');
-            let hasFlights = false;
-            flightEntries.forEach((flight) => {
-                const from = flight.querySelector('input[name="from"]').value || '___';
-                const to = flight.querySelector('input[name="to"]').value || '___';
-                const date = flight.querySelector('input[name="date"]').value || '___';
-                const takeoff = flight.querySelector('input[name="takeoff"]').value || '___';
-                const landing = flight.querySelector('input[name="landing"]').value || '___';
-                if (from !== '___' || to !== '___' || date !== '___' || takeoff !== '___' || landing !== '___') {
-                    hasFlights = true;
-                }
-                const p = document.createElement('p');
-                p.textContent = `טיסה מ ${from} ל ${to} בתאריך ${date} המראה ${takeoff} נחיתה ${landing}`;
-                previewFlightsList.appendChild(p);
-            });
-            const airline = document.getElementById('airline').value;
-            const flightIncludes = document.getElementById('flightIncludes').value;
-            const flightFreeText = document.getElementById('flightFreeText').value;
-            const flightCost = parseFloat(document.getElementById('flightCost').value) || 0;
-            const flightCancellable = document.getElementById('flightCancellable').checked;
-            const flightNoCancel = document.getElementById('flightNoCancel').checked;
-            const flightCancelCheck = document.getElementById('flightCancelCheck') ? document.getElementById('flightCancelCheck').checked : false;
-            const flightChangeCheck = document.getElementById('flightChangeCheck') ? document.getElementById('flightChangeCheck').checked : false;
-            const flightCancelFee = document.getElementById('flightCancelFee').value;
-            const flightChangeFee = document.getElementById('flightChangeFee').value;
-            if (hasFlights || airline || flightIncludes.trim() || flightFreeText || flightCost > 0) {
-                previewFlightsContainer.classList.remove('hidden');
-                document.getElementById('previewAirline').textContent = `טיסה בחברת תעופה ${airline || '___'}`;
-                const includesList = document.getElementById('previewFlightIncludes');
-                includesList.innerHTML = '';
-                flightIncludes.split('\n').forEach(line => {
-                    if (line.trim()) {
-                        const li = document.createElement('li');
-                        li.textContent = line.trim();
-                        includesList.appendChild(li);
-                    }
-                });
-                document.getElementById('previewFlightFreeText').textContent = flightFreeText || '';
-                document.getElementById('previewFlightCost').textContent = `עלות: $${flightCost.toLocaleString()}`;
-                const conditionsDiv = document.getElementById('previewFlightConditions');
-                conditionsDiv.innerHTML = '';
-                if (flightNoCancel) {
-                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
-                } else if (flightCancellable) {
-                    if (flightCancelCheck && flightCancelFee) {
-                        conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב ${flightCancelFee} לנוסע</p>`;
-                    }
-                    if (flightChangeCheck && flightChangeFee) {
-                        conditionsDiv.innerHTML += `<p>שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב ${flightChangeFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
-                    }
-                }
-                totalPrice += flightCost;
-            } else {
-                previewFlightsContainer.classList.add('hidden');
-            }
-            // Hotel
-            const previewHotelContainer = document.getElementById('previewHotelContainer');
-            const hotelName = document.getElementById('hotelName').value;
-            const hotelRoomDesc = document.getElementById('hotelRoomDesc').value;
-            const hotelPension = document.getElementById('hotelPension').value;
-            const hotelCost = parseFloat(document.getElementById('hotelCost').value) || 0;
-            const hotelCancellable = document.getElementById('hotelCancellable').checked;
-            const hotelCancelFee = document.getElementById('hotelCancelFee').value;
-            const hotelChangeable = document.getElementById('hotelChangeable').checked;
-            const hotelChangeFee = document.getElementById('hotelChangeFee').value;
-            const hotelNoCancel = document.getElementById('hotelNoCancel').checked;
-            if (hotelName || hotelCost > 0) {
-                previewHotelContainer.classList.remove('hidden');
-                document.getElementById('previewHotelName').textContent = `שם המלון: ${hotelName || '___'}`;
-                document.getElementById('previewHotelRoomDesc').textContent = `חדר, הרכב ומחיר: ${hotelRoomDesc || '___'}`;
-                document.getElementById('previewHotelPension').textContent = `פנסיון: ${hotelPension || '___'}`;
-                document.getElementById('previewHotelCost').textContent = `עלות: $${hotelCost.toLocaleString()}`;
-                const conditionsDiv = document.getElementById('previewHotelConditions');
-                conditionsDiv.innerHTML = '';
-                if (hotelCancellable && hotelCancelFee) {
-                    conditionsDiv.innerHTML += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההגעה ב ${hotelCancelFee} לנוסע</p>`;
-                }
-                if (hotelChangeable && hotelChangeFee) {
-                    conditionsDiv.innerHTML += `<p>שינוי – ניתן לשינוי עד 72 שעות לפני ההגעה ב ${hotelChangeFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
-                }
-                if (hotelNoCancel) {
-                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>`;
-                }
-                totalPrice += hotelCost;
-            } else {
-                previewHotelContainer.classList.add('hidden');
-            }
-            // Transfers
-            const previewTransfersContainer = document.getElementById('previewTransfersContainer');
-            const previewTransfersList = document.getElementById('previewTransfersList');
-            previewTransfersList.innerHTML = '';
-            const transfersContainer = document.getElementById('transfersContainer');
-            const transferEntries = transfersContainer.querySelectorAll('.transfer-entry');
-            let hasTransfers = false;
-            transferEntries.forEach((transfer, index) => {
-                const type = transfer.querySelector('select[name="transferType"]').value || '___';
-                const freeText = transfer.querySelector('textarea[name="transferFreeText"]').value || '';
-                if (type !== '___' || freeText) {
-                    hasTransfers = true;
-                }
-                const p = document.createElement('p');
-                p.textContent = `${index + 1}. ${type}${freeText ? ` - ${freeText}` : ''}`;
-                previewTransfersList.appendChild(p);
-            });
-            const transfersCost = parseFloat(document.getElementById('transfersCost').value) || 0;
-            const transfersNoCancel = document.getElementById('transfersNoCancel').checked;
-            const transfersCancellable = document.getElementById('transfersCancellable').checked;
-            const transfersCancelDate = document.getElementById('transfersCancelDate').value;
-            const transfersCancelFee = document.getElementById('transfersCancelFee').value;
-            if (hasTransfers || transfersCost > 0) {
-                previewTransfersContainer.classList.remove('hidden');
-                document.getElementById('previewTransfersCost').textContent = `עלות: $${transfersCost.toLocaleString()}`;
-                const conditionsDiv = document.getElementById('previewTransfersConditions');
-                conditionsDiv.innerHTML = '';
-                if (transfersNoCancel) {
-                    conditionsDiv.innerHTML += `<p>ללא אפשרות ביטול / שינוי</p>`;
-                } else if (transfersCancellable && transfersCancelDate && transfersCancelFee) {
-                    conditionsDiv.innerHTML += `<p>ניתן לביטול עד לתאריך ${transfersCancelDate} בדמי ביטול בסך ${transfersCancelFee}</p>`;
-                }
-                totalPrice += transfersCost;
-            } else {
-                previewTransfersContainer.classList.add('hidden');
-            }
-            // Total
-            const previewTotalContainer = document.getElementById('previewTotalContainer');
-            const hideTotal = document.getElementById('hideTotal').checked;
-            if (hideTotal) {
-                previewTotalContainer.classList.add('hidden');
-            } else {
-                previewTotalContainer.classList.remove('hidden');
-                document.getElementById('previewTotalPrice').textContent = totalPrice.toLocaleString();
-            }
-             // Set ship image automatically based on selection
-             const cruiseLine = document.getElementById('cruiseLine').value;
-             const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
-             if (ship && ship.image) {
-                 document.getElementById('previewShipImage').src = ship.image;
-             } else {
-                 document.getElementById('previewShipImage').src = 'https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה';
-             }
         }
         // --- PDF GENERATION ---
         async function generatePDF() {
@@ -1073,7 +537,7 @@
             tempContainer.appendChild(clone1);
             // Remove elements after total in clone1
             const main1 = clone1.querySelector('main');
-            const total1 = main1.querySelector('#previewTotalContainer');
+            const total1 = main1.querySelector('.mt-6.text-2xl.font-bold.text-right.text-blue-900.bg-gray-100.p-4.rounded-lg');
             let sib1 = total1.nextElementSibling;
             while (sib1) {
                 const next = sib1.nextElementSibling;
@@ -1098,14 +562,11 @@
             while (child2) {
                 const next = child2.nextElementSibling;
                 main2.removeChild(child2);
-                if (child2.id === 'previewTotalContainer') {
+                if (child2.classList.contains('mt-6') && child2.classList.contains('text-2xl') && child2.classList.contains('font-bold')) {
                     break;
                 }
                 child2 = next;
             }
-            // Wait for images to load in clones
-            await loadImages(clone1);
-            await loadImages(clone2);
             // Canvas options
             const canvasOptions = {
                 scale: 2,
@@ -1143,6 +604,8 @@
             addCanvasToPdf(canvas2);
             // Save PDF
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
+            // Increment global counter after successful PDF generation
+            incrementGlobalCounter();
             // Cleanup
             tempContainer.remove();
             element.classList.add('shadow-lg');
