@@ -44,7 +44,7 @@
             <!-- Input Form -->
             <div class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-         
+        
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -419,7 +419,7 @@
                     </select>
                 </div>
                 <!-- Additional Room Details (Floor and Room Number) -->
-                <div id="roomDetails" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="room-details hidden grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">קומה</label>
                         <input type="text" name="floor" oninput="updatePreview()" placeholder="לדוגמה: 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -629,7 +629,6 @@
             setupPasteListeners();
             updatePreview();
         });
- 
         // --- IMAGE PASTE LOGIC (only for itinerary) ---
         function setupPasteListeners() {
             const itineraryTarget = document.getElementById('itineraryPasteTarget');
@@ -735,7 +734,7 @@
         }
         function toggleRoomDetails(selectElement) {
             const roomEntry = selectElement.closest('.room-entry');
-            const detailsDiv = roomEntry.querySelector('#roomDetails');
+            const detailsDiv = roomEntry.querySelector('.room-details');
             if (detailsDiv) {
                 if (detailRoomTypes.includes(selectElement.value)) {
                     detailsDiv.classList.remove('hidden');
@@ -749,7 +748,7 @@
         function updatePreview() {
             // Simple text fields
             document.getElementById('previewClientName').textContent = document.getElementById('clientName').value || '___';
-     
+    
             const offerDate = document.getElementById('offerDate').value;
             if(offerDate) {
                  document.getElementById('previewDate').textContent = `תאריך: ${new Date(offerDate).toLocaleDateString('he-IL')}`;
@@ -761,18 +760,18 @@
             document.getElementById('previewShipName').textContent = shipName;
             document.getElementById('previewCruiseDuration').textContent = document.getElementById('cruiseDuration').value || '7';
             document.getElementById('previewCruiseDate').textContent = document.getElementById('cruiseDate').value || '___';
-     
+    
             // Advisor
             const selectedAdvisor = document.getElementById('advisor').value;
             document.getElementById('previewAdvisor').textContent = advisors[selectedAdvisor];
-     
+    
             // Rooms and Total Price
             const roomsContainer = document.getElementById('roomsContainer');
             const previewRoomsContainer = document.getElementById('previewRoomsContainer');
             previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
             let hasGuarantee = false;
-     
+    
             const roomEntries = roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const composition = room.querySelector('select[name="composition"]').value;
@@ -784,7 +783,7 @@
                 const cost = costInput ? costInput.value : '';
                 const costValue = parseFloat(cost) || 0;
                 totalPrice += costValue;
-         
+        
                 if (roomType && roomType.includes('גרנטי')) {
                     hasGuarantee = true;
                 }
@@ -805,7 +804,7 @@
                     if (extraDesc) {
                         roomDesc += ` | נוסף: ${extraDesc}`;
                     }
-         
+        
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white';
                     roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong> ${roomDesc || 'לא צוין תיאור'}</p>
