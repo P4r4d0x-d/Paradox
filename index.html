@@ -81,9 +81,18 @@
                         <label for="cruiseDuration" class="block text-sm font-medium text-gray-700">משך ההפלגה (לילות)</label>
                         <input type="number" id="cruiseDuration" value="7" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div>
-                        <label for="cruiseDate" class="block text-sm font-medium text-gray-700">תאריכי הפלגה</label>
-                        <input type="text" id="cruiseDate" placeholder="לדוגמה: 01.01.2026 - 08.01.2026" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-medium text-gray-700">תאריכי הפלגה</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="cruiseStartDate" class="block text-sm font-medium text-gray-700">מתאריך</label>
+                                <input type="date" id="cruiseStartDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="cruiseEndDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
+                                <input type="date" id="cruiseEndDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label for="advisor" class="block text-sm font-medium text-gray-700">יועץ שייט</label>
@@ -124,6 +133,10 @@
                             <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
                             <label for="hideTotal" class="ml-2 block text-sm text-gray-900">הסתר סה"כ עלות</label>
                         </div>
+                        <div class="flex items-start">
+                            <input id="hideCruise" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
+                            <label for="hideCruise" class="ml-2 block text-sm text-gray-900">הסתר פרטי שייט</label>
+                        </div>
                     </div>
                     <div class="mt-4">
                         <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
@@ -138,19 +151,16 @@
                         </div>
                         <button id="addFlightBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף טיסה</button>
                         <div>
-                            <label for="airline" class="block text-sm font-medium text-gray-700">חברת תעופה</label>
-                            <input type="text" id="airline" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
                             <label for="flightIncludes" class="block text-sm font-medium text-gray-700">הכרטיס כולל (ניתן לערוך)</label>
-                            <textarea id="flightIncludes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">מזוודה 20 ק"ג\nטרולי 7 ק"ג</textarea>
+                            <textarea id="flightIncludes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">מזוודה 20 ק"ג
+טרולי 7 ק"ג</textarea>
                         </div>
                         <div>
                             <label for="flightFreeText" class="block text-sm font-medium text-gray-700">מלל חופשי לטיסות</label>
                             <textarea id="flightFreeText" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                         </div>
                         <div>
-                            <label for="flightCost" class="block text-sm font-medium text-gray-700">עלות טיסות ($)</label>
+                            <label for="flightCost" class="block text-sm font-medium text-gray-700">עלות כרטיס טיסה לאדם ($)</label>
                             <input type="number" id="flightCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         </div>
                         <div>
@@ -182,51 +192,11 @@
                 </div>
                 <!-- Hotel Section -->
                 <div class="mt-6">
-                    <h3 class="text-xl font-bold mb-3">מלון (אופציונלי)</h3>
-                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        <div>
-                            <label for="hotelName" class="block text-sm font-medium text-gray-700">שם המלון</label>
-                            <input type="text" id="hotelName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="hotelRoomDesc" class="block text-sm font-medium text-gray-700">חדר, הרכב ומחיר</label>
-                            <textarea id="hotelRoomDesc" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                        </div>
-                        <div>
-                            <label for="hotelPension" class="block text-sm font-medium text-gray-700">פנסיון</label>
-                            <select id="hotelPension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                <option value="">בחר</option>
-                                <option value="לינה בלבד">לינה בלבד</option>
-                                <option value="לינה וארוחת בוקר">לינה וארוחת בוקר</option>
-                                <option value="חצי פנסיון">חצי פנסיון</option>
-                                <option value="פנסיון מלא">פנסיון מלא</option>
-                                <option value="הכל כלול">הכל כלול</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="hotelCost" class="block text-sm font-medium text-gray-700">עלות מלון ($)</label>
-                            <input type="number" id="hotelCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelCancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelCancellable" class="ml-2">ניתן לביטול עם דמי</label>
-                                    <input type="text" id="hotelCancelFee" placeholder="דמי ביטול לנוסע" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelChangeable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelChangeable" class="ml-2">ניתן לשינוי עם דמי</label>
-                                    <input type="text" id="hotelChangeFee" placeholder="דמי שינוי לנוסע" class="ml-2 w-32 border-gray-300 rounded-md shadow-sm">
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="hotelNoCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                                    <label for="hotelNoCancel" class="ml-2">ללא אפשרות ביטול/שינוי</label>
-                                </div>
-                            </div>
-                        </div>
+                    <h3 class="text-xl font-bold mb-3">מלונות (אופציונלי)</h3>
+                    <div id="hotelsContainer" class="space-y-4">
+                        <!-- Hotels will be dynamically added here -->
                     </div>
+                    <button id="addHotelBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף מלון</button>
                 </div>
                 <!-- Transfers Section -->
                 <div class="mt-6">
@@ -253,7 +223,7 @@
                                 <div id="transfersCancelDetails" class="hidden space-y-2 ml-6">
                                     <div>
                                         <label for="transfersCancelDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
-                                        <input type="text" id="transfersCancelDate" placeholder="לדוגמה: 01.01.2026" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                        <input type="date" id="transfersCancelDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                     </div>
                                     <div>
                                         <label for="transfersCancelFee" class="block text-sm font-medium text-gray-700">דמי ביטול</label>
@@ -285,7 +255,7 @@
                         <p class="mb-4 text-left"><span id="previewDate" class="font-semibold"></span></p>
                         <p class="text-xl mb-6">לכבוד <span id="previewClientName" class="font-bold"></span>,</p>
                         <p class="mb-6">בהמשך לבקשתך, מצורפת הצעת מחיר להפלגת החלומות שלכם:</p>
-                        <div class="bg-blue-50 rounded-lg p-4 mb-6 no-split">
+                        <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
                             <div class="grid grid-cols-2 gap-4 text-md">
                                 <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
@@ -295,12 +265,12 @@
                             </div>
                         </div>
                         <!-- Itinerary Image -->
-                        <div class="my-6 no-split">
+                        <div id="previewItinerarySection" class="my-6 no-split hidden">
                             <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
                         <!-- Rooms Details -->
-                        <div class="my-6">
+                        <div id="previewRoomsSection" class="my-6 hidden">
                             <h3 class="text-xl font-bold mb-3 no-split">פרטי החדרים:</h3>
                             <div id="previewRoomsContainer" class="space-y-4">
                             </div>
@@ -318,7 +288,6 @@
                             <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewFlightsList" class="space-y-2"></div>
-                                <p id="previewAirline"></p>
                                 <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
                                 <p id="previewFlightFreeText"></p>
                                 <p class="font-semibold text-right" id="previewFlightCost"></p>
@@ -326,14 +295,10 @@
                             </div>
                         </div>
                         <!-- Hotel Details -->
-                        <div id="previewHotelContainer" class="my-6 hidden">
-                            <h3 class="text-xl font-bold mb-3">פרטי מלון:</h3>
-                            <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
-                                <p id="previewHotelName"></p>
-                                <p id="previewHotelRoomDesc"></p>
-                                <p id="previewHotelPension"></p>
-                                <p class="font-semibold text-right" id="previewHotelCost"></p>
-                                <div id="previewHotelConditions" class="text-sm"></div>
+                        <div id="previewHotelsSection" class="my-6 hidden">
+                            <h3 class="text-xl font-bold mb-3">פרטי מלונות:</h3>
+                            <div id="previewHotelsContainer" class="space-y-4">
+                                <!-- Hotel previews go here -->
                             </div>
                         </div>
                         <!-- Transfers Details -->
@@ -349,7 +314,7 @@
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <!-- Ship Image -->
-                        <div class="my-8 no-split">
+                        <div id="previewShipImageSection" class="my-8 no-split hidden">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
                         <!-- Terms -->
@@ -452,6 +417,10 @@
             <button class="remove-flight-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">חברת תעופה</label>
+                    <input type="text" name="airline" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700">מוצא</label>
                     <input type="text" name="from" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
@@ -461,7 +430,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">תאריך</label>
-                    <input type="text" name="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="date" name="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שעת המראה</label>
@@ -492,6 +461,65 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">מלל חופשי</label>
                     <textarea name="transferFreeText" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- Hotel HTML Template (for cloning) -->
+    <template id="hotelTemplate">
+        <div class="hotel-entry border p-4 rounded-lg bg-gray-50 relative">
+            <button class="remove-hotel-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שם המלון</label>
+                    <input type="text" name="hotelName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">מספר לילות</label>
+                        <input type="number" name="hotelNights" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">מתאריך</label>
+                        <input type="date" name="hotelStartDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">סוג חדר</label>
+                    <textarea name="hotelRoomDesc" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">פנסיון</label>
+                    <select name="hotelPension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="">בחר</option>
+                        <option value="לינה בלבד">לינה בלבד</option>
+                        <option value="לינה וארוחת בוקר">לינה וארוחת בוקר</option>
+                        <option value="חצי פנסיון">חצי פנסיון</option>
+                        <option value="פנסיון מלא">פנסיון מלא</option>
+                        <option value="הכל כלול">הכל כלול</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">עלות מלון ($)</label>
+                    <input type="number" name="hotelCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="hotelCancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <label class="ml-2">ניתן לביטול עם דמי</label>
+                        </div>
+                        <div class="hotel-cancel-details hidden space-y-2 ml-6">
+                            <input type="text" name="hotelCancelFee" placeholder="דמי ביטול לחדר" class="w-full border-gray-300 rounded-md shadow-sm">
+                            <label class="block text-sm font-medium text-gray-700 mt-2">עד לתאריך</label>
+                            <input type="date" name="hotelCancelDate" class="w-full border-gray-300 rounded-md shadow-sm">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="hotelNoCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <label class="ml-2">ללא אפשרות ביטול/שינוי</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -633,7 +661,8 @@
             cruiseLine: document.getElementById('cruiseLine'),
             shipName: document.getElementById('shipName'),
             cruiseDuration: document.getElementById('cruiseDuration'),
-            cruiseDate: document.getElementById('cruiseDate'),
+            cruiseStartDate: document.getElementById('cruiseStartDate'),
+            cruiseEndDate: document.getElementById('cruiseEndDate'),
             advisor: document.getElementById('advisor'),
             itineraryPasteTarget: document.getElementById('itineraryPasteTarget'),
             roomsContainer: document.getElementById('roomsContainer'),
@@ -641,10 +670,10 @@
             includeTips: document.getElementById('includeTips'),
             includeMeals: document.getElementById('includeMeals'),
             hideTotal: document.getElementById('hideTotal'),
+            hideCruise: document.getElementById('hideCruise'),
             customInclusions: document.getElementById('customInclusions'),
             flightsContainer: document.getElementById('flightsContainer'),
             addFlightBtn: document.getElementById('addFlightBtn'),
-            airline: document.getElementById('airline'),
             flightIncludes: document.getElementById('flightIncludes'),
             flightFreeText: document.getElementById('flightFreeText'),
             flightCost: document.getElementById('flightCost'),
@@ -661,46 +690,38 @@
             transfersCancellable: document.getElementById('transfersCancellable'),
             transfersCancelDate: document.getElementById('transfersCancelDate'),
             transfersCancelFee: document.getElementById('transfersCancelFee'),
-            hotelName: document.getElementById('hotelName'),
-            hotelRoomDesc: document.getElementById('hotelRoomDesc'),
-            hotelPension: document.getElementById('hotelPension'),
-            hotelCost: document.getElementById('hotelCost'),
-            hotelCancellable: document.getElementById('hotelCancellable'),
-            hotelCancelFee: document.getElementById('hotelCancelFee'),
-            hotelChangeable: document.getElementById('hotelChangeable'),
-            hotelChangeFee: document.getElementById('hotelChangeFee'),
-            hotelNoCancel: document.getElementById('hotelNoCancel'),
+            hotelsContainer: document.getElementById('hotelsContainer'),
+            addHotelBtn: document.getElementById('addHotelBtn'),
             generatePDFBtn: document.getElementById('generatePDFBtn'),
             // Preview elements
             previewClientName: document.getElementById('previewClientName'),
             previewDate: document.getElementById('previewDate'),
+            previewCruiseDetails: document.getElementById('previewCruiseDetails'),
             previewCruiseLine: document.getElementById('previewCruiseLine'),
             previewShipName: document.getElementById('previewShipName'),
             previewCruiseDuration: document.getElementById('previewCruiseDuration'),
             previewCruiseDate: document.getElementById('previewCruiseDate'),
+            previewItinerarySection: document.getElementById('previewItinerarySection'),
             previewItineraryImage: document.getElementById('previewItineraryImage'),
+            previewRoomsSection: document.getElementById('previewRoomsSection'),
             previewRoomsContainer: document.getElementById('previewRoomsContainer'),
             previewGuaranteeNote: document.getElementById('previewGuaranteeNote'),
             previewInclusions: document.getElementById('previewInclusions'),
             previewFlightsContainer: document.getElementById('previewFlightsContainer'),
             previewFlightsList: document.getElementById('previewFlightsList'),
-            previewAirline: document.getElementById('previewAirline'),
             previewFlightIncludes: document.getElementById('previewFlightIncludes'),
             previewFlightFreeText: document.getElementById('previewFlightFreeText'),
             previewFlightCost: document.getElementById('previewFlightCost'),
             previewFlightConditions: document.getElementById('previewFlightConditions'),
-            previewHotelContainer: document.getElementById('previewHotelContainer'),
-            previewHotelName: document.getElementById('previewHotelName'),
-            previewHotelRoomDesc: document.getElementById('previewHotelRoomDesc'),
-            previewHotelPension: document.getElementById('previewHotelPension'),
-            previewHotelCost: document.getElementById('previewHotelCost'),
-            previewHotelConditions: document.getElementById('previewHotelConditions'),
+            previewHotelsSection: document.getElementById('previewHotelsSection'),
+            previewHotelsContainer: document.getElementById('previewHotelsContainer'),
             previewTransfersContainer: document.getElementById('previewTransfersContainer'),
             previewTransfersList: document.getElementById('previewTransfersList'),
             previewTransfersCost: document.getElementById('previewTransfersCost'),
             previewTransfersConditions: document.getElementById('previewTransfersConditions'),
             previewTotalContainer: document.getElementById('previewTotalContainer'),
             previewTotalPrice: document.getElementById('previewTotalPrice'),
+            previewShipImageSection: document.getElementById('previewShipImageSection'),
             previewShipImage: document.getElementById('previewShipImage'),
             previewAdvisor: document.getElementById('previewAdvisor'),
             previewElement: document.getElementById('preview'),
@@ -720,24 +741,25 @@
             // All form inputs
             elements.inputForm.addEventListener('input', updateStateAndPreview);
             elements.inputForm.addEventListener('change', updateStateAndPreview);
-
             // Dynamic buttons
             elements.addRoomBtn.addEventListener('click', () => { addRoom(); updateStateAndPreview(); });
             elements.addFlightBtn.addEventListener('click', () => { addFlight(); updateStateAndPreview(); });
+            elements.addHotelBtn.addEventListener('click', () => { addHotel(); updateStateAndPreview(); });
             elements.addTransferBtn.addEventListener('click', () => { addTransfer(); updateStateAndPreview(); });
-
             // Specific event listeners
             elements.cruiseLine.addEventListener('change', populateShips);
             elements.itineraryPasteTarget.addEventListener('paste', handlePaste);
             elements.itineraryPasteTarget.addEventListener('click', () => elements.itineraryPasteTarget.focus());
             elements.generatePDFBtn.addEventListener('click', generatePDF);
+            elements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
+            elements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
         }
-
         // --- STATE MANAGEMENT (localStorage) ---
         function saveState() {
             const state = {};
             const formInputs = elements.inputForm.querySelectorAll('input, select, textarea');
             formInputs.forEach(input => {
+                if(input.closest('.hotel-entry')) return; // Handled in dynamic fields
                 if (input.type === 'checkbox' || input.type === 'radio') {
                     state[input.id] = input.checked;
                 } else {
@@ -747,9 +769,9 @@
             const dynamicFields = {
                 rooms: [],
                 flights: [],
-                transfers: []
+                transfers: [],
+                hotels: []
             };
-
             elements.roomsContainer.querySelectorAll('.room-entry').forEach(roomDiv => {
                 const roomData = {};
                 roomDiv.querySelectorAll('input, select, textarea').forEach(input => {
@@ -771,22 +793,32 @@
                 });
                 dynamicFields.transfers.push(transferData);
             });
-
+            elements.hotelsContainer.querySelectorAll('.hotel-entry').forEach(hotelDiv => {
+                const hotelData = {};
+                hotelDiv.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (input.type === 'checkbox') {
+                        hotelData[input.name] = input.checked;
+                    } else {
+                        hotelData[input.name] = input.value;
+                    }
+                });
+                dynamicFields.hotels.push(hotelData);
+            });
             localStorage.setItem('quoteFormState', JSON.stringify({ ...state, dynamicFields }));
         }
-
         function loadState() {
             const savedState = JSON.parse(localStorage.getItem('quoteFormState'));
             if (!savedState) {
                 elements.offerDate.valueAsDate = new Date();
                 addRoom();
                 addFlight();
+                addHotel();
                 return;
             }
-
             // Restore static inputs
             const formInputs = elements.inputForm.querySelectorAll('input, select, textarea');
             formInputs.forEach(input => {
+                if(input.closest('.hotel-entry')) return;
                 if (savedState[input.id] !== undefined) {
                     if (input.type === 'checkbox' || input.type === 'radio') {
                         input.checked = savedState[input.id];
@@ -795,21 +827,22 @@
                     }
                 }
             });
-
             // Restore dynamic fields
             elements.roomsContainer.innerHTML = '';
             elements.flightsContainer.innerHTML = '';
             elements.transfersContainer.innerHTML = '';
+            elements.hotelsContainer.innerHTML = '';
             savedState.dynamicFields.rooms.forEach(roomData => addRoom(roomData));
             savedState.dynamicFields.flights.forEach(flightData => addFlight(flightData));
             savedState.dynamicFields.transfers.forEach(transferData => addTransfer(transferData));
+             if (savedState.dynamicFields.hotels) { 
+                savedState.dynamicFields.hotels.forEach(hotelData => addHotel(hotelData));
+            }
         }
-
         function updateStateAndPreview() {
             saveState();
             updatePreview();
         }
-
         // --- DYNAMIC FORM LOGIC ---
         function populateShips() {
             const cruiseLine = elements.cruiseLine.value;
@@ -832,46 +865,41 @@
             elements.roomsContainer.appendChild(clone);
             
             // Set initial data and setup listeners
-            const compositionSelect = roomDiv.querySelector('select[name="composition"]');
-            const roomTypeSelect = roomDiv.querySelector('select[name="roomType"]');
-            const floorInput = roomDiv.querySelector('input[name="floor"]');
-            const roomNumberInput = roomDiv.querySelector('input[name="roomNumber"]');
-            const extraDescTextarea = roomDiv.querySelector('textarea[name="extraDesc"]');
-            const costInput = roomDiv.querySelector('input[name="roomCost"]');
-
-            if (initialData.composition) compositionSelect.value = initialData.composition;
-            if (initialData.roomType) roomTypeSelect.value = initialData.roomType;
-            if (initialData.floor) floorInput.value = initialData.floor;
-            if (initialData.roomNumber) roomNumberInput.value = initialData.roomNumber;
-            if (initialData.extraDesc) extraDescTextarea.value = initialData.extraDesc;
-            if (initialData.roomCost) costInput.value = initialData.roomCost;
+            if (Object.keys(initialData).length > 0) {
+                 for (const key in initialData) {
+                    const input = roomDiv.querySelector(`[name="${key}"]`);
+                    if (input) input.value = initialData[key];
+                }
+            }
             
             roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => {
                 roomDiv.remove();
                 updateStateAndPreview();
             });
-            roomTypeSelect.addEventListener('change', () => toggleRoomDetails(roomDiv));
+            roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
             toggleRoomDetails(roomDiv); // Initial toggle
         }
-
         function addFlight(initialData = {}) {
             const template = document.getElementById('flightTemplate');
             const clone = template.content.cloneNode(true);
             const flightDiv = clone.querySelector('.flight-entry');
             elements.flightsContainer.appendChild(clone);
+            
+            if (Object.keys(initialData).length > 0) {
+                for (const key in initialData) {
+                    const input = flightDiv.querySelector(`[name="${key}"]`);
+                    if (input) input.value = initialData[key];
+                }
+            }
 
-            const fromInput = flightDiv.querySelector('input[name="from"]');
-            const toInput = flightDiv.querySelector('input[name="to"]');
-            const dateInput = flightDiv.querySelector('input[name="date"]');
-            const takeoffInput = flightDiv.querySelector('input[name="takeoff"]');
-            const landingInput = flightDiv.querySelector('input[name="landing"]');
-
-            if (initialData.from) fromInput.value = initialData.from;
-            if (initialData.to) toInput.value = initialData.to;
-            if (initialData.date) dateInput.value = initialData.date;
-            if (initialData.takeoff) takeoffInput.value = initialData.takeoff;
-            if (initialData.landing) landingInput.value = initialData.landing;
-
+            // Default airline from previous flight if exists
+            const existingFlights = elements.flightsContainer.querySelectorAll('.flight-entry');
+            if (existingFlights.length > 1 && !initialData.airline) { // Since we just added one
+                const previousAirline = existingFlights[existingFlights.length - 2].querySelector('input[name="airline"]').value;
+                if (previousAirline) {
+                    flightDiv.querySelector('input[name="airline"]').value = previousAirline;
+                }
+            }
             flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => {
                 flightDiv.remove();
                 updateStateAndPreview();
@@ -883,17 +911,52 @@
             const clone = template.content.cloneNode(true);
             const transferDiv = clone.querySelector('.transfer-entry');
             elements.transfersContainer.appendChild(clone);
-
-            const typeSelect = transferDiv.querySelector('select[name="transferType"]');
-            const freeTextTextarea = transferDiv.querySelector('textarea[name="transferFreeText"]');
-
-            if (initialData.transferType) typeSelect.value = initialData.transferType;
-            if (initialData.transferFreeText) freeTextTextarea.value = initialData.transferFreeText;
-
+            if (Object.keys(initialData).length > 0) {
+                for (const key in initialData) {
+                    const input = transferDiv.querySelector(`[name="${key}"]`);
+                    if (input) input.value = initialData[key];
+                }
+            }
             transferDiv.querySelector('.remove-transfer-btn').addEventListener('click', () => {
                 transferDiv.remove();
                 updateStateAndPreview();
             });
+        }
+
+        function addHotel(initialData = {}) {
+            const template = document.getElementById('hotelTemplate');
+            const clone = template.content.cloneNode(true);
+            const hotelDiv = clone.querySelector('.hotel-entry');
+            elements.hotelsContainer.appendChild(clone);
+
+            if (Object.keys(initialData).length > 0) {
+                for (const key in initialData) {
+                    const input = hotelDiv.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            input.checked = initialData[key];
+                        } else {
+                            input.value = initialData[key];
+                        }
+                    }
+                }
+            }
+
+            const cancellableCheckbox = hotelDiv.querySelector('[name="hotelCancellable"]');
+            const cancelDetailsDiv = hotelDiv.querySelector('.hotel-cancel-details');
+
+            const toggleDetails = () => {
+                cancelDetailsDiv.classList.toggle('hidden', !cancellableCheckbox.checked);
+            };
+
+            cancellableCheckbox.addEventListener('change', toggleDetails);
+            
+            hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => {
+                hotelDiv.remove();
+                updateStateAndPreview();
+            });
+            
+            toggleDetails(); // Initial check
         }
         
         function toggleTransfersCancelDetails() {
@@ -937,7 +1000,6 @@
                 }
             }
         }
-
         // --- PREVIEW UPDATE LOGIC ---
         function updatePreview() {
             // Simple text fields
@@ -947,11 +1009,21 @@
             elements.previewCruiseLine.textContent = elements.cruiseLine.value;
             elements.previewShipName.textContent = elements.shipName.value;
             elements.previewCruiseDuration.textContent = elements.cruiseDuration.value || '7';
-            elements.previewCruiseDate.textContent = elements.cruiseDate.value || '___';
+            const cruiseStart = elements.cruiseStartDate.value ? new Date(elements.cruiseStartDate.value).toLocaleDateString('he-IL') : '';
+            const cruiseEnd = elements.cruiseEndDate.value ? new Date(elements.cruiseEndDate.value).toLocaleDateString('he-IL') : '';
+            elements.previewCruiseDate.textContent = cruiseStart && cruiseEnd ? `${cruiseStart} - ${cruiseEnd}` : '___';
         
             // Advisor
             const selectedAdvisor = elements.advisor.value;
             elements.previewAdvisor.textContent = advisors[selectedAdvisor];
+        
+            // Show cruise sections only if cruise line is selected and not hidden
+            const hasCruiseLine = !!elements.cruiseLine.value;
+            const hideCruiseSection = elements.hideCruise.checked;
+            elements.previewCruiseDetails.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
+            elements.previewItinerarySection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
+            elements.previewRoomsSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
+            elements.previewShipImageSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
         
             // Ship Image
             const cruiseLine = elements.cruiseLine.value;
@@ -966,11 +1038,30 @@
             // Rooms and Total Price
             elements.previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
+            let totalPassengers = 0;
             let hasGuarantee = false;
         
             const roomEntries = elements.roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const composition = room.querySelector('select[name="composition"]').value;
+                switch(composition) {
+                    case 'נוסע יחיד': totalPassengers += 1; break;
+                    case 'זוג': totalPassengers += 2; break;
+                    case 'זוג + 1': totalPassengers += 3; break;
+                    case 'זוג + 2': totalPassengers += 4; break;
+                    case 'זוג + 3': totalPassengers += 5; break;
+                    case 'מבוגר + ילד': totalPassengers += 2; break;
+                    case 'מבוגר + 2 ילדים': totalPassengers += 3; break;
+                    case 'מבוגר + 3 ילדים': totalPassengers += 4; break;
+                    case 'מבוגר + 4 ילדים': totalPassengers += 5; break;
+                    case '3 מבוגרים': totalPassengers += 3; break;
+                    case '3 מבוגרים + 1': totalPassengers += 4; break;
+                    case '3 מבוגרים + 2': totalPassengers += 5; break;
+                    case '4 מבוגרים': totalPassengers += 4; break;
+                    case '4 מבוגרים + 1': totalPassengers += 5; break;
+                    case '5 מבוגרים': totalPassengers += 5; break;
+                }
+
                 const roomType = room.querySelector('select[name="roomType"]').value;
                 const floor = room.querySelector('input[name="floor"]').value;
                 const roomNumber = room.querySelector('input[name="roomNumber"]').value;
@@ -998,7 +1089,7 @@
                         }
                         roomDetails.push(typeText);
                     }
-                    if (extraDesc) roomDetails.push(`<strong>נוסף:</strong> ${extraDesc}`);
+                    if (extraDesc) roomDetails.push(`${extraDesc}`);
         
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
@@ -1024,7 +1115,6 @@
             }
             addInclusionItem(inclusionsList, elements.includeTips.checked ? 'כולל תשלום טיפים מראש.' : 'לא כולל תשלום טיפים מראש.');
             hasInclusions = true;
-
             const customInclusionsText = elements.customInclusions.value.trim();
             if (customInclusionsText) {
                 customInclusionsText.split('\n').filter(line => line.trim()).forEach(line => {
@@ -1032,27 +1122,27 @@
                     hasInclusions = true;
                 });
             }
-
             if (!hasInclusions) {
                 addInclusionItem(inclusionsList, 'אין הכללות מיוחדות.');
             }
-
             // Flights
-            const hasFlights = elements.flightsContainer.querySelectorAll('.flight-entry').length > 0 || elements.airline.value || elements.flightCost.value > 0;
+            const flightCostPerPerson = parseFloat(elements.flightCost.value) || 0;
+            const flightCostValue = flightCostPerPerson * totalPassengers;
+            const hasFlights = elements.flightsContainer.querySelectorAll('.flight-entry').length > 0 || flightCostValue > 0;
             elements.previewFlightsContainer.classList.toggle('hidden', !hasFlights);
             if (hasFlights) {
                 elements.previewFlightsList.innerHTML = '';
                 elements.flightsContainer.querySelectorAll('.flight-entry').forEach((flight, index) => {
+                    const airline = flight.querySelector('input[name="airline"]').value || '___';
                     const from = flight.querySelector('input[name="from"]').value || '___';
                     const to = flight.querySelector('input[name="to"]').value || '___';
-                    const date = flight.querySelector('input[name="date"]').value || '___';
+                    const date = flight.querySelector('input[name="date"]').value ? new Date(flight.querySelector('input[name="date"]').value).toLocaleDateString('he-IL') : '___';
                     const takeoff = flight.querySelector('input[name="takeoff"]').value || '___';
                     const landing = flight.querySelector('input[name="landing"]').value || '___';
                     const p = document.createElement('p');
-                    p.textContent = `טיסה מ ${from} ל ${to} בתאריך ${date} המראה ${takeoff} נחיתה ${landing}`;
+                    p.textContent = `טיסה בחברת ${airline} מ ${from} ל ${to} בתאריך ${date} המראה ${takeoff} נחיתה ${landing}`;
                     elements.previewFlightsList.appendChild(p);
                 });
-                elements.previewAirline.textContent = `טיסה בחברת תעופה ${elements.airline.value || '___'}`;
                 const includesList = elements.previewFlightIncludes;
                 includesList.innerHTML = '';
                 elements.flightIncludes.value.split('\n').forEach(line => {
@@ -1061,8 +1151,15 @@
                     }
                 });
                 elements.previewFlightFreeText.textContent = elements.flightFreeText.value;
-                const flightCostValue = parseFloat(elements.flightCost.value) || 0;
-                elements.previewFlightCost.textContent = `עלות: $${flightCostValue.toLocaleString()}`;
+                
+                if (flightCostPerPerson > 0 && totalPassengers > 0) {
+                    elements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
+                } else if (flightCostPerPerson > 0) {
+                    elements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם`;
+                } else {
+                    elements.previewFlightCost.textContent = '';
+                }
+
                 totalPrice += flightCostValue;
         
                 let conditionsText = '';
@@ -1081,33 +1178,61 @@
                 elements.previewFlightConditions.innerHTML = conditionsText;
             }
         
-            // Hotel
-            const hotelCostValue = parseFloat(elements.hotelCost.value) || 0;
-            const hasHotel = elements.hotelName.value || hotelCostValue > 0;
-            elements.previewHotelContainer.classList.toggle('hidden', !hasHotel);
-            if (hasHotel) {
-                elements.previewHotelName.textContent = `שם המלון: ${elements.hotelName.value || '___'}`;
-                elements.previewHotelRoomDesc.textContent = `חדר, הרכב ומחיר: ${elements.hotelRoomDesc.value || '___'}`;
-                elements.previewHotelPension.textContent = `פנסיון: ${elements.hotelPension.value || '___'}`;
-                elements.previewHotelCost.textContent = `עלות: $${hotelCostValue.toLocaleString()}`;
-                totalPrice += hotelCostValue;
-        
-                let conditionsText = '';
-                if (elements.hotelNoCancel.checked) {
-                    conditionsText += '<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>';
-                } else {
-                    const cancelFee = elements.hotelCancelFee.value;
-                    const changeFee = elements.hotelChangeFee.value;
-                    if (elements.hotelCancellable.checked && cancelFee) {
-                        conditionsText += `<p>ביטול – ניתן לביטול עד 72 שעות לפני ההגעה ב ${cancelFee} לנוסע</p>`;
+            // Hotels
+            elements.previewHotelsContainer.innerHTML = '';
+            let totalHotelCost = 0;
+            const hotelEntries = elements.hotelsContainer.querySelectorAll('.hotel-entry');
+            const hasHotels = hotelEntries.length > 0 && Array.from(hotelEntries).some(h => h.querySelector('[name="hotelName"]').value || h.querySelector('[name="hotelCost"]').value > 0);
+            
+            elements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
+
+            if (hasHotels) {
+                hotelEntries.forEach((hotel) => {
+                    const hotelName = hotel.querySelector('[name="hotelName"]').value || '___';
+                    const hotelCostValue = parseFloat(hotel.querySelector('[name="hotelCost"]').value) || 0;
+                    
+                    if (!hotelName && !hotelCostValue) return;
+
+                    const hotelNights = hotel.querySelector('[name="hotelNights"]').value || '___';
+                    const hotelStartDateValue = hotel.querySelector('[name="hotelStartDate"]').value;
+                    const hotelStartDate = hotelStartDateValue ? new Date(hotelStartDateValue).toLocaleDateString('he-IL') : '___';
+                    const hotelRoomDesc = hotel.querySelector('[name="hotelRoomDesc"]').value || '___';
+                    const hotelPension = hotel.querySelector('[name="hotelPension"]').value || '___';
+                    
+                    totalHotelCost += hotelCostValue;
+
+                    let conditionsText = '';
+                    const hotelNoCancel = hotel.querySelector('[name="hotelNoCancel"]').checked;
+                    const hotelCancellable = hotel.querySelector('[name="hotelCancellable"]').checked;
+                    
+                    if (hotelNoCancel) {
+                        conditionsText += '<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>';
+                    } else if (hotelCancellable) {
+                        const cancelFee = hotel.querySelector('[name="hotelCancelFee"]').value;
+                        const cancelDateValue = hotel.querySelector('[name="hotelCancelDate"]').value;
+                        const cancelDate = cancelDateValue ? new Date(cancelDateValue).toLocaleDateString('he-IL') : '___';
+                        
+                        if (cancelFee && cancelDate !== '___') {
+                            conditionsText += `<p>ביטול – ניתן לבטל בעלות של ${cancelFee} לחדר עד לתאריך ${cancelDate} ולאחריו דמי ביטול מלאים</p>`;
+                        }
                     }
-                    if (elements.hotelChangeable.checked && changeFee) {
-                        conditionsText += `<p>שינוי – ניתן לשינוי עד 72 שעות לפני ההגעה ב ${changeFee} לנוסע ומותנה באותה מחלקת שירות, במידה ואין משלמים הפרשי מחירים.</p>`;
-                    }
-                }
-                elements.previewHotelConditions.innerHTML = conditionsText;
+                    
+                    const hotelPreviewDiv = document.createElement('div');
+                    hotelPreviewDiv.className = 'border p-3 rounded-lg bg-white space-y-2 no-split';
+                    hotelPreviewDiv.innerHTML = `
+                        <h4 class="font-bold text-md">${hotelName}</h4>
+                        <p>${hotelNights} לילות מתאריך ${hotelStartDate}</p>
+                        <p>סוג חדר: ${hotelRoomDesc}</p>
+                        <p>פנסיון: ${hotelPension}</p>
+                        <p class="font-semibold text-right">עלות: $${hotelCostValue.toLocaleString()}</p>
+                        <div class="text-sm">${conditionsText}</div>
+                    `;
+                    elements.previewHotelsContainer.appendChild(hotelPreviewDiv);
+                });
             }
-        
+            
+            totalPrice += totalHotelCost;
+
             // Transfers
             const transfersCostValue = parseFloat(elements.transfersCost.value) || 0;
             const hasTransfers = elements.transfersContainer.querySelectorAll('.transfer-entry').length > 0 || transfersCostValue > 0;
@@ -1117,9 +1242,11 @@
                 elements.transfersContainer.querySelectorAll('.transfer-entry').forEach((transfer, index) => {
                     const type = transfer.querySelector('select[name="transferType"]').value || '___';
                     const freeText = transfer.querySelector('textarea[name="transferFreeText"]').value || '';
-                    const p = document.createElement('p');
-                    p.textContent = `${index + 1}. ${type}${freeText ? ` - ${freeText}` : ''}`;
-                    elements.previewTransfersList.appendChild(p);
+                    if (type !== '___' || freeText) {
+                        const p = document.createElement('p');
+                        p.textContent = `${index + 1}. ${type}${freeText ? ` - ${freeText}` : ''}`;
+                        elements.previewTransfersList.appendChild(p);
+                    }
                 });
                 elements.previewTransfersCost.textContent = `עלות: $${transfersCostValue.toLocaleString()}`;
                 totalPrice += transfersCostValue;
@@ -1128,7 +1255,8 @@
                 if (elements.transfersNoCancel.checked) {
                     conditionsText += `<p>ללא אפשרות ביטול / שינוי</p>`;
                 } else if (elements.transfersCancellable.checked && elements.transfersCancelDate.value && elements.transfersCancelFee.value) {
-                    conditionsText += `<p>ניתן לביטול עד לתאריך ${elements.transfersCancelDate.value} בדמי ביטול בסך ${elements.transfersCancelFee.value}</p>`;
+                    const transfersCancelDateFormatted = new Date(elements.transfersCancelDate.value).toLocaleDateString('he-IL');
+                    conditionsText += `<p>ניתן לביטול עד לתאריך ${transfersCancelDateFormatted} בדמי ביטול בסך ${elements.transfersCancelFee.value}</p>`;
                 }
                 elements.previewTransfersConditions.innerHTML = conditionsText;
             }
@@ -1147,7 +1275,6 @@
             li.textContent = text;
             list.appendChild(li);
         }
-
         // --- PDF GENERATION ---
         async function generatePDF() {
             elements.previewElement.classList.remove('shadow-lg');
@@ -1161,7 +1288,7 @@
             document.body.appendChild(previewClone);
         
             // Remove any dynamic buttons that shouldn't be in the PDF
-            previewClone.querySelectorAll('.remove-room-btn, .remove-flight-btn, .remove-transfer-btn').forEach(btn => btn.remove());
+            previewClone.querySelectorAll('.remove-room-btn, .remove-flight-btn, .remove-transfer-btn, .remove-hotel-btn').forEach(btn => btn.remove());
         
             // Ensure all images are loaded before rendering to canvas
             const images = previewClone.querySelectorAll('img');
