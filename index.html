@@ -246,7 +246,7 @@
                     <!-- Header -->
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                         <div class="text-right">
-                            <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
+                             <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
                         </div>
                         <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
@@ -314,9 +314,9 @@
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <!-- Ship Image -->
-                        <div id="previewShipImageSection" class="my-8 no-split hidden">
+                        <!-- <div id="previewShipImageSection" class="my-8 no-split hidden">
                            <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
-                        </div>
+                        </div> -->
                         <!-- Terms -->
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
@@ -721,8 +721,8 @@
             previewTransfersConditions: document.getElementById('previewTransfersConditions'),
             previewTotalContainer: document.getElementById('previewTotalContainer'),
             previewTotalPrice: document.getElementById('previewTotalPrice'),
-            previewShipImageSection: document.getElementById('previewShipImageSection'),
-            previewShipImage: document.getElementById('previewShipImage'),
+            // previewShipImageSection: document.getElementById('previewShipImageSection'),
+            // previewShipImage: document.getElementById('previewShipImage'),
             previewAdvisor: document.getElementById('previewAdvisor'),
             previewElement: document.getElementById('preview'),
             previewMain: document.getElementById('preview-main'),
@@ -1023,17 +1023,17 @@
             elements.previewCruiseDetails.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
             elements.previewItinerarySection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
             elements.previewRoomsSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
-            elements.previewShipImageSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
+            // elements.previewShipImageSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
         
             // Ship Image
-            const cruiseLine = elements.cruiseLine.value;
+            /* const cruiseLine = elements.cruiseLine.value;
             const shipName = elements.shipName.value;
             const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
             if (ship && ship.image) {
                 elements.previewShipImage.src = ship.image;
             } else {
                 elements.previewShipImage.src = 'https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה';
-            }
+            } */
         
             // Rooms and Total Price
             elements.previewRoomsContainer.innerHTML = '';
@@ -1340,3 +1340,4 @@
     </footer>
 </body>
 </html>
+
