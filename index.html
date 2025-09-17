@@ -32,6 +32,9 @@
         .no-split {
             break-inside: avoid;
         }
+        .no-break-after {
+            break-after: avoid;
+        }
         @media print {
             .no-print {
                 display: none;
@@ -266,12 +269,12 @@
                         </div>
                         <!-- Itinerary Image -->
                         <div id="previewItinerarySection" class="my-6 no-split hidden">
-                            <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-break-after">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
                         <!-- Rooms Details -->
                         <div id="previewRoomsSection" class="my-6 hidden">
-                            <h3 class="text-xl font-bold mb-3 no-split">פרטי החדרים:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-break-after">פרטי החדרים:</h3>
                             <div id="previewRoomsContainer" class="space-y-4">
                             </div>
                             <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden no-split">
@@ -285,7 +288,7 @@
                         </div>
                         <!-- Flights Details -->
                         <div id="previewFlightsContainer" class="my-6 hidden">
-                            <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-break-after">פרטי טיסות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewFlightsList" class="space-y-2"></div>
                                 <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
@@ -296,14 +299,14 @@
                         </div>
                         <!-- Hotel Details -->
                         <div id="previewHotelsSection" class="my-6 hidden">
-                            <h3 class="text-xl font-bold mb-3">פרטי מלונות:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4">
                                 <!-- Hotel previews go here -->
                             </div>
                         </div>
                         <!-- Transfers Details -->
                         <div id="previewTransfersContainer" class="my-6 hidden">
-                            <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
+                            <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewTransfersList" class="space-y-2"></div>
                                 <p class="font-semibold text-right" id="previewTransfersCost"></p>
@@ -320,7 +323,7 @@
                         <!-- Terms -->
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
-                                <h4 class="font-bold">תנאי תשלום וביטול:</h4>
+                                <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
                                 <p><strong>אפשרויות תשלום:</strong></p>
                                 <ul class="list-disc list-inside">
                                     <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
@@ -1340,4 +1343,5 @@
     </footer>
 </body>
 </html>
+
 
