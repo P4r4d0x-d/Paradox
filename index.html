@@ -44,6 +44,10 @@
                 print-color-adjust: exact;
             }
         }
+        #previewItineraryImage, #previewShipImage {
+            height: 300px;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -56,7 +60,7 @@
             <!-- Input Form -->
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-                
+               
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
@@ -317,9 +321,9 @@
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <!-- Ship Image -->
-                        <!-- <div id="previewShipImageSection" class="my-8 no-split hidden">
-                           <img id="previewShipImage" src="https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
-                        </div> -->
+                        <div id="previewShipImageSection" class="my-8 no-split hidden">
+                           <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
+                        </div>
                         <!-- Terms -->
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
@@ -531,82 +535,82 @@
         // --- DATA (Simulating Excel file with images integrated) ---
         const cruiseData = {
             "MSC": [
-                {name: "MSC Preziosa", year: 2013, image: "https://i.postimg.cc/mrYsMd0L/MSC-300x225.webp"},
-                {name: "MSC World America", year: 2025, image: "https://i.postimg.cc/rwB97TQJ/MSC-World-America-main-300x225.webp"},
-                {name: "MSC Splendida", year: 2009, image: "https://i.postimg.cc/DwY9X9j3/MSC-300x225.webp"},
-                {name: "MSC World Asia", year: 2026, image: "https://i.postimg.cc/9F3QkF90/MSC-World-Asia.jpg"},
-                {name: "MSC Magnifica", year: 2010, image: "https://i.postimg.cc/s2rpwX0Y/MSC-300x225.webp"},
-                {name: "MSC World Europa", year: 2022, image: "https://i.postimg.cc/V6jZKvwn/MSC-World-Europa-main-300x225.webp"},
-                {name: "MSC Musica", year: 2006, image: "https://i.postimg.cc/K8LPPLQc/MSC-300x225.webp"},
-                {name: "MSC Seashore", year: 2021, image: "https://i.postimg.cc/PrX9FX0k/MSC-300x225.webp"},
-                {name: "MSC Orchestra", year: 2007, image: "https://i.postimg.cc/BQwpcHFR/MSC-main-300x225.webp"},
-                {name: "MSC Seaside", year: 2017, image: "https://i.postimg.cc/cHG570f2/MSC-300x225.webp"},
-                {name: "MSC Poesia", year: 2008, image: "https://i.postimg.cc/ZKJztFB2/MSC-300x225.webp"},
-                {name: "MSC Seascape", year: 2022, image: "https://i.postimg.cc/wBmGs7RD/MSC-300x225.webp"},
-                {name: "MSC Armonia", year: 2001, image: "https://i.postimg.cc/FsKGLDYj/MSC-main-300x225.webp"},
-                {name: "MSC Seaview", year: 2018, image: "https://i.postimg.cc/J4zY5TBr/MSC-300x225.webp"},
-                {name: "MSC Lirica", year: 2003, image: "https://i.postimg.cc/fbfYFN66/MSC-300x225.webp"},
-                {name: "MSC Bellissima", year: 2019, image: "https://i.postimg.cc/SNQ1GmvY/MSC-main-300x225.webp"},
-                {name: "MSC Opera", year: 2004, image: "https://i.postimg.cc/52Y3Pyqy/MSC-main-300x225.webp"},
-                {name: "MSC Euribia", year: 2023, image: "https://i.postimg.cc/3w2ZTqqH/MSC-Euribia-main-300x225.webp"},
-                {name: "MSC Sinfonia", year: 2002, image: "https://i.postimg.cc/2jwXvpy9/MSC-300x225.webp"},
-                {name: "MSC Grandiosa", year: 2019, image: "https://i.postimg.cc/yxjQzGkN/MSC-main-300x225.webp"},
-                {name: "MSC Divina", year: 2012, image: "https://i.postimg.cc/yxsQtK65/MSC-main-300x225.webp"},
-                {name: "MSC Meraviglia", year: 2017, image: "https://i.postimg.cc/J4S3HKNd/MSC-300x225.webp"},
-                {name: "MSC Fantasia", year: 2008, image: "https://i.postimg.cc/x877BHWp/MSC-300x225.webp"},
-                {name: "MSC Virtuosa", year: 2021, image: "https://i.postimg.cc/sXF0PSk3/MSC-300x225.webp"}
+                {name: "MSC Preziosa", year: 2013, image: "https://i.postimg.cc/vBPv6qWq/MSC16008892.jpg"},
+                {name: "MSC Splendida", year: 2009, image: "https://i.postimg.cc/250WHqV3/MSC13015955.jpg"},
+                {name: "MSC Magnifica", year: 2010, image: "https://i.postimg.cc/ZqbsQDxH/MSC19019079.jpg"},
+                {name: "MSC Musica", year: 2006, image: "https://i.postimg.cc/5Nmwr9Kc/MSC13014701.jpg"},
+                {name: "MSC Orchestra", year: 2007, image: "https://i.postimg.cc/nhPQ8XvW/MSC16006817.jpg"},
+                {name: "MSC Poesia", year: 2008, image: "https://i.postimg.cc/yxRmyYrN/MSC25037328.jpg"},
+                {name: "MSC Armonia", year: 2001, image: "https://i.postimg.cc/KzSpXwS4/MSC16006221-1.jpg"},
+                {name: "MSC Lirica", year: 2003, image: "https://i.postimg.cc/MKSqwZJb/MSC16006932.jpg"},
+                {name: "MSC Opera", year: 2004, image: "https://i.postimg.cc/VvFTm8XD/MSC15004313.jpg"},
+                {name: "MSC Sinfonia", year: 2002, image: "https://i.postimg.cc/Y90j1rCm/MSC16006204.jpg"},
+                {name: "MSC Divina", year: 2012, image: "https://i.postimg.cc/HkTMrCXb/MSC13011902.jpg"},
+                {name: "MSC Fantasia", year: 2008, image: "https://i.postimg.cc/MTwJSthZ/MSC13012071.jpg"},
+                {name: "MSC World America", year: 2025, image: "https://i.postimg.cc/MGkh7dZ0/MSC25040915.jpg"},
+                {name: "MSC World Asia", year: 2026, image: "https://i.postimg.cc/C1xJkq8H/MSC25035094.jpg"},
+                {name: "MSC World Europa", year: 2022, image: "https://i.postimg.cc/NM2DdwN5/MSC22013055.jpg"},
+                {name: "MSC Seashore", year: 2021, image: "https://i.postimg.cc/R0HJ8VB5/MSC21007729.jpg"},
+                {name: "MSC Seaside", year: 2017, image: "https://i.postimg.cc/4xrmzkh8/MSC18014069.jpg"},
+                {name: "MSC Seascape", year: 2022, image: "https://i.postimg.cc/7PsswmzH/MSC21008179.jpg"},
+                {name: "MSC Seaview", year: 2018, image: "https://i.postimg.cc/pdWz9tNg/MSC19018890.jpg"},
+                {name: "MSC Bellissima", year: 2019, image: "https://i.postimg.cc/xjwxFgbc/MSC18013997.jpg"},
+                {name: "MSC Euribia", year: 2023, image: "https://i.postimg.cc/Sswr3NRw/MSC23019432.jpg"},
+                {name: "MSC Grandiosa", year: 2019, image: "https://i.postimg.cc/nr62DVqH/MSC19001443.jpg"},
+                {name: "MSC Meraviglia", year: 2017, image: "https://i.postimg.cc/DzMxTcmJ/MSC17011157.jpg"},
+                {name: "MSC Virtuosa", year: 2021, image: "https://i.postimg.cc/bwF5yPBw/MSC18017765.jpg"}
             ],
             "Royal Caribbean": [
-                {name: "Adventure of the Seas", year: 2001, image: "https://i.postimg.cc/gknzTbwr/Adventure-of-the-Seas-300x225.webp"},
-                {name: "Allure of the Seas", year: 2010, image: "https://i.postimg.cc/4xcJXvQg/Allure-of-the-Seas-300x225.webp"},
-                {name: "Anthem of the Seas", year: 2015, image: "https://i.postimg.cc/fbhMy380/Anthem-of-the-Seas-300x225.webp"},
-                {name: "Brilliance of the Seas", year: 2002, image: "https://i.postimg.cc/3wCYvKqf/Brilliance-of-the-Seas-300x225.webp"},
-                {name: "Enchantment of the Seas", year: 1997, image: "https://i.postimg.cc/NMsY83qs/Enchantment-of-the-Seas-300x225.webp"},
-                {name: "Explorer of the Seas", year: 2000, image: "https://i.postimg.cc/4xpTDfX4/Explorer-of-the-Seas-300x225.webp"},
-                {name: "Freedom of the Seas", year: 2006, image: "https://i.postimg.cc/Bvgfvm8d/Freedom-of-the-Seas-300x225.webp"},
-                {name: "Grandeur of the Seas", year: 1996, image: "https://i.postimg.cc/269pQ37G/Grandeur-of-the-Seas-300x225.webp"},
-                {name: "Harmony of the Seas", year: 2016, image: "https://i.postimg.cc/Y0v5bkXH/Harmony-of-the-Seas-300x225.webp"},
-                {name: "Icon of the Seas", year: 2024, image: "https://i.postimg.cc/ZYgt0BRK/Icon-of-the-Seas-300x225.webp"},
-                {name: "Independence of the Seas", year: 2008, image: "https://i.postimg.cc/2SxBzfwm/Independence-of-the-Seas-300x225.webp"},
-                {name: "Jewel of the Seas", year: 2004, image: "https://i.postimg.cc/nzXsY9tc/Jewel-of-the-Seas-300x225.webp"},
-                {name: "Legend of the Seas", year: 1995, image: "https://i.postimg.cc/C19RvMFC/LEGEND-OF-THE-SEAS-300x225.webp"},
-                {name: "Liberty of the Seas", year: 2007, image: "https://i.postimg.cc/ZYyBWNcw/Liberty-of-the-Seas-300x225.webp"},
-                {name: "Mariner of the Seas", year: 2003, image: "https://i.postimg.cc/QxQFbrv5/Mariner-of-the-Seas-300x225.webp"},
-                {name: "Navigator of the Seas", year: 2002, image: "https://i.postimg.cc/9Qcrgnjk/Navigator-of-the-Seas-300x225.webp"},
-                {name: "Oasis of the Seas", year: 2009, image: "https://i.postimg.cc/PrytJfB6/Oasis-of-the-Seas-300x225.webp"},
-                {name: "Odyssey of the Seas", year: 2021, image: "https://i.postimg.cc/Fzm4FwG5/Odyssey-of-the-Seas-300x225.webp"},
-                {name: "Ovation of the Seas", year: 2016, image: "https://i.postimg.cc/vTzd4XS1/Ovation-of-the-Seas-300x225.webp"},
-                {name: "Quantum of the Seas", year: 2014, image: "https://i.postimg.cc/SsgrjMfS/Quantum-of-the-Seas-300x225.webp"},
-                {name: "Radiance of the Seas", year: 2001, image: "https://i.postimg.cc/rsz94wfS/Radiance-of-the-Seas-300x225.webp"},
-                {name: "Rhapsody of the Seas", year: 1997, image: "https://i.postimg.cc/zXbjX3bN/Rhapsody-of-the-Seas-300x225.webp"},
-                {name: "Serenade of the Seas", year: 2003, image: "https://i.postimg.cc/02TC6xDw/Serenade-of-the-Seas-300x225.webp"},
-                {name: "Spectrum of the Seas", year: 2019, image: "https://i.postimg.cc/bv8HTT6Y/Spectrum-of-the-Seas-300x225.webp"},
-                {name: "Star of the Seas", year: 2025, image: "https://i.postimg.cc/284SNRdw/Star-of-the-Seas.jpg"},
-                {name: "Symphony of the Seas", year: 2018, image: "https://i.postimg.cc/0NfGHw3Y/Symphony-of-the-Seas-300x225.webp"},
-                {name: "Utopia of the Seas", year: 2024, image: "https://i.postimg.cc/Z54KT7Vh/Utopia-of-the-Seas.jpg"}
+                {name: "Adventure of the Seas", year: 2001, image: "https://i.postimg.cc/3wBSGMKP/1623457762-DJI-0713.jpg"},
+                {name: "Allure of the Seas", year: 2010, image: "https://i.postimg.cc/pLYbs6WB/1722900416-RCI-AL-CGI-ALT-201911-MVerdure-OA19-Aerial-FLL1-027-RT-EXT-LR.jpg"},
+                {name: "Anthem of the Seas", year: 2015, image: "https://i.postimg.cc/mDFGy2tP/1446674152-image002.jpg"},
+                {name: "Brilliance of the Seas", year: 2002, image: "https://i.postimg.cc/1XGhbC0P/1697834102-RCI-Brilliance-Exterior-Side-4-UR.jpg"},
+                {name: "Enchantment of the Seas", year: 1997, image: "https://i.postimg.cc/hPsNx7pC/image-2301.avif"},
+                {name: "Explorer of the Seas", year: 2000, image: "https://i.postimg.cc/VkYb65NB/ew0-KICAi-Yn-Vja2-V0-Ijog-In-Byb2-Qtc2-Vydmlj-ZS1pd-HJhdm-Vs-Y2-Ru-LWVua-GFu-Y2-Vid-WNr-ZXQt-Y2-Y0c-TZkc-XY5dj-I4-Iiw-NCi-Ag-Imtl.jpg"},
+                {name: "Freedom of the Seas", year: 2006, image: "https://i.postimg.cc/MKwnPX12/1624145764-IMG-0571.jpg"},
+                {name: "Grandeur of the Seas", year: 1996, image: "https://i.postimg.cc/K8zvwTzV/harmony-of-the-seas-slide-1600x702.jpg"},
+                {name: "Harmony of the Seas", year: 2016, image: "https://i.postimg.cc/nVPdqbmD/1473174759-HM-Aft.jpg"},
+                {name: "Icon of the Seas", year: 2024, image: "https://i.postimg.cc/gJJ0F6Nr/1708378767-RCI-PDC-202401-CC-JGraham-Icon-Arrival-DJI-A003-0044-RT-EXT.jpg"},
+                {name: "Independence of the Seas", year: 2008, image: "https://i.postimg.cc/bY0qCgzL/1600881251-RCI-ID-June2018-Portugal-Heli-Jordan-Dani-Sunrise-Ship-01-0012-RET-CMYK.jpg"},
+                {name: "Jewel of the Seas", year: 2004, image: "https://i.postimg.cc/wjyPPxXH/1616633882-jewel-of-the-seas-grenada-docked-harbor-21.jpg"},
+                {name: "Legend of the Seas", year: 1995, image: "https://i.postimg.cc/fTpZkr5z/2113-a15df9c337f.jpg"},
+                {name: "Liberty of the Seas", year: 2007, image: ""},
+                {name: "Mariner of the Seas", year: 2003, image: ""},
+                {name: "Navigator of the Seas", year: 2002, image: ""},
+                {name: "Oasis of the Seas", year: 2009, image: ""},
+                {name: "Odyssey of the Seas", year: 2021, image: ""},
+                {name: "Ovation of the Seas", year: 2016, image: ""},
+                {name: "Quantum of the Seas", year: 2014, image: ""},
+                {name: "Radiance of the Seas", year: 2001, image: ""},
+                {name: "Rhapsody of the Seas", year: 1997, image: ""},
+                {name: "Serenade of the Seas", year: 2003, image: ""},
+                {name: "Spectrum of the Seas", year: 2019, image: ""},
+                {name: "Star of the Seas", year: 2025, image: ""},
+                {name: "Symphony of the Seas", year: 2018, image: ""},
+                {name: "Utopia of the Seas", year: 2024, image: ""},
             ],
             "Norwegian Cruise Line": [
-                {name: "Norwegian Aqua", year: 2025, image: "https://i.postimg.cc/T3hRkwRy/NORWEIGAN-AQUA-300x202.png"},
-                {name: "Norwegian Bliss", year: 2018, image: "https://i.postimg.cc/jC05VYZV/Norwegian-Bliss-300x225.webp"},
-                {name: "Norwegian Breakaway", year: 2013, image: "https://i.postimg.cc/MHx6tmTx/Norwegian-Breakaway-300x225.webp"},
-                {name: "Norwegian Dawn", year: 2002, image: "https://i.postimg.cc/5yMB3TL0/Norwegian-Dawn-300x225.webp"},
-                {name: "Norwegian Encore", year: 2019, image: "https://i.postimg.cc/wxhcvxYs/Norwegian-Encore-300x225.webp"},
-                {name: "Norwegian Epic", year: 2010, image: "https://i.postimg.cc/VLm9byzZ/Norwegian-Epic-300x225.webp"},
-                {name: "Norwegian Escape", year: 2015, image: "https://i.postimg.cc/CL7GGv1h/Norwegian-Escape-300x225.webp"},
-                {name: "Norwegian Getaway", year: 2014, image: "https://i.postimg.cc/x8GFC77H/Norwegian-Getaway-300x225.webp"},
-                {name: "Norwegian Jade", year: 2006, image: "https://i.postimg.cc/4xxFfW17/Norwegian-Jade-300x225.webp"},
-                {name: "Norwegian Jewel", year: 2005, image: "https://i.postimg.cc/dtq565pH/Norwegian-Jewel-300x225.webp"},
-                {name: "Norwegian Joy", year: 2017, image: "https://i.postimg.cc/TPW01F5w/Norwegian-Joy-300x225.webp"},
-                {name: "Norwegian Luna", year: 2026, image: "https://i.postimg.cc/WzZb4xBs/NORWEGIAN-LUNA.jpg"},
-                {name: "Norwegian Pearl", year: 2006, image: "https://i.postimg.cc/sxK9bRqn/Norwegian-Pearl-300x225.webp"},
-                {name: "Norwegian Prima", year: 2022, image: "https://i.postimg.cc/xjPRXK8K/Norwegian-Prima-300x225.webp"},
-                {name: "Norwegian Sky", year: 1999, image: "https://i.postimg.cc/yYYTck32/Norwegian-Sky-300x225.webp"},
-                {name: "Norwegian Spirit", year: 1998, image: "https://i.postimg.cc/L8JBQwTT/Norwegian-Spirit-300x225.webp"},
-                {name: "Norwegian Star", year: 2001, image: "https://i.postimg.cc/qvWcPwDd/Norwegian-Star-300x225.webp"},
-                {name: "Norwegian Sun", year: 2001, image: "https://i.postimg.cc/FsB0SG4J/Norwegian-Sun-300x225.webp"},
-                {name: "Norwegian Viva", year: 2023, image: "https://i.postimg.cc/g09RSJrz/Norwegian-Viva-300x225.webp"},
-                {name: "Norwegian Gem", year: 2007, image: "https://i.postimg.cc/90fqRwgp/Norwegian-Gem-300x225.webp"},
-                {name: "Pride of America", year: 2005, image: "https://i.postimg.cc/59Pzcpjk/Pride-of-America-300x225.webp"}
+                {name: "Norwegian Aqua", year: 2025, image: "https://i.postimg.cc/YCVXc3v4/norwegianaquainmiami4.jpg"},
+                {name: "Norwegian Bliss", year: 2018, image: "https://i.postimg.cc/8ctHZB8z/norwegianbliss-ketchikanalaska-bird039seyeview.jpg"},
+                {name: "Norwegian Breakaway", year: 2013, image: "https://i.postimg.cc/XNQkS8hV/norwegianbreakaway-indestination-st-luciaaerial.jpg"},
+                {name: "Norwegian Dawn", year: 2002, image: "https://i.postimg.cc/9QT9Mtxw/norwegiandawn-aerial.jpg"},
+                {name: "Norwegian Encore", year: 2019, image: "https://i.postimg.cc/bvmwNZj2/norwegianencore-birdseyeview.jpg"},
+                {name: "Norwegian Epic", year: 2010, image: "https://i.postimg.cc/XvrYqVNH/norwegianepic-aerial.jpg"},
+                {name: "Norwegian Escape", year: 2015, image: "https://i.postimg.cc/LsxjK4Cx/norwegianescape-tortola-9.jpg"},
+                {name: "Norwegian Getaway", year: 2014, image: "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg"},
+                {name: "Norwegian Jade", year: 2006, image: "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg"},
+                {name: "Norwegian Jewel", year: 2005, image: "https://i.postimg.cc/sgR8t41D/norwegianjewel-indestinationjuneaualaska.jpg"},
+                {name: "Norwegian Joy", year: 2017, image: "https://i.postimg.cc/ZnmmVzk4/norwegianjoy.jpg"},
+                {name: "Norwegian Luna", year: 2026, image: "https://i.postimg.cc/0NSh3X0Q/norwegianlunaoverhead.jpg"},
+                {name: "Norwegian Pearl", year: 2006, image: "https://i.postimg.cc/nr3W7ypd/norwegianpearl-aerial.jpg"},
+                {name: "Norwegian Prima", year: 2022, image: "https://i.postimg.cc/7h53sdSt/norwegianprima-aerial-stern.jpg"},
+                {name: "Norwegian Sky", year: 1999, image: "https://i.postimg.cc/zfPSCqgH/norwegiansky-aerial.jpg"},
+                {name: "Norwegian Spirit", year: 1998, image: "https://i.postimg.cc/gJZR38p1/norwegianspirit-aerial-1.jpg"},
+                {name: "Norwegian Star", year: 2001, image: "https://i.postimg.cc/pX6sQYML/norwegianstar-aerial.jpg"},
+                {name: "Norwegian Sun", year: 2001, image: "https://i.postimg.cc/bN7QN6jk/norwegiansun-aerial.jpg"},
+                {name: "Norwegian Viva", year: 2023, image: "https://i.postimg.cc/FFfprkLt/ncl-viva-aerial-sanjuan-0910.jpg"},
+                {name: "Norwegian Gem", year: 2007, image: "https://i.postimg.cc/Z5LF7r1N/norwegiangem-aerial.jpg"},
+                {name: "Pride of America", year: 2005, image: "https://i.postimg.cc/SNF6mT48/prideofamerica-aerial.jpg"}
             ],
             "CELEBRITY": [
                 {name: "Celebrity Apex", year: 2020, image: "https://i.postimg.cc/76hB396G/Celebrity-Apex-300x225.webp"},
@@ -656,7 +660,7 @@
             "מרפסת לפנים האונייה עם בחירת מיקום",
             "סוויטה"
         ];
-        
+       
         // --- CACHE DOM ELEMENTS ---
         const elements = {
             clientName: document.getElementById('clientName'),
@@ -724,14 +728,14 @@
             previewTransfersConditions: document.getElementById('previewTransfersConditions'),
             previewTotalContainer: document.getElementById('previewTotalContainer'),
             previewTotalPrice: document.getElementById('previewTotalPrice'),
-            // previewShipImageSection: document.getElementById('previewShipImageSection'),
-            // previewShipImage: document.getElementById('previewShipImage'),
+            previewShipImageSection: document.getElementById('previewShipImageSection'),
+            previewShipImage: document.getElementById('previewShipImage'),
             previewAdvisor: document.getElementById('previewAdvisor'),
             previewElement: document.getElementById('preview'),
             previewMain: document.getElementById('preview-main'),
             inputForm: document.getElementById('inputForm')
         };
-        
+       
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             loadState();
@@ -739,7 +743,7 @@
             setupEventListeners();
             updatePreview();
         });
-        
+       
         function setupEventListeners() {
             // All form inputs
             elements.inputForm.addEventListener('input', updateStateAndPreview);
@@ -838,7 +842,7 @@
             savedState.dynamicFields.rooms.forEach(roomData => addRoom(roomData));
             savedState.dynamicFields.flights.forEach(flightData => addFlight(flightData));
             savedState.dynamicFields.transfers.forEach(transferData => addTransfer(transferData));
-             if (savedState.dynamicFields.hotels) { 
+             if (savedState.dynamicFields.hotels) {
                 savedState.dynamicFields.hotels.forEach(hotelData => addHotel(hotelData));
             }
         }
@@ -860,13 +864,13 @@
             });
             updateStateAndPreview();
         }
-        
+       
         function addRoom(initialData = {}) {
             const template = document.getElementById('roomTemplate');
             const clone = template.content.cloneNode(true);
             const roomDiv = clone.querySelector('.room-entry');
             elements.roomsContainer.appendChild(clone);
-            
+           
             // Set initial data and setup listeners
             if (Object.keys(initialData).length > 0) {
                  for (const key in initialData) {
@@ -874,7 +878,7 @@
                     if (input) input.value = initialData[key];
                 }
             }
-            
+           
             roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => {
                 roomDiv.remove();
                 updateStateAndPreview();
@@ -887,14 +891,13 @@
             const clone = template.content.cloneNode(true);
             const flightDiv = clone.querySelector('.flight-entry');
             elements.flightsContainer.appendChild(clone);
-            
+           
             if (Object.keys(initialData).length > 0) {
                 for (const key in initialData) {
                     const input = flightDiv.querySelector(`[name="${key}"]`);
                     if (input) input.value = initialData[key];
                 }
             }
-
             // Default airline from previous flight if exists
             const existingFlights = elements.flightsContainer.querySelectorAll('.flight-entry');
             if (existingFlights.length > 1 && !initialData.airline) { // Since we just added one
@@ -908,7 +911,7 @@
                 updateStateAndPreview();
             });
         }
-        
+       
         function addTransfer(initialData = {}) {
             const template = document.getElementById('transferTemplate');
             const clone = template.content.cloneNode(true);
@@ -925,13 +928,11 @@
                 updateStateAndPreview();
             });
         }
-
         function addHotel(initialData = {}) {
             const template = document.getElementById('hotelTemplate');
             const clone = template.content.cloneNode(true);
             const hotelDiv = clone.querySelector('.hotel-entry');
             elements.hotelsContainer.appendChild(clone);
-
             if (Object.keys(initialData).length > 0) {
                 for (const key in initialData) {
                     const input = hotelDiv.querySelector(`[name="${key}"]`);
@@ -944,43 +945,40 @@
                     }
                 }
             }
-
             const cancellableCheckbox = hotelDiv.querySelector('[name="hotelCancellable"]');
             const cancelDetailsDiv = hotelDiv.querySelector('.hotel-cancel-details');
-
             const toggleDetails = () => {
                 cancelDetailsDiv.classList.toggle('hidden', !cancellableCheckbox.checked);
             };
-
             cancellableCheckbox.addEventListener('change', toggleDetails);
-            
+           
             hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => {
                 hotelDiv.remove();
                 updateStateAndPreview();
             });
-            
+           
             toggleDetails(); // Initial check
         }
-        
+       
         function toggleTransfersCancelDetails() {
             const detailsDiv = document.getElementById('transfersCancelDetails');
             const isCancellable = elements.transfersCancellable.checked;
             detailsDiv.classList.toggle('hidden', !isCancellable);
         }
-        
+       
         function toggleFlightCancelDetails() {
             const detailsDiv = document.getElementById('flightCancelDetails');
             const isCancellable = elements.flightCancellable.checked;
             detailsDiv.classList.toggle('hidden', !isCancellable);
         }
-        
+       
         function toggleRoomDetails(roomEntry) {
             const detailsDiv = roomEntry.querySelector('.room-details');
             const roomType = roomEntry.querySelector('select[name="roomType"]').value;
             const isDetailed = detailRoomTypes.includes(roomType);
             detailsDiv.classList.toggle('hidden', !isDetailed);
         }
-        
+       
         // --- IMAGE PASTE LOGIC (only for itinerary) ---
         function handlePaste(event) {
             event.preventDefault();
@@ -1015,35 +1013,35 @@
             const cruiseStart = elements.cruiseStartDate.value ? new Date(elements.cruiseStartDate.value).toLocaleDateString('he-IL') : '';
             const cruiseEnd = elements.cruiseEndDate.value ? new Date(elements.cruiseEndDate.value).toLocaleDateString('he-IL') : '';
             elements.previewCruiseDate.textContent = cruiseStart && cruiseEnd ? `${cruiseStart} - ${cruiseEnd}` : '___';
-        
+       
             // Advisor
             const selectedAdvisor = elements.advisor.value;
             elements.previewAdvisor.textContent = advisors[selectedAdvisor];
-        
+       
             // Show cruise sections only if cruise line is selected and not hidden
             const hasCruiseLine = !!elements.cruiseLine.value;
             const hideCruiseSection = elements.hideCruise.checked;
             elements.previewCruiseDetails.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
             elements.previewItinerarySection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
             elements.previewRoomsSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
-            // elements.previewShipImageSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
-        
+            elements.previewShipImageSection.classList.toggle('hidden', hideCruiseSection || !hasCruiseLine);
+       
             // Ship Image
-            /* const cruiseLine = elements.cruiseLine.value;
+            const cruiseLine = elements.cruiseLine.value;
             const shipName = elements.shipName.value;
             const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
             if (ship && ship.image) {
                 elements.previewShipImage.src = ship.image;
             } else {
-                elements.previewShipImage.src = 'https://placehold.co/800x450/e2e8f0/adb5bd?text=תמונת+האונייה';
-            } */
-        
+                elements.previewShipImage.src = 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה';
+            }
+       
             // Rooms and Total Price
             elements.previewRoomsContainer.innerHTML = '';
             let totalPrice = 0;
             let totalPassengers = 0;
             let hasGuarantee = false;
-        
+       
             const roomEntries = elements.roomsContainer.querySelectorAll('.room-entry');
             roomEntries.forEach((room, index) => {
                 const composition = room.querySelector('select[name="composition"]').value;
@@ -1064,17 +1062,16 @@
                     case '4 מבוגרים + 1': totalPassengers += 5; break;
                     case '5 מבוגרים': totalPassengers += 5; break;
                 }
-
                 const roomType = room.querySelector('select[name="roomType"]').value;
                 const floor = room.querySelector('input[name="floor"]').value;
                 const roomNumber = room.querySelector('input[name="roomNumber"]').value;
                 const extraDesc = room.querySelector('textarea[name="extraDesc"]').value;
                 const costValue = parseFloat(room.querySelector('input[name="roomCost"]').value) || 0;
-        
+       
                 if (roomType && roomType.includes('גרנטי')) {
                     hasGuarantee = true;
                 }
-        
+       
                 if (composition || roomType || extraDesc || costValue > 0) {
                     let roomDetails = [];
                     if (composition) roomDetails.push(`<strong>הרכב:</strong> ${composition}`);
@@ -1093,7 +1090,7 @@
                         roomDetails.push(typeText);
                     }
                     if (extraDesc) roomDetails.push(`${extraDesc}`);
-        
+       
                     const roomDiv = document.createElement('div');
                     roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
                     roomDiv.innerHTML = `
@@ -1106,12 +1103,12 @@
                 }
             });
             elements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
-        
+       
             // Inclusions
             const inclusionsList = elements.previewInclusions;
             inclusionsList.innerHTML = '';
             let hasInclusions = false;
-            
+           
             if (elements.includeMeals.checked) {
                 addInclusionItem(inclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
                 hasInclusions = true;
@@ -1154,7 +1151,7 @@
                     }
                 });
                 elements.previewFlightFreeText.textContent = elements.flightFreeText.value;
-                
+               
                 if (flightCostPerPerson > 0 && totalPassengers > 0) {
                     elements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
                 } else if (flightCostPerPerson > 0) {
@@ -1162,9 +1159,8 @@
                 } else {
                     elements.previewFlightCost.textContent = '';
                 }
-
                 totalPrice += flightCostValue;
-        
+       
                 let conditionsText = '';
                 if (elements.flightNoCancel.checked) {
                     conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה</p>';
@@ -1180,46 +1176,43 @@
                 }
                 elements.previewFlightConditions.innerHTML = conditionsText;
             }
-        
+       
             // Hotels
             elements.previewHotelsContainer.innerHTML = '';
             let totalHotelCost = 0;
             const hotelEntries = elements.hotelsContainer.querySelectorAll('.hotel-entry');
             const hasHotels = hotelEntries.length > 0 && Array.from(hotelEntries).some(h => h.querySelector('[name="hotelName"]').value || h.querySelector('[name="hotelCost"]').value > 0);
-            
+           
             elements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
-
             if (hasHotels) {
                 hotelEntries.forEach((hotel) => {
                     const hotelName = hotel.querySelector('[name="hotelName"]').value || '___';
                     const hotelCostValue = parseFloat(hotel.querySelector('[name="hotelCost"]').value) || 0;
-                    
+                   
                     if (!hotelName && !hotelCostValue) return;
-
                     const hotelNights = hotel.querySelector('[name="hotelNights"]').value || '___';
                     const hotelStartDateValue = hotel.querySelector('[name="hotelStartDate"]').value;
                     const hotelStartDate = hotelStartDateValue ? new Date(hotelStartDateValue).toLocaleDateString('he-IL') : '___';
                     const hotelRoomDesc = hotel.querySelector('[name="hotelRoomDesc"]').value || '___';
                     const hotelPension = hotel.querySelector('[name="hotelPension"]').value || '___';
-                    
+                   
                     totalHotelCost += hotelCostValue;
-
                     let conditionsText = '';
                     const hotelNoCancel = hotel.querySelector('[name="hotelNoCancel"]').checked;
                     const hotelCancellable = hotel.querySelector('[name="hotelCancellable"]').checked;
-                    
+                   
                     if (hotelNoCancel) {
                         conditionsText += '<p>ללא אפשרות ביטול/ שינוי מרגע אישור ההזמנה</p>';
                     } else if (hotelCancellable) {
                         const cancelFee = hotel.querySelector('[name="hotelCancelFee"]').value;
                         const cancelDateValue = hotel.querySelector('[name="hotelCancelDate"]').value;
                         const cancelDate = cancelDateValue ? new Date(cancelDateValue).toLocaleDateString('he-IL') : '___';
-                        
+                       
                         if (cancelFee && cancelDate !== '___') {
                             conditionsText += `<p>ביטול – ניתן לבטל בעלות של ${cancelFee} לחדר עד לתאריך ${cancelDate} ולאחריו דמי ביטול מלאים</p>`;
                         }
                     }
-                    
+                   
                     const hotelPreviewDiv = document.createElement('div');
                     hotelPreviewDiv.className = 'border p-3 rounded-lg bg-white space-y-2 no-split';
                     hotelPreviewDiv.innerHTML = `
@@ -1233,9 +1226,8 @@
                     elements.previewHotelsContainer.appendChild(hotelPreviewDiv);
                 });
             }
-            
+           
             totalPrice += totalHotelCost;
-
             // Transfers
             const transfersCostValue = parseFloat(elements.transfersCost.value) || 0;
             const hasTransfers = elements.transfersContainer.querySelectorAll('.transfer-entry').length > 0 || transfersCostValue > 0;
@@ -1253,7 +1245,7 @@
                 });
                 elements.previewTransfersCost.textContent = `עלות: $${transfersCostValue.toLocaleString()}`;
                 totalPrice += transfersCostValue;
-        
+       
                 let conditionsText = '';
                 if (elements.transfersNoCancel.checked) {
                     conditionsText += `<p>ללא אפשרות ביטול / שינוי</p>`;
@@ -1263,16 +1255,16 @@
                 }
                 elements.previewTransfersConditions.innerHTML = conditionsText;
             }
-        
+       
             // Total
             elements.previewTotalContainer.classList.toggle('hidden', elements.hideTotal.checked);
             elements.previewTotalPrice.textContent = totalPrice.toLocaleString();
-            
+           
             // Toggle conditional fields
             toggleFlightCancelDetails();
             toggleTransfersCancelDetails();
         }
-        
+       
         function addInclusionItem(list, text) {
             const li = document.createElement('li');
             li.textContent = text;
@@ -1282,17 +1274,17 @@
         async function generatePDF() {
             elements.previewElement.classList.remove('shadow-lg');
             const { jsPDF } = window.jspdf;
-        
+       
             // Clone the preview element to a temporary container for rendering
             const previewClone = elements.previewElement.cloneNode(true);
             previewClone.style.position = 'absolute';
             previewClone.style.left = '-9999px';
             previewClone.style.width = '794px'; // A4 width in px for rendering
             document.body.appendChild(previewClone);
-        
+       
             // Remove any dynamic buttons that shouldn't be in the PDF
             previewClone.querySelectorAll('.remove-room-btn, .remove-flight-btn, .remove-transfer-btn, .remove-hotel-btn').forEach(btn => btn.remove());
-        
+       
             // Ensure all images are loaded before rendering to canvas
             const images = previewClone.querySelectorAll('img');
             const promises = Array.from(images).map(img => new Promise(resolve => {
@@ -1304,16 +1296,16 @@
                 }
             }));
             await Promise.all(promises);
-        
+       
             const canvas = await html2canvas(previewClone, {
                 scale: 2,
                 useCORS: true,
                 letterRendering: true
             });
-        
+       
             // Remove the clone after rendering
             previewClone.remove();
-        
+       
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -1321,17 +1313,17 @@
             const imgHeight = canvas.height * pdfWidth / canvas.width;
             let heightLeft = imgHeight;
             let position = 0;
-        
+       
             pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
             heightLeft -= pdfHeight;
-        
+       
             while (heightLeft > 0) {
                 position -= pdfHeight;
                 pdf.addPage();
                 pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
                 heightLeft -= pdfHeight;
             }
-        
+       
             const clientName = elements.clientName.value || 'הצעה';
             const shipName = elements.shipName.value || 'קרוז';
             pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
@@ -1343,5 +1335,3 @@
     </footer>
 </body>
 </html>
-
-
