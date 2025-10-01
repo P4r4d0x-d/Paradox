@@ -8,8 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZNvGEC2Y/2F2GjKdc3zqok5u/H6W6eSllFL8BjgoBbr2eFW7tBpK4p/ZH11jmoAKu+9Z2iQRP+qS+o8jRSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             font-family: 'Assistant', sans-serif;
@@ -31,6 +30,8 @@
         @media print {
             .no-print { display: none; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            #preview { box-shadow: none; border: none; padding: 0; margin: 0; }
+            .preview-section { page-break-inside: avoid; }
         }
         #previewItineraryImage, #previewShipImage {
             height: 300px;
@@ -38,6 +39,10 @@
         }
         .preview-section {
             min-height: 100px; /* Set a minimum height for sections to help with consistent layout */
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
         }
         /* Modal styles */
         .modal {
@@ -72,10 +77,36 @@
             text-decoration: none;
             cursor: pointer;
         }
+        /* Improved design styles */
+        #preview {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        #preview header {
+            border-bottom-width: 2px;
+            border-color: #e5e7eb;
+        }
+        #preview-main {
+            space-y: 6;
+        }
+        .preview-section h2, .preview-section h3 {
+            color: #1d4ed8;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        #previewTotalContainer {
+            background-color: #eff6ff;
+            color: #1e40af;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: left;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
     <div id="loginScreen" class="fixed inset-0 bg-gray-200 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
             <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">כניסה למערכת</h2>
@@ -95,7 +126,7 @@
             </button>
         </div>
     </div>
-    
+   
     <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden">
         <header class="text-center mb-8 no-print">
             <div class="flex justify-between items-center">
@@ -114,7 +145,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-                
+               
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -142,7 +173,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div id="cruiseSectionContainer" class="mt-6 border-t pt-4">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xl font-bold">שייט</h3>
@@ -198,7 +228,6 @@
                         <button id="addRoomBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
                     </div>
                  </div>
-
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">מה כלול</h3>
                      <div class="flex items-start mb-4">
@@ -210,7 +239,7 @@
                         <textarea id="customInclusions" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
                 </div>
-                
+               
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
@@ -256,13 +285,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">מלונות (אופציונלי)</h3>
                     <div id="hotelsContainer" class="space-y-4"></div>
                     <button id="addHotelBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף מלון</button>
                 </div>
-
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">העברות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
@@ -297,13 +324,12 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="mt-8 flex justify-between gap-4">
                     <button id="saveQuoteBtn" class="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">שמור הצעה</button>
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-            
+           
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
@@ -312,8 +338,7 @@
                         </div>
                         <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
-
-                    <main id="preview-main" class="mt-8">
+                    <main id="preview-main" class="mt-8 space-y-6">
                         <div class="flex justify-between items-start">
                             <p class="text-xl mb-6"><span id="previewDocTitle"></span> <span id="previewClientName" class="font-bold"></span>,</p>
                              <div>
@@ -321,10 +346,9 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                        
+                       
                         <p id="previewOpeningLine" class="mb-6"></p>
-
-                        <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
+                        <div id="previewCruiseDetails" class="rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
                             <div class="grid grid-cols-2 gap-4 text-md">
                                 <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
@@ -334,12 +358,11 @@
                                 <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
                             </div>
                         </div>
-                        
+                       
                         <div id="previewItinerarySection" class="my-6 no-split hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
-
                         <div id="previewRoomsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי החדרים:</h3>
                             <div id="previewRoomsContainer" class="space-y-4"></div>
@@ -347,7 +370,6 @@
                                 חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>💡 חשוב לדעת!<br>חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
                             </div>
                         </div>
-
                         <div id="previewFlightsContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי טיסות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -361,12 +383,12 @@
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
-                        
+                       
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                        
+                       
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -375,21 +397,20 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                        
+                       
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
                              <h3 class="text-xl font-bold mb-3 no-break-after">הערות ודגשים:</h3>
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
                             </ul>
                         </div>
-                        
+                       
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
-
                         <div id="previewShipImageSection" class="my-8 no-split hidden preview-section">
                            <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
-                        
+                       
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -407,7 +428,6 @@
                             </div>
                         </div>
                     </main>
-
                     <footer class="text-center mt-12 border-t-2 pt-6 border-gray-200">
                         <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
                         <p id="previewAdvisor">ליאור דובינובסקי | יועץ שייט | 03-3106454 | lior@balicruise.co.il</p>
@@ -416,7 +436,7 @@
             </div>
         </div>
     </div>
-    
+   
     <div id="savedQuotesModal" class="modal">
         <div class="modal-content">
             <span id="closeModalBtn" class="close-btn">&times;</span>
@@ -425,8 +445,6 @@
                 </div>
         </div>
     </div>
-
-
     <template id="roomTemplate">
         <div class="room-entry border p-4 rounded-lg mt-2 bg-gray-50 relative">
             <button class="remove-room-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print">X</button>
@@ -598,7 +616,7 @@
             </div>
         </div>
     </template>
-    
+   
 <script>
 // --- DATA ---
 const cruiseData = {
@@ -710,7 +728,6 @@ const cruiseData = {
         { name: "Costa Firenze", year: 2021, image: "https://i.postimg.cc/9Xb8v439/1140-X428-1.png" }
     ]
 };
-
 const advisors = {
     "lior": { name: "ליאור דובינובסקי", email: "lior@balicruise.co.il", pass: "lior1234", details: "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il" },
     "tatiana": { name: "טטיאנה לאונוב", email: "tatiana@balicruise.co.il", pass: "tatiana1234", details: "טטיאנה לאונוב/Tatyana Leonov | יועצת שייט | 03-3106454 | tatiana@balicruise.co.il" },
@@ -723,10 +740,8 @@ const detailRoomTypes = [
     "פנימי עם בחירת מיקום", "חלון עם בחירת מיקום", "מרפסת לים עם בחירת מיקום",
     "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
 ];
-
 // --- GLOBAL STATE ---
 let currentQuoteId = null;
-
 // --- DOM ELEMENTS CACHE ---
 const DOMElements = {
     loginScreen: document.getElementById('loginScreen'),
@@ -781,7 +796,7 @@ const DOMElements = {
     generatePDFBtn: document.getElementById('generatePDFBtn'),
     saveQuoteBtn: document.getElementById('saveQuoteBtn'),
     newQuoteBtn: document.getElementById('newQuoteBtn'),
-    
+   
     // Preview elements
     previewClientName: document.getElementById('previewClientName'),
     previewDate: document.getElementById('previewDate'),
@@ -819,14 +834,12 @@ const DOMElements = {
     previewShipImage: document.getElementById('previewShipImage'),
     previewAdvisor: document.getElementById('previewAdvisor'),
     previewElement: document.getElementById('preview'),
-
     // Modal
     savedQuotesModal: document.getElementById('savedQuotesModal'),
     showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
     savedQuotesList: document.getElementById('savedQuotesList'),
 };
-
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
@@ -835,35 +848,31 @@ document.addEventListener('DOMContentLoaded', () => {
         showMainContent(loggedInUser);
     }
 });
-
 function setupEventListeners() {
     DOMElements.loginBtn.addEventListener('click', handleLogin);
     DOMElements.passwordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleLogin();
     });
-
     DOMElements.inputForm.addEventListener('input', updateStateAndPreview);
     DOMElements.inputForm.addEventListener('change', updateStateAndPreview);
-    
+   
     DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); updateStateAndPreview(); });
     DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); updateStateAndPreview(); });
     DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); updateStateAndPreview(); });
     DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); updateStateAndPreview(); });
-
     DOMElements.cruiseLine.addEventListener('change', () => {
         populateShips();
         updateStateAndPreview();
     });
-    
+   
     DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
     DOMElements.generatePDFBtn.addEventListener('click', generatePDF);
     DOMElements.saveQuoteBtn.addEventListener('click', saveQuote);
     DOMElements.newQuoteBtn.addEventListener('click', startNewQuote);
-
     DOMElements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.flightNoCancel.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
-    
+   
     DOMElements.showSavedQuotesBtn.addEventListener('click', showSavedQuotes);
     DOMElements.closeModalBtn.addEventListener('click', () => DOMElements.savedQuotesModal.style.display = 'none');
     window.addEventListener('click', (event) => {
@@ -872,13 +881,11 @@ function setupEventListeners() {
         }
     });
 }
-
 // --- LOGIN LOGIC ---
 function handleLogin() {
     const email = DOMElements.emailInput.value.toLowerCase();
     const password = DOMElements.passwordInput.value;
     const advisorKey = Object.keys(advisors).find(key => advisors[key].email === email);
-
     if (advisorKey && advisors[advisorKey].pass === password) {
         sessionStorage.setItem('loggedInAdvisor', advisorKey);
         showMainContent(advisorKey);
@@ -886,17 +893,15 @@ function handleLogin() {
         DOMElements.loginError.classList.remove('hidden');
     }
 }
-
 function showMainContent(advisorKey) {
     DOMElements.loginScreen.classList.add('hidden');
     DOMElements.mainContent.classList.remove('hidden');
     DOMElements.loggedInAdvisor.textContent = advisors[advisorKey].name;
     DOMElements.advisor.value = advisorKey;
-    
+   
     populateShips();
     startNewQuote();
 }
-
 // --- QUOTE MANAGEMENT ---
 function getNextQuoteNumber() {
     let lastNumber = parseInt(localStorage.getItem('lastQuoteNumber') || '0');
@@ -904,17 +909,15 @@ function getNextQuoteNumber() {
     localStorage.setItem('lastQuoteNumber', lastNumber);
     return lastNumber;
 }
-
 function saveQuote() {
     const state = getFormState();
     if (!state.clientName) {
         alert('יש להזין שם לקוח לפני שמירת ההצעה.');
         return;
     }
-    
+   
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
-
     if (currentQuoteId) {
         const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
         if (quoteIndex > -1) {
@@ -927,7 +930,7 @@ function saveQuote() {
         const quoteNumber = getNextQuoteNumber();
         currentQuoteId = `Q${quoteNumber}-${Date.now()}`;
         state.quoteNumber = quoteNumber;
-        
+       
         allQuotes.push({
             id: currentQuoteId,
             quoteNumber: quoteNumber,
@@ -941,8 +944,6 @@ function saveQuote() {
     localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
     alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
 }
-
-
 function loadQuote(quoteId) {
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const quote = allQuotes.find(q => q.id === quoteId);
@@ -953,45 +954,42 @@ function loadQuote(quoteId) {
         DOMElements.savedQuotesModal.style.display = 'none';
     }
 }
-
 function deleteQuote(quoteId) {
     if (confirm('האם אתה בטוח שברצונך למחוק הצעה זו?')) {
         let allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
         allQuotes = allQuotes.filter(q => q.id !== quoteId);
         localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
-        showSavedQuotes(); 
+        showSavedQuotes();
     }
 }
-
 function startNewQuote() {
     currentQuoteId = null;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
-    DOMElements.inputForm.reset(); 
-    
+    DOMElements.inputForm.reset();
+   
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
-    
+   
     DOMElements.offerDate.valueAsDate = new Date();
     const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
     if (loggedInUser) {
         DOMElements.advisor.value = loggedInUser;
     }
-    
+   
     addRoom();
     addFlight();
     addHotel();
     addTransfer();
-    
+   
     updateStateAndPreview();
 }
-
 function showSavedQuotes() {
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
-    
+   
     DOMElements.savedQuotesList.innerHTML = '';
     if (advisorQuotes.length === 0) {
         DOMElements.savedQuotesList.innerHTML = '<p>לא נמצאו הצעות שמורות.</p>';
@@ -1011,7 +1009,6 @@ function showSavedQuotes() {
             `;
             DOMElements.savedQuotesList.appendChild(div);
         });
-
         DOMElements.savedQuotesList.querySelectorAll('.load-quote-btn').forEach(btn => {
             btn.addEventListener('click', (e) => loadQuote(e.target.dataset.id));
         });
@@ -1021,14 +1018,12 @@ function showSavedQuotes() {
     }
     DOMElements.savedQuotesModal.style.display = 'block';
 }
-
 // --- STATE MANAGEMENT ---
 function getFormState() {
     const state = {};
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
     formInputs.forEach(input => {
         if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry')) return;
-
         if (input.type === 'radio') {
             if (input.checked) state[input.name] = input.value;
         } else if (input.type === 'checkbox') {
@@ -1037,11 +1032,9 @@ function getFormState() {
             state[input.id] = input.value;
         }
     });
-    
+   
     state.itineraryImageSrc = DOMElements.previewItineraryImage.src;
     state.quoteNumber = DOMElements.currentQuoteNumber.textContent.replace('מספר הצעה: ', '');
-
-
     const dynamicFields = {
         rooms: [], flights: [], transfers: [], hotels: []
     };
@@ -1068,17 +1061,15 @@ function getFormState() {
         });
         dynamicFields.hotels.push(data);
     });
-    
+   
     state.dynamicFields = dynamicFields;
     return state;
 }
-
 function loadState(state) {
     // Restore static inputs
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
     formInputs.forEach(input => {
         if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry')) return;
-
         if (input.type === 'radio') {
             if (state[input.name] === input.value) input.checked = true;
         } else if (input.type === 'checkbox') {
@@ -1087,31 +1078,27 @@ function loadState(state) {
             if (state[input.id] !== undefined) input.value = state[input.id];
         }
     });
-
     DOMElements.previewItineraryImage.src = state.itineraryImageSrc || 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול';
-
     // Restore dynamic fields
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
-    
-    populateShips(state.shipName); 
-    
+   
+    populateShips(state.shipName);
+   
     state.dynamicFields.rooms.forEach(data => addRoom(data));
     state.dynamicFields.flights.forEach(data => addFlight(data));
     state.dynamicFields.transfers.forEach(data => addTransfer(data));
     if (state.dynamicFields.hotels) {
         state.dynamicFields.hotels.forEach(data => addHotel(data));
     }
-    
+   
     updatePreview();
 }
-
 function updateStateAndPreview() {
     updatePreview();
 }
-
 // --- DYNAMIC FORM LOGIC ---
 function populateShips(selectedShip) {
     const cruiseLine = DOMElements.cruiseLine.value;
@@ -1127,31 +1114,29 @@ function populateShips(selectedShip) {
     });
     if(currentVal) shipSelect.value = currentVal;
 }
-
 function addRoom(initialData = {}) {
     const template = document.getElementById('roomTemplate');
     const clone = template.content.cloneNode(true);
     const roomDiv = clone.querySelector('.room-entry');
     DOMElements.roomsContainer.appendChild(clone);
-    
+   
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = roomDiv.querySelector(`[name="${key}"]`);
             if (input) input.value = initialData[key];
         }
     }
-    
+   
     roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => { roomDiv.remove(); updateStateAndPreview(); });
     roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
     toggleRoomDetails(roomDiv);
 }
-
 function addFlight(initialData = {}) {
     const template = document.getElementById('flightTemplate');
     const clone = template.content.cloneNode(true);
     const flightDiv = clone.querySelector('.flight-entry');
     DOMElements.flightsContainer.appendChild(clone);
-    
+   
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = flightDiv.querySelector(`[name="${key}"]`);
@@ -1169,10 +1154,9 @@ function addFlight(initialData = {}) {
             flightDiv.querySelector('input[name="to"]').value = prevFrom;
          }
     }
-    
+   
     flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => { flightDiv.remove(); updateStateAndPreview(); });
 }
-
 function addTransfer(initialData = {}) {
     const template = document.getElementById('transferTemplate');
     const clone = template.content.cloneNode(true);
@@ -1186,7 +1170,6 @@ function addTransfer(initialData = {}) {
     }
     transferDiv.querySelector('.remove-transfer-btn').addEventListener('click', () => { transferDiv.remove(); updateStateAndPreview(); });
 }
-
 function addHotel(initialData = {}) {
     const template = document.getElementById('hotelTemplate');
     const clone = template.content.cloneNode(true);
@@ -1208,7 +1191,6 @@ function addHotel(initialData = {}) {
     hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => { hotelDiv.remove(); updateStateAndPreview(); });
     toggleDetails();
 }
-
 function toggleTransfersCancelDetails() {
     DOMElements.transfersCancelDetails.classList.toggle('hidden', !DOMElements.transfersCancellable.checked);
 }
@@ -1220,7 +1202,6 @@ function toggleRoomDetails(roomEntry) {
     const roomType = roomEntry.querySelector('select[name="roomType"]').value;
     detailsDiv.classList.toggle('hidden', !detailRoomTypes.includes(roomType));
 }
-
 function handlePaste(event) {
     event.preventDefault();
     const items = (event.clipboardData || window.clipboardData).items;
@@ -1239,11 +1220,10 @@ function handlePaste(event) {
         }
     }
 }
-
 // --- PREVIEW UPDATE LOGIC ---
 function updatePreview() {
     const state = getFormState();
-    
+   
     // Document Type and Header
     const docType = state.docType || 'quote';
     if (docType === 'quote') {
@@ -1253,12 +1233,11 @@ function updatePreview() {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
         DOMElements.previewOpeningLine.textContent = 'מצורפים טפסי אישור הזמנה. אנא קרא/י ואשר/י בהודעה חוזרת.';
     }
-
     DOMElements.previewClientName.textContent = state.clientName || '___';
     DOMElements.previewDate.textContent = state.offerDate ? `תאריך: ${new Date(state.offerDate).toLocaleDateString('he-IL')}` : '';
     DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
     DOMElements.previewAdvisor.textContent = advisors[state.advisor]?.details || '';
-    
+   
     // Cruise section visibility
     const isCruiseHidden = state.hideCruise;
     DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
@@ -1266,12 +1245,11 @@ function updatePreview() {
     DOMElements.previewItinerarySection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewRoomsSection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewShipImageSection.classList.toggle('hidden', isCruiseHidden);
-    
+   
     // Cruise Details
     DOMElements.previewCruiseLine.textContent = state.cruiseLine;
     DOMElements.previewShipName.textContent = state.shipName;
     DOMElements.previewCruiseDuration.textContent = state.cruiseDuration || '7';
-
     // Dates and Ports
     const startDate = state.cruiseStartDate;
     if (startDate) {
@@ -1283,11 +1261,9 @@ function updatePreview() {
         DOMElements.previewCruiseDate.textContent = '___';
     }
     DOMElements.previewPorts.textContent = (state.departurePort && state.arrivalPort) ? `${state.departurePort} - ${state.arrivalPort}` : '___';
-
     // Ship Image
     const ship = cruiseData[state.cruiseLine]?.find(s => s.name === state.shipName);
     DOMElements.previewShipImage.src = (ship && ship.image) ? ship.image : 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה';
-
     // Rooms
     DOMElements.previewRoomsContainer.innerHTML = '';
     let totalPrice = 0;
@@ -1296,10 +1272,10 @@ function updatePreview() {
     state.dynamicFields.rooms.forEach((room, index) => {
         const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '5 מבוגרים': 5 }[room.composition] || 0;
         totalPassengers += passengersInRoom;
-        
+       
         if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
         const costValue = parseFloat(room.roomCost) || 0;
-        
+       
         if (room.composition || room.roomType || costValue > 0) {
             let details = [];
             if (room.composition) details.push(`<strong>הרכב:</strong> ${room.composition}`);
@@ -1310,7 +1286,6 @@ function updatePreview() {
                 details.push(typeText);
             }
             if (room.extraDesc) details.push(room.extraDesc);
-
             const roomDiv = document.createElement('div');
             roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
             roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong></p>
@@ -1321,7 +1296,6 @@ function updatePreview() {
         }
     });
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
-
     // Inclusions
     const inclusionsList = DOMElements.previewInclusions;
     inclusionsList.innerHTML = '';
@@ -1334,7 +1308,6 @@ function updatePreview() {
     if (state.customInclusions) {
         state.customInclusions.split('\n').filter(line => line.trim()).forEach(line => addInclusionItem(inclusionsList, line.trim()));
     }
-
     // Flights
     const flightCostPerPerson = parseFloat(state.flightCost) || 0;
     const flightCostValue = flightCostPerPerson * totalPassengers;
@@ -1350,7 +1323,6 @@ function updatePreview() {
                 DOMElements.previewFlightsList.appendChild(p);
             }
         });
-
         const includesList = DOMElements.previewFlightIncludes;
         includesList.innerHTML = '';
         const includesText = state.flightIncludes.trim();
@@ -1360,9 +1332,8 @@ function updatePreview() {
                 if (line.trim()) addInclusionItem(includesList, line.trim());
             });
         }
-        
+       
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-
         if (flightCostPerPerson > 0 && totalPassengers > 0) {
             DOMElements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
         } else if (flightCostPerPerson > 0) {
@@ -1371,7 +1342,7 @@ function updatePreview() {
             DOMElements.previewFlightCost.textContent = '';
         }
         totalPrice += flightCostValue;
-        
+       
         let conditionsText = '';
         if (state.flightCancelType === 'flightNoCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1387,7 +1358,6 @@ function updatePreview() {
         }
         DOMElements.previewFlightConditions.innerHTML = conditionsText;
     }
-
     // Hotels
     DOMElements.previewHotelsContainer.innerHTML = '';
     const hasHotels = state.dynamicFields.hotels.some(h => h.hotelName || h.hotelCost > 0);
@@ -1416,7 +1386,6 @@ function updatePreview() {
             }
         });
     }
-
     // Transfers
     const transfersCost = parseFloat(state.transfersCost) || 0;
     const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType) || transfersCost > 0;
@@ -1441,64 +1410,45 @@ function updatePreview() {
         }
         DOMElements.previewTransfersConditions.innerHTML = conditionsText;
     }
-
     // Total Price
     DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
     DOMElements.previewTotalPrice.textContent = totalPrice.toLocaleString();
 }
-
 function addInclusionItem(list, text) {
     const li = document.createElement('li');
     li.innerHTML = text;
     list.appendChild(li);
 }
-
 // --- PDF GENERATION ---
 async function generatePDF() {
-    DOMElements.previewElement.classList.remove('shadow-lg');
-    const { jsPDF } = window.jspdf;
-    
-    const clone = DOMElements.previewElement.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.width = '794px';
-    document.body.appendChild(clone);
-    clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
+    const loadingText = DOMElements.generatePDFBtn.textContent;
+    DOMElements.generatePDFBtn.textContent = 'מייצר PDF...';
+    DOMElements.generatePDFBtn.disabled = true;
 
-    const images = clone.querySelectorAll('img');
-    const promises = Array.from(images).map(img => new Promise(resolve => {
-        if (img.complete && img.naturalHeight !== 0) resolve();
-        else { img.onload = resolve; img.onerror = resolve; }
-    }));
-    await Promise.all(promises);
-
-    const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
-    clone.remove();
-
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgHeight = canvas.height * pdfWidth / canvas.width;
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-    heightLeft -= pdfHeight;
-
-    while (heightLeft > 0) {
-        position -= pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-    }
-
+    const element = DOMElements.previewElement;
     const clientName = DOMElements.clientName.value || 'הצעה';
     const shipName = DOMElements.shipName.value || 'קרוז';
-    pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
-    DOMElements.previewElement.classList.add('shadow-lg');
-}
+    const offerDate = DOMElements.offerDate.value ? `_${DOMElements.offerDate.value}` : '';
 
+    const opt = {
+        margin: 0.5,
+        filename: `הצעת מחיר ${shipName} - ${clientName}${offerDate}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    try {
+        await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('שגיאה ביצירת PDF. נסה שוב.');
+    } finally {
+        DOMElements.generatePDFBtn.textContent = loadingText;
+        DOMElements.generatePDFBtn.disabled = false;
+    }
+}
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
     פותח על ידי ליאור דובינובסקי
