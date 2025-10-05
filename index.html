@@ -2748,7 +2748,7 @@ function updatePreview() {
 
         if (includesText) {
 
-            includesText.split('\n').split('\n').forEach(line => {
+            includesText.split('\n').forEach(line => {
 
                 if (line.trim()) addInclusionItem(includesList, line.trim());
 
@@ -3022,7 +3022,7 @@ async function generatePDF() {
 
         await Promise.all(loadPromises);
 
-        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
+        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, allowTaint: true, logging: false, ignoreElements: (element) => element.hasAttribute('data-grammarly-shadow-root') });
 
         clone.remove();
 
