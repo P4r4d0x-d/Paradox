@@ -94,7 +94,7 @@
             </button>
         </div>
     </div>
-   
+    
     <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden">
         <header class="text-center mb-8 no-print">
             <div class="flex justify-between items-center">
@@ -113,7 +113,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-               
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -158,7 +158,7 @@
                                     <option>Royal Caribbean</option>
                                     <option>Norwegian Cruise Line</option>
                                     <option>CELEBRITY</option>
-                                    <option>COSTA</option>
+                                    <option value="COSTA">COSTA</option>
                                 </select>
                             </div>
                             <div>
@@ -195,7 +195,7 @@
                         </div>
                         <button id="addRoomBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
                     </div>
-                 </div>
+               </div>
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">מה כלול</h3>
                      <div class="flex items-start mb-4">
@@ -207,7 +207,7 @@
                         <textarea id="customInclusions" aria-label="הערות ודגשים נוספים" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
                 </div>
-               
+                
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
@@ -297,12 +297,12 @@
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-           
+            
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto overflow-y-auto">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                         <div class="text-right">
-                            <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" loading="lazy" />
+                            <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" loading="lazy" crossorigin="anonymous" />
                         </div>
                         <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
@@ -314,7 +314,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                       
+                        
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -326,10 +326,10 @@
                                 <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
                             </div>
                         </div>
-                       
+                        
                         <div id="previewItinerarySection" class="my-6 no-split hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">מסלול ההפלגה:</h3>
-                            <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="מסלול ההפלגה" loading="lazy">
+                            <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="מסלול ההפלגה" loading="lazy" crossorigin="anonymous">
                         </div>
                         <div id="previewRoomsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי החדרים:</h3>
@@ -351,12 +351,12 @@
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
-                       
+                        
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                       
+                        
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -365,20 +365,20 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                       
+                        
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
                              <h3 class="text-xl font-bold mb-3 no-break-after">הערות ודגשים:</h3>
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
                             </ul>
                         </div>
-                       
+                        
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <div id="previewShipImageSection" class="my-8 no-split hidden preview-section">
-                           <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="אוניית קרוז" loading="lazy">
+                           <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="אוניית קרוז" loading="lazy" crossorigin="anonymous">
                         </div>
-                       
+                        
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -392,7 +392,7 @@
                                 <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
                                 <p class="text-xs text-black mt-2">טל"ח</p>
                                 <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
-                                <p class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                                <p id="priceNote" class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
                             </div>
                         </div>
                     </main>
@@ -404,7 +404,7 @@
             </div>
         </div>
     </div>
-   
+    
     <div id="savedQuotesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="savedQuotesModalTitle">
         <div class="modal-content">
             <span id="closeModalBtn" class="close-btn">&times;</span>
@@ -584,7 +584,8 @@
             </div>
         </div>
     </template>
-   
+</body>
+</html>
 <script>
 // --- DATA ---
 const cruiseData = {
@@ -805,6 +806,7 @@ const DOMElements = {
     showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
     savedQuotesList: document.getElementById('savedQuotesList'),
+    priceNote: document.getElementById('priceNote'),
 };
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -822,7 +824,7 @@ function setupEventListeners() {
     const debouncedUpdate = debounce(updateStateAndPreview, 300);
     DOMElements.inputForm.addEventListener('input', debouncedUpdate);
     DOMElements.inputForm.addEventListener('change', debouncedUpdate);
-   
+    
     DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); debouncedUpdate(); });
     DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); debouncedUpdate(); });
     DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); debouncedUpdate(); });
@@ -831,7 +833,7 @@ function setupEventListeners() {
         populateShips();
         debouncedUpdate();
     });
-   
+    
     DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
     DOMElements.generatePDFBtn.addEventListener('click', generatePDF);
     DOMElements.saveQuoteBtn.addEventListener('click', saveQuote);
@@ -839,7 +841,7 @@ function setupEventListeners() {
     DOMElements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.flightNoCancel.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
-   
+    
     DOMElements.showSavedQuotesBtn.addEventListener('click', showSavedQuotes);
     DOMElements.closeModalBtn.addEventListener('click', () => DOMElements.savedQuotesModal.style.display = 'none');
     window.addEventListener('click', (event) => {
@@ -880,7 +882,7 @@ function showMainContent(advisorKey) {
     DOMElements.mainContent.classList.remove('hidden');
     DOMElements.loggedInAdvisor.textContent = advisors[advisorKey].name;
     DOMElements.advisor.value = advisorKey;
-   
+    
     populateShips();
     startNewQuote();
 }
@@ -903,7 +905,7 @@ function saveQuote() {
             alert('יש להזין שם לקוח לפני שמירת ההצעה.');
             return;
         }
-       
+        
         const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
         const advisorKey = sessionStorage.getItem('loggedInAdvisor');
         if (currentQuoteId) {
@@ -918,7 +920,7 @@ function saveQuote() {
             const quoteNumber = getNextQuoteNumber();
             currentQuoteId = `Q${quoteNumber}-${Date.now()}`;
             state.quoteNumber = quoteNumber;
-           
+            
             allQuotes.push({
                 id: currentQuoteId,
                 quoteNumber: quoteNumber,
@@ -968,23 +970,29 @@ function startNewQuote() {
     currentQuoteId = null;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
-   
+    
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
-   
-    DOMElements.offerDate.valueAsDate = new Date();
+    
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1; // Months start at 0!
+    let dd = today.getDate();
+    if (dd < 10) dd = '0' + dd;
+    if (mm < 10) mm = '0' + mm;
+    DOMElements.offerDate.value = yyyy + '-' + mm + '-' + dd;
     const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
     if (loggedInUser) {
         DOMElements.advisor.value = loggedInUser;
     }
-   
+    
     addRoom();
     addFlight();
     addHotel();
     addTransfer();
-   
+    
     updateStateAndPreview();
 }
 function showSavedQuotes() {
@@ -992,7 +1000,7 @@ function showSavedQuotes() {
     try {
         const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
         const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
-       
+        
         DOMElements.savedQuotesList.innerHTML = '';
         if (advisorQuotes.length === 0) {
             DOMElements.savedQuotesList.innerHTML = '<p>לא נמצאו הצעות שמורות.</p>';
@@ -1039,7 +1047,7 @@ function getFormState() {
             state[input.id] = input.value;
         }
     });
-   
+    
     state.itineraryImageSrc = DOMElements.previewItineraryImage.src;
     state.quoteNumber = DOMElements.currentQuoteNumber.textContent.replace('מספר הצעה: ', '');
     const dynamicFields = {
@@ -1068,7 +1076,7 @@ function getFormState() {
         });
         dynamicFields.hotels.push(data);
     });
-   
+    
     state.dynamicFields = dynamicFields;
     return state;
 }
@@ -1091,16 +1099,16 @@ function loadState(state) {
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
-   
+    
     populateShips(state.shipName);
-   
+    
     state.dynamicFields.rooms.forEach(data => addRoom(data));
     state.dynamicFields.flights.forEach(data => addFlight(data));
     state.dynamicFields.transfers.forEach(data => addTransfer(data));
     if (state.dynamicFields.hotels) {
         state.dynamicFields.hotels.forEach(data => addHotel(data));
     }
-   
+    
     updatePreview();
 }
 function updateStateAndPreview() {
@@ -1126,14 +1134,14 @@ function addRoom(initialData = {}) {
     const clone = template.content.cloneNode(true);
     const roomDiv = clone.querySelector('.room-entry');
     DOMElements.roomsContainer.appendChild(roomDiv);
-   
+    
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = roomDiv.querySelector(`[name="${key}"]`);
             if (input) input.value = initialData[key];
         }
     }
-   
+    
     roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => { roomDiv.remove(); updateStateAndPreview(); });
     roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
     toggleRoomDetails(roomDiv);
@@ -1144,7 +1152,7 @@ function addFlight(initialData = {}) {
     const clone = template.content.cloneNode(true);
     const flightDiv = clone.querySelector('.flight-entry');
     DOMElements.flightsContainer.appendChild(flightDiv);
-   
+    
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = flightDiv.querySelector(`[name="${key}"]`);
@@ -1162,7 +1170,7 @@ function addFlight(initialData = {}) {
             flightDiv.querySelector('input[name="to"]').value = prevFrom;
          }
     }
-   
+    
     flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => { flightDiv.remove(); updateStateAndPreview(); });
     flightDiv.querySelector('input[name="airline"]').focus();
 }
@@ -1245,7 +1253,7 @@ function updatePreview() {
         return; // No change, skip update
     }
     lastStateHash = stateHash;
-   
+    
     // Document Type and Header
     const docType = state.docType || 'quote';
     if (docType === 'quote') {
@@ -1259,7 +1267,7 @@ function updatePreview() {
     DOMElements.previewDate.textContent = state.offerDate ? `תאריך: ${new Date(state.offerDate).toLocaleDateString('he-IL')}` : '';
     DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
     DOMElements.previewAdvisor.textContent = advisors[state.advisor]?.details || '';
-   
+    
     // Cruise section visibility
     const isCruiseHidden = state.hideCruise;
     DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
@@ -1267,7 +1275,7 @@ function updatePreview() {
     DOMElements.previewItinerarySection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewRoomsSection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewShipImageSection.classList.toggle('hidden', isCruiseHidden);
-   
+    
     // Cruise Details
     DOMElements.previewCruiseLine.textContent = state.cruiseLine;
     DOMElements.previewShipName.textContent = state.shipName;
@@ -1309,10 +1317,10 @@ function updatePreview() {
     state.dynamicFields.rooms.forEach((room, index) => {
         const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '5 מבוגרים': 5 }[room.composition] || 0;
         totalPassengers += passengersInRoom;
-       
+        
         if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
         const costValue = parseFloat(room.roomCost) || 0;
-       
+        
         if (room.composition || room.roomType || costValue > 0) {
             let details = [];
             if (room.composition) details.push(`<strong>הרכב:</strong> ${room.composition}`);
@@ -1369,7 +1377,7 @@ function updatePreview() {
                 if (line.trim()) addInclusionItem(includesList, line.trim());
             });
         }
-       
+        
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
         if (flightCostPerPerson > 0 && totalPassengers > 0) {
             DOMElements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
@@ -1379,7 +1387,7 @@ function updatePreview() {
             DOMElements.previewFlightCost.textContent = '';
         }
         totalPrice += flightCostValue;
-       
+        
         let conditionsText = '';
         if (state.flightCancelType === 'flightNoCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1451,6 +1459,9 @@ function updatePreview() {
     DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
     DOMElements.previewTotalPrice.textContent = totalPrice.toLocaleString();
     lastTotalPrice = totalPrice;
+    
+    // Hide price note for confirmation
+    DOMElements.priceNote.classList.toggle('hidden', docType === 'confirmation');
 }
 function addInclusionItem(list, text) {
     const li = document.createElement('li');
@@ -1466,53 +1477,62 @@ async function generatePDF() {
             alert(error);
             return;
         }
-        DOMElements.previewElement.classList.remove('shadow-lg');
-        const originalDisplay = DOMElements.previewQuoteNumber.style.display;
-        DOMElements.previewQuoteNumber.style.display = 'none'; // Hide quote number for client version
+
+        const previewElement = document.getElementById('preview');
+        const quoteNumberElement = document.getElementById('previewQuoteNumber');
+        
+        previewElement.classList.remove('shadow-lg');
+        const originalDisplay = quoteNumberElement.style.display;
+        quoteNumberElement.style.display = 'none'; // Hide quote number for client version
+
         const { jsPDF } = window.jspdf;
-       
-        const clone = DOMElements.previewElement.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
-        clone.style.width = '794px';
-        document.body.appendChild(clone);
-        clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
-        const images = clone.querySelectorAll('img');
-        const promises = Array.from(images).map(img => new Promise(resolve => {
-            if (img.complete && img.naturalHeight !== 0) resolve();
-            else { img.onload = resolve; img.onerror = resolve; }
-        }));
-        await Promise.all(promises);
-        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
-        clone.remove();
+        
+        // Use html2canvas with useCORS option instead of manual fetching
+        const canvas = await html2canvas(previewElement, { 
+            scale: 2, 
+            useCORS: true // This is the key change
+        });
+        
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgHeight = canvas.height * pdfWidth / canvas.width;
+        
         let heightLeft = imgHeight;
         let position = 0;
+        
         pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
+        
         while (heightLeft > 0) {
             position -= pdfHeight;
             pdf.addPage();
             pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
             heightLeft -= pdfHeight;
         }
-        const clientName = DOMElements.clientName.value || 'הצעה';
-        const shipName = DOMElements.shipName.value || 'קרוז';
+        
+        const clientName = document.getElementById('clientName').value || 'הצעה';
+        const shipName = document.getElementById('shipName').value || 'קרוז';
         pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
-        DOMElements.previewElement.classList.add('shadow-lg');
-        DOMElements.previewQuoteNumber.style.display = originalDisplay; // Restore visibility
+        
+        // Restore styles
+        previewElement.classList.add('shadow-lg');
+        quoteNumberElement.style.display = originalDisplay; 
+        
     } catch (error) {
         console.error('שגיאה ביצירת PDF:', error);
         alert('שגיאה ביצירת ה-PDF. נסה שוב או בדוק קישורים לתמונות.');
+        
+        // Restore styles even if there is an error
+        const previewElement = document.getElementById('preview');
+        const quoteNumberElement = document.getElementById('previewQuoteNumber');
+        previewElement.classList.add('shadow-lg');
+        if(quoteNumberElement) quoteNumberElement.style.display = 'block';
     }
 }
+
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
     פותח על ידי ליאור דובינובסקי
 </footer>
-</body>
-</html>
