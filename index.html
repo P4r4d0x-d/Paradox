@@ -1405,7 +1405,7 @@ function updatePreview() {
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
     const cruiseInclusionsList = DOMElements.previewCruiseInclusionsList;
     cruiseInclusionsList.innerHTML = '';
-    if (!state.hideMealInclusion && !isCruiseHidden) {
+    if (!isCruiseHidden) {
         addInclusionItem(cruiseInclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
     }
     if(state.cruiseLine === 'MSC' && !isCruiseHidden) {
