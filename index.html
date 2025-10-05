@@ -158,11 +158,27 @@
                                     <option>Norwegian Cruise Line</option>
                                     <option>CELEBRITY</option>
                                     <option>COSTA</option>
+                                    <option>Carnival</option>
+                                    <option>Azamara</option>
+                                    <option>Virgin Voyages</option>
+                                    <option>Seabourn</option>
+                                    <option>Regent Seven Seas</option>
+                                    <option>Ponant</option>
+                                    <option>P&O Cruises</option>
+                                    <option>Oceania Cruises</option>
+                                    <option>Holland America</option>
+                                    <option>Disney Cruise Line</option>
+                                    <option>Cunard</option>
+                                    <option>Crystal</option>
                                 </select>
                             </div>
                             <div>
                                 <label for="shipName" class="block text-sm font-medium text-gray-700">שם האונייה</label>
                                 <select id="shipName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select>
+                            </div>
+                            <div>
+                                <label for="shipVideo" class="block text-sm font-medium text-gray-700">קישור וידאו (YouTube)</label>
+                                <input type="text" id="shipVideo" placeholder="https://www.youtube.com/..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                             </div>
                             <div>
                                 <label for="cruiseDuration" class="block text-sm font-medium text-gray-700">משך ההפלגה (לילות)</label>
@@ -301,7 +317,7 @@
             </div>
            
             <div class="lg:w-1/2">
-                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto">
+                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                         <div class="text-right">
                             <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
@@ -328,7 +344,10 @@
                                 <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
                             </div>
                         </div>
-                       
+                        <div id="previewCruiseInclusions" class="mt-4 text-sm space-y-3 no-split preview-section hidden">
+                            <ul id="previewCruiseInclusionsList" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
+                            </ul>
+                        </div>
                         <div id="previewItinerarySection" class="my-6 no-split hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">מסלול ההפלגה:</h3>
                             <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
@@ -368,17 +387,17 @@
                             </div>
                         </div>
                        
+                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
+                            סה"כ עלות: $<span id="previewTotalPrice">0</span>
+                        </div>
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
                              <h3 class="text-xl font-bold mb-3 no-break-after">הערות ודגשים:</h3>
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
                             </ul>
                         </div>
-                       
-                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
-                            סה"כ עלות: $<span id="previewTotalPrice">0</span>
-                        </div>
                         <div id="previewShipImageSection" class="my-8 no-split hidden preview-section">
                            <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
+                           <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a></p>
                         </div>
                        
                         <div class="mt-8 text-sm space-y-3">
@@ -402,6 +421,7 @@
                         <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
                         <p id="previewAdvisor">ליאור דובינובסקי | יועץ שייט | 03-3106454 | lior@balicruise.co.il</p>
                     </footer>
+                    <p id="previewInternalQuote" class="absolute bottom-0 left-0 text-xs text-gray-400">מספר הצעה פנימי: <span id="previewInternalNumber"></span></p>
                 </div>
             </div>
         </div>
@@ -592,111 +612,239 @@
 // --- DATA ---
 const cruiseData = {
     "MSC": [
-        { name: "MSC Preziosa", year: 2013, image: "https://i.postimg.cc/vBPv6qWq/MSC16008892.jpg" },
-        { name: "MSC Splendida", year: 2009, image: "https://i.postimg.cc/250WHqV3/MSC13015955.jpg" },
-        { name: "MSC Magnifica", year: 2010, image: "https://i.postimg.cc/ZqbsQDxH/MSC19019079.jpg" },
-        { name: "MSC Musica", year: 2006, image: "https://i.postimg.cc/5Nmwr9Kc/MSC13014701.jpg" },
-        { name: "MSC Orchestra", year: 2007, image: "https://i.postimg.cc/nhPQ8XvW/MSC16006817.jpg" },
-        { name: "MSC Poesia", year: 2008, image: "https://i.postimg.cc/yxRmyYrN/MSC25037328.jpg" },
-        { name: "MSC Armonia", year: 2001, image: "https://i.postimg.cc/KzSpXwS4/MSC16006221-1.jpg" },
-        { name: "MSC Lirica", year: 2003, image: "https://i.postimg.cc/MKSqwZJb/MSC16006932.jpg" },
-        { name: "MSC Opera", year: 2004, image: "https://i.postimg.cc/VvFTm8XD/MSC15004313.jpg" },
-        { name: "MSC Sinfonia", year: 2002, image: "https://i.postimg.cc/Y90j1rCm/MSC16006204.jpg" },
-        { name: "MSC Divina", year: 2012, image: "https://i.postimg.cc/HkTMrCXb/MSC13011902.jpg" },
-        { name: "MSC Fantasia", year: 2008, image: "https://i.postimg.cc/MTwJSthZ/MSC13012071.jpg" },
-        { name: "MSC World America", year: 2025, image: "https://i.postimg.cc/MGkh7dZ0/MSC25040915.jpg" },
-        { name: "MSC World Asia", year: 2026, image: "https://i.postimg.cc/C1xJkq8H/MSC25035094.jpg" },
-        { name: "MSC World Europa", year: 2022, image: "https://i.postimg.cc/NM2DdwN5/MSC22013055.jpg" },
-        { name: "MSC Seashore", year: 2021, image: "https://i.postimg.cc/R0HJ8VB5/MSC21007729.jpg" },
-        { name: "MSC Seaside", year: 2017, image: "https://i.postimg.cc/4xrmzkh8/MSC18014069.jpg" },
-        { name: "MSC Seascape", year: 2022, image: "https://i.postimg.cc/7PsswmzH/MSC21008179.jpg" },
-        { name: "MSC Seaview", year: 2018, image: "https://i.postimg.cc/pdWz9tNg/MSC19018890.jpg" },
-        { name: "MSC Bellissima", year: 2019, image: "https://i.postimg.cc/xjwxFgbc/MSC18013997.jpg" },
-        { name: "MSC Euribia", year: 2023, image: "https://i.postimg.cc/Sswr3NRw/MSC23019432.jpg" },
-        { name: "MSC Grandiosa", year: 2019, image: "https://i.postimg.cc/nr62DVqH/MSC19001443.jpg" },
-        { name: "MSC Meraviglia", year: 2017, image: "https://i.postimg.cc/DzMxTcmJ/MSC17011157.jpg" },
-        { name: "MSC Virtuosa", year: 2021, image: "https://i.postimg.cc/bwF5yPBw/MSC18017765.jpg" }
-    ],
-    "Royal Caribbean": [
-        { name: "Adventure of the Seas", year: 2001, image: "https://i.postimg.cc/3wBSGMKP/1623457762-DJI-0713.jpg" },
-        { name: "Allure of the Seas", year: 2010, image: "https://i.postimg.cc/pLYbs6WB/1722900416-RCI-AL-CGI-ALT-201911-MVerdure-OA19-Aerial-FLL1-027-RT-EXT-LR.jpg" },
-        { name: "Anthem of the Seas", year: 2015, image: "https://i.postimg.cc/mDFGy2tP/1446674152-image002.jpg" },
-        { name: "Brilliance of the Seas", year: 2002, image: "https://i.postimg.cc/1XGhbC0P/1697834102-RCI-Brilliance-Exterior-Side-4-UR.jpg" },
-        { name: "Enchantment of the Seas", year: 1997, image: "https://i.postimg.cc/hPsNx7pC/image-2301.avif" },
-        { name: "Explorer of the Seas", year: 2000, image: "https://i.postimg.cc/VkYb65NB/ew0-KICAi-Yn-Vja2-V0-Ijog-In-Byb2-Qtc2-Vydmlj-ZS1pd-HJhdm-Vs-Y2-Ru-LWVua-GFu-Y2-Vid-WNr-ZXQt-Y2-Y0c-TZkc-XY5dj-I4-Iiw-NCi-Ag-Imtl.jpg" },
-        { name: "Freedom of the Seas", year: 2006, image: "https://i.postimg.cc/MKwnPX12/1624145764-IMG-0571.jpg" },
-        { name: "Grandeur of the Seas", year: 1996, image: "https://i.postimg.cc/K8zvwTzV/harmony-of-the-seas-slide-1600x702.jpg" },
-        { name: "Harmony of the Seas", year: 2016, image: "https://i.postimg.cc/nVPdqbmD/1473174759-HM-Aft.jpg" },
-        { name: "Icon of the Seas", year: 2024, image: "https://i.postimg.cc/gJJ0F6Nr/1708378767-RCI-PDC-202401-CC-JGraham-Icon-Arrival-DJI-A003-0044-RT-EXT.jpg" },
-        { name: "Independence of the Seas", year: 2008, image: "https://i.postimg.cc/bY0qCgzL/1600881251-RCI-ID-June2018-Portugal-Heli-Jordan-Dani-Sunrise-Ship-01-0012-RET-CMYK.jpg" },
-        { name: "Jewel of the Seas", year: 2004, image: "https://i.postimg.cc/wjyPPxXH/1616633882-jewel-of-the-seas-grenada-docked-harbor-21.jpg" },
-        { name: "Legend of the Seas", year: 2026, image: "https://i.postimg.cc/fTpZkr5z/2113-a15df9c337f.jpg" },
-        { name: "Liberty of the Seas", year: 2007, image: "https://i.postimg.cc/prfYqcFs/1627996078-RCI-OA-LABADEE-122019-CC-Youth-Fam-LISIEWSKI-DRONE-089-RET-CMYK1.jpg" },
-        { name: "Mariner of the Seas", year: 2003, image: "https://i.postimg.cc/2SYQyqTr/1530649053-MA18-Aerials-FL641.jpg" },
-        { name: "Navigator of the Seas", year: 2002, image: "https://i.postimg.cc/ncprQv82/1655474745-RCI-NV-OOH-JD-032019-DP-1-Aerial-5782-RET-CMYK.jpg" },
-        { name: "Oasis of the Seas", year: 2009, image: "https://i.postimg.cc/prfYqcFs/1627996078-RCI-OA-LABADEE-122019-CC-Youth-Fam-LISIEWSKI-DRONE-089-RET-CMYK1.jpg" },
-        { name: "Odyssey of the Seas", year: 2021, image: "https://i.postimg.cc/ncprQv82/1655474745-RCI-NV-OOH-JD-032019-DP-1-Aerial-5782-RET-CMYK.jpg" },
-        { name: "Ovation of the Seas", year: 2016, image: "https://i.postimg.cc/wj2VJrXF/1683126646-369-Port-Vila-Vanuatu.jpg" },
-        { name: "Quantum of the Seas", year: 2014, image: "https://i.postimg.cc/8cG4Lg06/1602097549-RCI-QN-Aerials-NY089.jpg" },
-        { name: "Radiance of the Seas", year: 2001, image: "https://i.postimg.cc/k47tCjN1/Radiance-of-the-Seas.webp" },
-        { name: "Rhapsody of the Seas", year: 1997, image: "https://i.postimg.cc/wB4n2m80/rhapsody-of-the-seas-1.jpg" },
-        { name: "Serenade of the Seas", year: 2003, image: "https://i.postimg.cc/J0vJ6rR5/1676465710-Serenade-of-the-Seas.jpg" },
-        { name: "Spectrum of the Seas", year: 2019, image: "https://i.postimg.cc/k5nZ0R2M/1690382346-Spectrum-of-the-Seas-3-1.jpg" },
-        { name: "Star of the Seas", year: 2025, image: "https://i.postimg.cc/d1h7XhQp/1720512613-Star-of-the-Seas-Floats-Out.jpg" },
-        { name: "Symphony of the Seas", year: 2018, image: "https://i.postimg.cc/G2jD4b50/1627995811-RCI-SY-PERFECTDAY-122019-CC-Youth-Fam-LISIEWSKI-DRONE-011-RET-CMYK.jpg" },
-        { name: "Utopia of the Seas", year: 2024, image: "https://i.postimg.cc/Wb7SgP8T/1721051513-RCI-UT-Launch-070824-JS-DR-01-523-RT-CMYK.jpg" }
+        { name: "MSC Preziosa", video: "https://www.youtube.com/watch?v=LzWd7k_JqwE", image: "https://i.postimg.cc/mrYsMd0L/MSC-300x225.webp" },
+        { name: "MSC Splendida", video: "https://www.youtube.com/watch?v=wuI1iqyS80o", image: "https://i.postimg.cc/DwY9X9j3/MSC-300x225.webp" },
+        { name: "MSC Magnifica", video: "https://www.youtube.com/watch?v=3VNHV9rVLjk", image: "https://i.postimg.cc/s2rpwX0Y/MSC-300x225.webp" },
+        { name: "MSC Musica", video: "https://www.youtube.com/watch?v=ze1A0OJ5ddw", image: "https://i.postimg.cc/K8LPPLQc/MSC-300x225.webp" },
+        { name: "MSC Orchestra", video: "https://www.youtube.com/watch?v=eRnLETQwMLA", image: "https://i.postimg.cc/BQwpcHFR/MSC-main-300x225.webp" },
+        { name: "MSC Poesia", video: "https://www.youtube.com/watch?v=Pfo49__jig0", image: "https://i.postimg.cc/ZKJztFB2/MSC-300x225.webp" },
+        { name: "MSC Armonia", video: "https://www.youtube.com/watch?v=QkVpYGrpb2M", image: "https://i.postimg.cc/FsKGLDYj/MSC-main-300x225.webp" },
+        { name: "MSC Lirica", video: "https://www.youtube.com/watch?v=hj0E3bOObdA", image: "https://i.postimg.cc/fbfYFN66/MSC-300x225.webp" },
+        { name: "MSC Opera", video: "https://www.youtube.com/watch?v=TwdHj0Cod1M", image: "https://i.postimg.cc/52Y3Pyqy/MSC-main-300x225.webp" },
+        { name: "MSC Sinfonia", video: "https://www.youtube.com/watch?v=LWH-o-XGAi4", image: "https://i.postimg.cc/2jwXvpy9/MSC-300x225.webp" },
+        { name: "MSC Divina", video: "https://www.youtube.com/watch?v=GnJpM5B8jZbc", image: "https://i.postimg.cc/yxsQtK65/MSC-main-300x225.webp" },
+        { name: "MSC Fantasia", video: "https://www.youtube.com/watch?v=m_UlYTVhBzY", image: "https://i.postimg.cc/x877BHWp/MSC-300x225.webp" },
+        { name: "MSC World America", video: "https://www.youtube.com/watch?v=jYPYZEQxpHI", image: "https://i.postimg.cc/rwC97TQJ/MSC-World-America-main-300x225.webp" },
+        { name: "MSC World Asia", video: "", image: "https://i.postimg.cc/9F3QkF90/MSC-World-Asia.jpg" },
+        { name: "MSC World Europa", video: "https://www.youtube.com/watch?v=DL6hnxPqUUo", image: "https://i.postimg.cc/V6jZKvwn/MSC-World-Europa-main-300x225.webp" },
+        { name: "MSC Seashore", video: "https://www.youtube.com/watch?v=KHqmnA5UDZo", image: "https://i.postimg.cc/PrX9FX0k/MSC-300x225.webp" },
+        { name: "MSC Seaside", video: "https://www.youtube.com/watch?v=1ZNpczW1bL8", image: "https://i.postimg.cc/cHG570f2/MSC-300x225.webp" },
+        { name: "MSC Seascape", video: "https://www.youtube.com/watch?v=H2IwM2uoon0", image: "https://i.postimg.cc/wBmGs7RD/MSC-300x225.webp" },
+        { name: "MSC Seaview", video: "https://www.youtube.com/watch?v=Fmxi2uJcjQg", image: "https://i.postimg.cc/J4zY5TBr/MSC-300x225.webp" },
+        { name: "MSC Bellissima", video: "https://www.youtube.com/watch?v=dkL4LSiilQo", image: "https://i.postimg.cc/SNQ1GmvY/MSC-main-300x225.webp" },
+        { name: "MSC Euribia", video: "https://www.youtube.com/watch?v=PDtK-GM5MRM", image: "https://i.postimg.cc/3w2ZTqqH/MSC-Euribia-main-300x225.webp" },
+        { name: "MSC Grandiosa", video: "https://www.youtube.com/watch?v=5URU14l8EgE", image: "https://i.postimg.cc/yxjQzGkN/MSC-main-300x225.webp" },
+        { name: "MSC Meraviglia", video: "https://www.youtube.com/watch?v=ql-b48h1oUw", image: "https://i.postimg.cc/J4S3HKNd/MSC-300x225.webp" },
+        { name: "MSC Virtuosa", video: "https://www.youtube.com/watch?v=OLS9W9cMj1o", image: "https://i.postimg.cc/sXF0PSk3/MSC-300x225.webp" }
     ],
     "Norwegian Cruise Line": [
-        { name: "Norwegian Aqua", year: 2025, image: "https://i.postimg.cc/YCVXc3v4/norwegianaquainmiami4.jpg" },
-        { name: "Norwegian Bliss", year: 2018, image: "https://i.postimg.cc/8ctHZB8z/norwegianbliss-ketchikanalaska-bird039seyeview.jpg" },
-        { name: "Norwegian Breakaway", year: 2013, image: "https://i.postimg.cc/XNQkS8hV/norwegianbreakaway-indestination-st-luciaaerial.jpg" },
-        { name: "Norwegian Dawn", year: 2002, image: "https://i.postimg.cc/9QT9Mtxw/norwegiandawn-aerial.jpg" },
-        { name: "Norwegian Encore", year: 2019, image: "https://i.postimg.cc/bvmwNZj2/norwegianencore-birdseyeview.jpg" },
-        { name: "Norwegian Epic", year: 2010, image: "https://i.postimg.cc/XvrYqVNH/norwegianepic-aerial.jpg" },
-        { name: "Norwegian Escape", year: 2015, image: "https://i.postimg.cc/LsxjK4Cx/norwegianescape-tortola-9.jpg" },
-        { name: "Norwegian Getaway", year: 2014, image: "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg" },
-        { name: "Norwegian Jade", year: 2006, image: "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg" },
-        { name: "Norwegian Jewel", year: 2005, image: "https://i.postimg.cc/sgR8t41D/norwegianjewel-indestinationjuneaualaska.jpg" },
-        { name: "Norwegian Joy", year: 2017, image: "https://i.postimg.cc/ZnmmVzk4/norwegianjoy.jpg" },
-        { name: "Norwegian Luna", year: 2026, image: "https://i.postimg.cc/0NSh3X0Q/norwegianlunaoverhead.jpg" },
-        { name: "Norwegian Pearl", year: 2006, image: "https://i.postimg.cc/nr3W7ypd/norwegianpearl-aerial.jpg" },
-        { name: "Norwegian Prima", year: 2022, image: "https://i.postimg.cc/7h53sdSt/norwegianprima-aerial-stern.jpg" },
-        { name: "Norwegian Sky", year: 1999, image: "https://i.postimg.cc/zfPSCqgH/norwegiansky-aerial.jpg" },
-        { name: "Norwegian Spirit", year: 1998, image: "https://i.postimg.cc/gJZR38p1/norwegianspirit-aerial-1.jpg" },
-        { name: "Norwegian Star", year: 2001, image: "https://i.postimg.cc/pX6sQYML/norwegianstar-aerial.jpg" },
-        { name: "Norwegian Sun", year: 2001, image: "https://i.postimg.cc/bN7QN6jk/norwegiansun-aerial.jpg" },
-        { name: "Norwegian Viva", year: 2023, image: "https://i.postimg.cc/FFfprkLt/ncl-viva-aerial-sanjuan-0910.jpg" },
-        { name: "Norwegian Gem", year: 2007, image: "https://i.postimg.cc/Z5LF7r1N/norwegiangem-aerial.jpg" },
-        { name: "Pride of America", year: 2005, image: "https://i.postimg.cc/SNF6mT48/prideofamerica-aerial.jpg" }
+        { name: "Norwegian Aqua", video: "https://www.youtube.com/watch?v=omxujspTlJw", image: "https://i.postimg.cc/T3hRkwRy/NORWEIGAN-AQUA-300x202.png" },
+        { name: "Norwegian Bliss", video: "https://www.youtube.com/watch?v=OtTbM6KUKCk", image: "https://i.postimg.cc/jC05VYZV/Norwegian-Bliss-300x225.webp" },
+        { name: "Norwegian Breakaway", video: "https://www.youtube.com/watch?v=v2kFn36kW7w", image: "https://i.postimg.cc/MHx6tmTx/Norwegian-Breakaway-300x225.webp" },
+        { name: "Norwegian Dawn", video: "https://www.youtube.com/watch?v=mHw-Gxxe4FA", image: "https://i.postimg.cc/5yMB3TL0/Norwegian-Dawn-300x225.webp" },
+        { name: "Norwegian Encore", video: "https://www.youtube.com/watch?v=87Ri0lawr_U", image: "https://i.postimg.cc/wxhcvxYs/Norwegian-Encore-300x225.webp" },
+        { name: "Norwegian Epic", video: "https://www.youtube.com/watch?v=Syk85jAwues", image: "https://i.postimg.cc/VLm9byzZ/Norwegian-Epic-300x225.webp" },
+        { name: "Norwegian Escape", video: "https://www.youtube.com/watch?v=09YP6AhVAVA", image: "https://i.postimg.cc/CL7GGv1h/Norwegian-Escape-300x225.webp" },
+        { name: "Norwegian Getaway", video: "https://www.youtube.com/watch?v=DW9UgPpeXv0", image: "https://i.postimg.cc/x8GFC77H/Norwegian-Getaway-300x225.webp" },
+        { name: "Norwegian Jade", video: "https://www.youtube.com/watch?v=HQ-X6Vr0Pu4", image: "https://i.postimg.cc/4xxFfW17/Norwegian-Jade-300x225.webp" },
+        { name: "Norwegian Jewel", video: "https://www.youtube.com/watch?v=DKwxbM6VrMww", image: "https://i.postimg.cc/dtq565pH/Norwegian-Jewel-300x225.webp" },
+        { name: "Norwegian Joy", video: "https://www.youtube.com/watch?v=HoKjM NrNww0o", image: "https://i.postimg.cc/TPW01F5w/Norwegian-Joy-300x225.webp" },
+        { name: "Norwegian Luna", video: "https://www.youtube.com/watch?v=uK2uUAHEs3Q", image: "https://i.postimg.cc/WzZb4xBs/NORWEGIAN-LUNA.jpg" },
+        { name: "Norwegian Pearl", video: "https://www.youtube.com/watch?v=bV977mnd8FY", image: "https://i.postimg.cc/sxK9bRqn/Norwegian-Pearl-300x225.webp" },
+        { name: "Norwegian Prima", video: "https://www.youtube.com/watch?v=ugOF9hHC5U0", image: "https://i.postimg.cc/xjPRXK8K/Norwegian-Prima-300x225.webp" },
+        { name: "Norwegian Sky", video: "https://www.youtube.com/watch?v=3k_inYuoEho", image: "https://i.postimg.cc/yYYTck32/Norwegian-Sky-300x225.webp" },
+        { name: "Norwegian Spirit", video: "https://www.youtube.com/watch?v=-GPrS81xEkE", image: "https://i.postimg.cc/L8JBQwTT/Norwegian-Spirit-300x225.webp" },
+        { name: "Norwegian Star", video: "", image: "https://i.postimg.cc/qvWcPwDd/Norwegian-Star-300x225.webp" },
+        { name: "Norwegian Sun", video: "", image: "https://i.postimg.cc/FsB0SG4J/Norwegian-Sun-300x225.webp" },
+        { name: "Norwegian Viva", video: "https://www.youtube.com/watch?v=LDCkEPw9cvk", image: "https://i.postimg.cc/g09RSJrz/Norwegian-Viva-300x225.webp" },
+        { name: "Norwegian Gem", video: "", image: "https://i.postimg.cc/90fqRwgp/Norwegian-Gem-300x225.webp" },
+        { name: "Pride of America", video: "", image: "https://i.postimg.cc/59Pzcpjk/Pride-of-America-300x225.webp" }
+    ],
+    "Royal Caribbean": [
+        { name: "Adventure of the Seas", video: "", image: "https://i.postimg.cc/gknzTbwr/Adventure-of-the-Seas-300x225.webp" },
+        { name: "Allure of the Seas", video: "https://www.youtube.com/watch?v=KbH0tBNGu5Y", image: "https://i.postimg.cc/4xcJXvQg/Allure-of-the-Seas-300x225.webp" },
+        { name: "Anthem of the Seas", video: "", image: "https://i.postimg.cc/fbhMy380/Anthem-of-the-Seas-300x225.webp" },
+        { name: "Brilliance of the Seas", video: "", image: "https://i.postimg.cc/3wCYvKqf/Brilliance-of-the-Seas-300x225.webp" },
+        { name: "Enchantment of the Seas", video: "", image: "https://i.postimg.cc/NMsY83qs/Enchantment-of-the-Seas-300x225.webp" },
+        { name: "Explorer of the Seas", video: "https://www.youtube.com/watch?v=DTi1YCmpAa4", image: "https://i.postimg.cc/4xpTDfX4/Explorer-of-the-Seas-300x225.webp" },
+        { name: "Freedom of the Seas", video: "https://www.youtube.com/watch?v=348M1LSXFHA", image: "https://i.postimg.cc/Bvgfvm8d/Freedom-of-the-Seas-300x225.webp" },
+        { name: "Grandeur of the Seas", video: "", image: "https://i.postimg.cc/269pQ37G/Grandeur-of-the-Seas-300x225.webp" },
+        { name: "Harmony of the Seas", video: "https://www.youtube.com/watch?v=mYuY5b88bZU", image: "https://i.postimg.cc/Y0v5bkXH/Harmony-of-the-Seas-300x225.webp" },
+        { name: "Icon of the Seas", video: "https://www.youtube.com/watch?v=E66ugm_xhr4", image: "https://i.postimg.cc/ZYgt0BRK/Icon-of-the-Seas-300x225.webp" },
+        { name: "Independence of the Seas", video: "https://www.youtube.com/watch?v=sZEigiftcII", image: "https://i.postimg.cc/2SxBzfwm/Independence-of-the-Seas-300x225.webp" },
+        { name: "Jewel of the Seas", video: "", image: "https://i.postimg.cc/nzXsY9tc/Jewel-of-the-Seas-300x225.webp" },
+        { name: "Legend of the Seas", video: "", image: "https://i.postimg.cc/C19RvMFC/LEGEND-OF-THE-SEAS-300x225.webp" },
+        { name: "Liberty of the Seas", video: "https://www.youtube.com/watch?v=uKTrVQSQVwo", image: "https://i.postimg.cc/ZYyBWNcw/Liberty-of-the-Seas-300x225.webp" },
+        { name: "Mariner of the Seas", video: "", image: "https://i.postimg.cc/QxQFbrv5/Mariner-of-the-Seas-300x225.webp" },
+        { name: "Navigator of the Seas", video: "", image: "https://i.postimg.cc/9Qcrgnjk/Navigator-of-the-Seas-300x225.webp" },
+        { name: "Oasis of the Seas", video: "https://www.youtube.com/watch?v=GUN6KVvFlYE", image: "https://i.postimg.cc/PrytJfB6/Oasis-of-the-Seas-300x225.webp" },
+        { name: "Odyssey of the Seas", video: "", image: "https://i.postimg.cc/Fzm4FwG5/Odyssey-of-the-Seas-300x225.webp" },
+        { name: "Ovation of the Seas", video: "", image: "https://i.postimg.cc/vTzd4XS1/Ovation-of-the-Seas-300x225.webp" },
+        { name: "Quantum of the Seas", video: "", image: "https://i.postimg.cc/SsgrjMfS/Quantum-of-the-Seas-300x225.webp" },
+        { name: "Radiance of the Seas", video: "", image: "https://i.postimg.cc/rsz94wfS/Radiance-of-the-Seas-300x225.webp" },
+        { name: "Rhapsody of the Seas", video: "", image: "https://i.postimg.cc/zXbjX3bN/Rhapsody-of-the-Seas-300x225.webp" },
+        { name: "Serenade of the Seas", video: "", image: "https://i.postimg.cc/02TC6xDw/Serenade-of-the-Seas-300x225.webp" },
+        { name: "Spectrum of the Seas", video: "", image: "https://i.postimg.cc/bv8HTT6Y/Spectrum-of-the-Seas-300x225.webp" },
+        { name: "Star of the Seas", video: "https://www.youtube.com/watch?v=Dzy3kbEqXXQ", image: "https://i.postimg.cc/284SNRdw/Star-of-the-Seas.jpg" },
+        { name: "Symphony of the Seas", video: "https://www.youtube.com/watch?v=GOPIRTWBNMc", image: "https://i.postimg.cc/0NfGHw3Y/Symphony-of-the-Seas-300x225.webp" },
+        { name: "Utopia of the Seas", video: "https://www.youtube.com/watch?v=dEQsBIA0jnE", image: "https://i.postimg.cc/Z54KT7Vh/Utopia-of-the-Seas.jpg" }
     ],
     "CELEBRITY": [
-        { name: "Celebrity Apex", year: 2020, image: "https://i.postimg.cc/XvnySv66/1727383416-Celebrity-Cruises-Deployment-2026-27-Norway.jpg" },
-        { name: "Celebrity Ascent", year: 2023, image: "https://i.postimg.cc/T1BCCDSY/1696341244-CEL-ASCENT-SHIPYARD-10-1.jpg" },
-        { name: "Celebrity Beyond", year: 2022, image: "https://i.postimg.cc/hjTLc5ZH/1670260994-CEL-BY-Drone-Aerial-3-2.jpg" },
-        { name: "Celebrity Constellation", year: 2002, image: "https://i.postimg.cc/8kbv4W2R/1692052717-Celebrity-Constellation.jpg" },
-        { name: "Celebrity Eclipse", year: 2010, image: "https://i.postimg.cc/65mybhY4/1666618068-Celebrity-Eclipse-arrives-in-Sydney.jpg" },
-        { name: "Celebrity Edge", year: 2018, image: "https://i.postimg.cc/x1mTxVkc/1676465705-Celebrity-Edge.jpg" },
-        { name: "Celebrity Equinox", year: 2009, image: "https://i.postimg.cc/zvL1yTK3/1733170644-Celebrity-Cruises-to-set-sail-from-Port-Canaveral-for-the-first-time-offering-even-more-w.jpg" },
-        { name: "Celebrity Flora", year: 2019, image: "https://i.postimg.cc/zGkXZSk4/1676465707-Celebrity-Flora.jpg" },
-        { name: "Celebrity Infinity", year: 2001, image: "https://i.postimg.cc/jj59ct3S/Celebrity-Infinity-300x225.webp" },
-        { name: "Celebrity Millennium", year: 2000, image: "https://i.postimg.cc/KYHWswCr/Celebrity-Millennium-300x225.webp" },
-        { name: "Celebrity Reflection", year: 2012, image: "https://i.postimg.cc/C5yQwDhR/Celebrity-Reflection-300x225.webp" },
-        { name: "Celebrity Silhouette", year: 2011, image: "https://i.postimg.cc/RhcbhFhX/Celebrity-Silhouette-300x225.webp" },
-        { name: "Celebrity Solstice", year: 2008, image: "https://i.postimg.cc/1R6dJWBw/Celebrity-Solstice-300x225.webp" },
-        { name: "Celebrity Summit", year: 2001, image: "https://i.postimg.cc/VL8VTjZT/Celebrity-Summit-300x225.webp" },
-        { name: "Celebrity Xcel", year: 2025, image: "https://i.postimg.cc/ZKxMhC1q/Celebrity-Xcel-300x225.webp" }
+        { name: "Celebrity Apex", video: "https://www.youtube.com/watch?v=tP2rwE33VlU", image: "https://i.postimg.cc/76hB396G/Celebrity-Apex-300x225.webp" },
+        { name: "Celebrity Ascent", video: "", image: "https://i.postimg.cc/zvR0MfTq/Celebrity-Ascent-300x225.webp" },
+        { name: "Celebrity Beyond", video: "", image: "https://i.postimg.cc/JzmCNwWs/Celebrity-Beyond-300x225.webp" },
+        { name: "Celebrity Constellation", video: "", image: "https://i.postimg.cc/N0jhn1FY/Celebrity-Constellation-300x225.webp" },
+        { name: "Celebrity Eclipse", video: "", image: "https://i.postimg.cc/TwKzdfn4/Celebrity-Eclipse-300x225.webp" },
+        { name: "Celebrity Edge", video: "https://www.youtube.com/watch?v=pZnY58nFJZA", image: "https://i.postimg.cc/1X6bFBC0/Celebrity-Edge-300x225.webp" },
+        { name: "Celebrity Equinox", video: "", image: "https://i.postimg.cc/L6tr6yZ2/Celebrity-Equinox-300x225.webp" },
+        { name: "Celebrity Flora", video: "", image: "https://i.postimg.cc/g2G1wvvR/Celebrity-Flora-300x225.webp" },
+        { name: "Celebrity Infinity", video: "", image: "https://i.postimg.cc/jj59ct3S/Celebrity-Infinity-300x225.webp" },
+        { name: "Celebrity Millennium", video: "", image: "https://i.postimg.cc/KYHWswCr/Celebrity-Millennium-300x225.webp" },
+        { name: "Celebrity Reflection", video: "", image: "https://i.postimg.cc/C5yQwDhR/Celebrity-Reflection-300x225.webp" },
+        { name: "Celebrity Silhouette", video: "", image: "https://i.postimg.cc/RhcbhFhX/Celebrity-Silhouette-300x225.webp" },
+        { name: "Celebrity Solstice", video: "", image: "https://i.postimg.cc/1R6dJWBw/Celebrity-Solstice-300x225.webp" },
+        { name: "Celebrity Summit", video: "https://www.youtube.com/watch?v=9_pogpg6sVc", image: "https://i.postimg.cc/VL8VTjZT/Celebrity-Summit-300x225.webp" },
+        { name: "Celebrity Xce", video: "", image: "https://i.postimg.cc/ZKxMhC1q/Celebrity-Xcel-300x225.webp" }
     ],
     "COSTA": [
-        { name: "Costa Deliziosa", year: 2010, image: "https://i.postimg.cc/c4xhmF29/DE-Aerial.jpg" },
-        { name: "Costa Diadema", year: 2014, image: "https://i.postimg.cc/GmZSqkkF/00018070.jpg" },
-        { name: "Costa Fascinosa", year: 2012, image: "https://i.postimg.cc/B6Np9D1g/00016701.jpg" },
-        { name: "Costa Favolosa", year: 2011, image: "https://i.postimg.cc/D0Hqncfs/00016299.jpg" },
-        { name: "Costa Fortuna", year: 2003, image: "https://i.postimg.cc/5NGJvK2f/00017033.jpg" },
-        { name: "Costa Pacifica", year: 2009, image: "https://i.postimg.cc/pL8wj2Sw/00014882.jpg" },
-        { name: "Costa Serena", year: 2007, image: "https://i.postimg.cc/SR2TpdbF/00012297.jpg" },
-        { name: "Costa Smeralda", year: 2019, image: "https://i.postimg.cc/cCLmscpP/2027-ae143f64968.jpg" },
-        { name: "Costa Toscana", year: 2021, image: "https://i.postimg.cc/28pyN54r/00020846.jpg" },
-        { name: "Costa Firenze", year: 2021, image: "https://i.postimg.cc/9Xb8v439/1140-X428-1.png" }
+        { name: "Costa Deliziosa", video: "", image: "https://i.postimg.cc/ryCJD7gn/Costa-Deliziosa-300x225.webp" },
+        { name: "Costa Diadema", video: "", image: "https://i.postimg.cc/Fsrx3GB9/Costa-Diadema-300x225.webp" },
+        { name: "Costa Fascinosa", video: "https://www.youtube.com/watch?v=Drd_TRoAHYs", image: "https://i.postimg.cc/TYtJ9mzn/Costa-Fascinosa-300x225.webp" },
+        { name: "Costa Favolosa", video: "", image: "https://i.postimg.cc/t4ft0bCT/Costa-Favolosa-300x225.webp" },
+        { name: "Costa Fortuna", video: "https://www.youtube.com/watch?v=YCmi6a04q80", image: "https://i.postimg.cc/Ssb6sG9b/Costa-Fortuna-300x225.webp" },
+        { name: "Costa Pacifica", video: "", image: "https://i.postimg.cc/bNwQsrZr/Costa-Pacifica-300x225.webp" },
+        { name: "Costa Serena", video: "", image: "https://i.postimg.cc/7Z9Pb3WJ/Costa-Serena.jpg" },
+        { name: "Costa Smeralda", video: "https://www.youtube.com/watch?v=YV1XNNUfcrg", image: "https://i.postimg.cc/YCgj9Bzj/Costa-Smeralda-300x225.webp" },
+        { name: "Costa Toscana", video: "", image: "https://i.postimg.cc/FRK90M3y/Costa-Toscana-300x225.webp" },
+        { name: "Costa Firenze", video: "", image: "https://i.postimg.cc/sgRsTQ5D/Costa-Firenze-300x225.webp" }
+    ],
+    "Carnival": [
+        { name: "Carnival Adventure", video: "", image: "" },
+        { name: "Carnival Breeze", video: "", image: "" },
+        { name: "Carnival Celebration", video: "", image: "" },
+        { name: "Carnival Conquest", video: "", image: "" },
+        { name: "Carnival Dream", video: "", image: "" },
+        { name: "Carnival Elation", video: "", image: "" },
+        { name: "Carnival Encounter", video: "", image: "" },
+        { name: "Carnival Festivale", video: "", image: "" },
+        { name: "Carnival Firenze", video: "", image: "" },
+        { name: "Carnival Freedom", video: "", image: "" },
+        { name: "Carnival Glory", video: "", image: "" },
+        { name: "Carnival Horizon", video: "", image: "" },
+        { name: "Carnival Jubilee", video: "", image: "" },
+        { name: "Carnival Legend", video: "", image: "" },
+        { name: "Carnival Liberty", video: "", image: "" },
+        { name: "Carnival Luminosa", video: "", image: "" },
+        { name: "Carnival Magic", video: "", image: "" },
+        { name: "Carnival Miracle", video: "", image: "" },
+        { name: "Carnival Panorama", video: "", image: "" },
+        { name: "Carnival Paradise", video: "", image: "" },
+        { name: "Carnival Pride", video: "", image: "" },
+        { name: "Carnival Radiance", video: "", image: "" },
+        { name: "Carnival Spirit", video: "", image: "" },
+        { name: "Carnival Splendor", video: "", image: "" },
+        { name: "Carnival Sunrise", video: "", image: "" },
+        { name: "Carnival Sunshine", video: "", image: "" },
+        { name: "Carnival Valor", video: "", image: "" },
+        { name: "Carnival Venezia", video: "", image: "" },
+        { name: "Carnival Vista", video: "", image: "" },
+        { name: "Mardi Gras", video: "", image: "" }
+    ],
+    "Azamara": [
+        { name: "Azamara Journey", video: "", image: "" },
+        { name: "Azamara Onward", video: "", image: "" },
+        { name: "Azamara Pursuit", video: "", image: "" },
+        { name: "Azamara Quest", video: "", image: "" }
+    ],
+    "Virgin Voyages": [
+        { name: "Brilliant Lady", video: "", image: "" },
+        { name: "Resilient Lady", video: "", image: "" },
+        { name: "Scarlet Lady", video: "", image: "" },
+        { name: "Valiant Lady", video: "", image: "" }
+    ],
+    "Seabourn": [
+        { name: "Seabourn Encore", video: "", image: "" },
+        { name: "Seabourn Ovation", video: "", image: "" },
+        { name: "Seabourn Pursuit", video: "", image: "" },
+        { name: "Seabourn Quest", video: "", image: "" },
+        { name: "Seabourn Sojourn", video: "", image: "" },
+        { name: "Seabourn Venture", video: "", image: "" }
+    ],
+    "Regent Seven Seas": [
+        { name: "Seven Seas Explorer", video: "", image: "" },
+        { name: "Seven Seas Grandeur", video: "", image: "" },
+        { name: "Seven Seas Mariner", video: "", image: "" },
+        { name: "Seven Seas Navigator", video: "", image: "" },
+        { name: "Seven Seas Prestige", video: "", image: "" },
+        { name: "Seven Seas Splendor", video: "", image: "" },
+        { name: "Seven Seas Voyager", video: "", image: "" }
+    ],
+    "Ponant": [
+        { name: "L'Austral", video: "", image: "" },
+        { name: "Le Bellot", video: "", image: "" },
+        { name: "Le Boreal", video: "", image: "" },
+        { name: "Le Bougainville", video: "", image: "" },
+        { name: "Le Champlain", video: "", image: "" },
+        { name: "Le Commandant Charcot", video: "", image: "" },
+        { name: "Le Dumont D'urville", video: "", image: "" },
+        { name: "Le Jacques Cartier", video: "", image: "" },
+        { name: "Le Laperouse", video: "", image: "" },
+        { name: "Le Lyrial", video: "", image: "" },
+        { name: "Le Ponant", video: "", image: "" },
+        { name: "Le Soleal", video: "", image: "" },
+        { name: "Spirit of Ponant", video: "", image: "" }
+    ],
+    "P&O Cruises": [
+        { name: "Arcadia", video: "", image: "" },
+        { name: "Arvia", video: "", image: "" },
+        { name: "Aurora", video: "", image: "" },
+        { name: "Azura", video: "", image: "" },
+        { name: "Britannia", video: "", image: "" },
+        { name: "Iona", video: "", image: "" },
+        { name: "Ventura", video: "", image: "" }
+    ],
+    "Oceania Cruises": [
+        { name: "Oceania Allura", video: "", image: "" },
+        { name: "Oceania Insignia", video: "", image: "" },
+        { name: "Oceania Marina", video: "", image: "" },
+        { name: "Oceania Nautica", video: "", image: "" },
+        { name: "Oceania Regatta", video: "", image: "" },
+        { name: "Oceania Riviera", video: "", image: "" },
+        { name: "Oceania Sirena", video: "", image: "" },
+        { name: "Oceania Vista", video: "", image: "" }
+    ],
+    "Holland America": [
+        { name: "Eurodam", video: "", image: "" },
+        { name: "Koningsdam", video: "", image: "" },
+        { name: "Nieuw Amsterdam", video: "", image: "" },
+        { name: "Nieuw Statendam", video: "", image: "" },
+        { name: "Noordam", video: "", image: "" },
+        { name: "Oosterdam", video: "", image: "" },
+        { name: "Rotterdam", video: "", image: "" },
+        { name: "Volendam", video: "", image: "" },
+        { name: "Westerdam", video: "", image: "" },
+        { name: "Zaandam", video: "", image: "" },
+        { name: "Zuiderdam", video: "", image: "" }
+    ],
+    "Disney Cruise Line": [
+        { name: "Disney Adventure", video: "", image: "" },
+        { name: "Disney Destiny", video: "", image: "" },
+        { name: "Disney Dream", video: "", image: "" },
+        { name: "Disney Fantasy", video: "", image: "" },
+        { name: "Disney Magic", video: "", image: "" },
+        { name: "Disney Treasure", video: "", image: "" },
+        { name: "Disney Wish", video: "", image: "" },
+        { name: "Disney Wonder", video: "", image: "" }
+    ],
+    "Cunard": [
+        { name: "Queen Mary 2", video: "", image: "" },
+        { name: "Queen Anne", video: "", image: "" },
+        { name: "Queen Elizabeth", video: "", image: "" },
+        { name: "Queen Victoria", video: "", image: "" }
+    ],
+    "Crystal": [
+        { name: "Crystal Serenity", video: "", image: "" },
+        { name: "Crystal Symphony", video: "", image: "" }
     ]
 };
 const advisors = {
@@ -712,6 +860,7 @@ const detailRoomTypes = [
     "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
 ];
 let currentQuoteId = null;
+let isLoaded = false;
 const DOMElements = {
     loginScreen: document.getElementById('loginScreen'),
     mainContent: document.getElementById('mainContent'),
@@ -727,6 +876,7 @@ const DOMElements = {
     advisor: document.getElementById('advisor'),
     cruiseLine: document.getElementById('cruiseLine'),
     shipName: document.getElementById('shipName'),
+    shipVideo: document.getElementById('shipVideo'),
     cruiseDuration: document.getElementById('cruiseDuration'),
     cruiseStartDate: document.getElementById('cruiseStartDate'),
     departurePort: document.getElementById('departurePort'),
@@ -781,6 +931,8 @@ const DOMElements = {
     previewRoomsSection: document.getElementById('previewRoomsSection'),
     previewRoomsContainer: document.getElementById('previewRoomsContainer'),
     previewGuaranteeNote: document.getElementById('previewGuaranteeNote'),
+    previewCruiseInclusions: document.getElementById('previewCruiseInclusions'),
+    previewCruiseInclusionsList: document.getElementById('previewCruiseInclusionsList'),
     previewInclusions: document.getElementById('previewInclusions'),
     previewFlightsContainer: document.getElementById('previewFlightsContainer'),
     previewFlightsList: document.getElementById('previewFlightsList'),
@@ -799,9 +951,11 @@ const DOMElements = {
     previewTotalPrice: document.getElementById('previewTotalPrice'),
     previewShipImageSection: document.getElementById('previewShipImageSection'),
     previewShipImage: document.getElementById('previewShipImage'),
+    previewShipVideo: document.getElementById('previewShipVideo'),
     previewAdvisor: document.getElementById('previewAdvisor'),
     previewElement: document.getElementById('preview'),
     importantNote: document.getElementById('importantNote'),
+    previewInternalNumber: document.getElementById('previewInternalNumber'),
     savedQuotesModal: document.getElementById('savedQuotesModal'),
     showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
@@ -827,6 +981,13 @@ function setupEventListeners() {
     DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); updateStateAndPreview(); });
     DOMElements.cruiseLine.addEventListener('change', () => {
         populateShips();
+        updateStateAndPreview();
+    });
+    DOMElements.shipName.addEventListener('change', () => {
+        const cruiseLine = DOMElements.cruiseLine.value;
+        const shipName = DOMElements.shipName.value;
+        const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
+        DOMElements.shipVideo.value = ship?.video || '';
         updateStateAndPreview();
     });
     DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
@@ -907,6 +1068,7 @@ function loadQuote(quoteId) {
     const quote = allQuotes.find(q => q.id === quoteId);
     if (quote) {
         currentQuoteId = quote.id;
+        isLoaded = true;
         DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
         loadState(quote.state);
         DOMElements.savedQuotesModal.style.display = 'none';
@@ -922,6 +1084,7 @@ function deleteQuote(quoteId) {
 }
 function startNewQuote() {
     currentQuoteId = null;
+    isLoaded = false;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
@@ -1053,7 +1216,7 @@ function populateShips(selectedShip) {
     ships.forEach(ship => {
         const option = document.createElement('option');
         option.value = ship.name;
-        option.textContent = `${ship.name} (${ship.year})`;
+        option.textContent = ship.name;
         shipSelect.appendChild(option);
     });
     if(currentVal) shipSelect.value = currentVal;
@@ -1166,7 +1329,11 @@ function updatePreview() {
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
         DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
-        DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
+        if (!isLoaded) {
+            DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
+        } else {
+            DOMElements.previewQuoteNumber.textContent = '';
+        }
         DOMElements.importantNote.classList.remove('hidden');
     } else {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
@@ -1180,6 +1347,7 @@ function updatePreview() {
     const isCruiseHidden = state.hideCruise;
     DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewCruiseDetails.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewCruiseInclusions.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewItinerarySection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewRoomsSection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewShipImageSection.classList.toggle('hidden', isCruiseHidden);
@@ -1198,6 +1366,8 @@ function updatePreview() {
     DOMElements.previewPorts.textContent = (state.departurePort && state.arrivalPort) ? `${state.departurePort} - ${state.arrivalPort}` : '___';
     const ship = cruiseData[state.cruiseLine]?.find(s => s.name === state.shipName);
     DOMElements.previewShipImage.src = (ship && ship.image) ? ship.image : 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה';
+    DOMElements.previewShipVideo.classList.toggle('hidden', !state.shipVideo);
+    if (state.shipVideo) DOMElements.previewShipVideo.querySelector('a').href = state.shipVideo;
     DOMElements.previewRoomsContainer.innerHTML = '';
     let totalPrice = 0;
     let totalPassengers = 0;
@@ -1227,16 +1397,18 @@ function updatePreview() {
         }
     });
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
-    const inclusionsList = DOMElements.previewInclusions;
-    inclusionsList.innerHTML = '';
-    if (!state.hideMealInclusion) {
-        addInclusionItem(inclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+    const cruiseInclusionsList = DOMElements.previewCruiseInclusionsList;
+    cruiseInclusionsList.innerHTML = '';
+    if (!state.hideMealInclusion && !isCruiseHidden) {
+        addInclusionItem(cruiseInclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
     }
     if(state.cruiseLine === 'MSC' && !isCruiseHidden) {
-        addInclusionItem(inclusionsList, '<strong>כולל תשלום טיפים מראש.</strong>');
+        addInclusionItem(cruiseInclusionsList, '<strong>כולל תשלום טיפים מראש.</strong>');
     } else if (!isCruiseHidden) {
-         addInclusionItem(inclusionsList, 'לא כולל תשלום טיפים מראש.');
+         addInclusionItem(cruiseInclusionsList, 'לא כולל תשלום טיפים מראש.');
     }
+    const inclusionsList = DOMElements.previewInclusions;
+    inclusionsList.innerHTML = '';
     if (state.customInclusions) {
         state.customInclusions.split('\n').filter(line => line.trim()).forEach(line => addInclusionItem(inclusionsList, line.trim()));
     }
@@ -1300,13 +1472,21 @@ function updatePreview() {
                     conditionsText = '<p>ללא אפשרות ביטול/שינוי.</p>';
                 } else if (hotel.hotelCancellable) {
                     const date = hotel.hotelCancelDate ? new Date(hotel.hotelCancelDate).toLocaleDateString('he-IL') : '___';
-                    conditionsText = `<p>ביטול – ניתן לבטל בעלות של ${hotel.hotelCancelFee || '___'} לחדר עד לתאריך ${date}.</p>`;
+                    const fee = hotel.hotelCancelFee || '___';
+                    conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
+                }
+                const startDate = hotel.hotelStartDate ? new Date(hotel.hotelStartDate) : null;
+                let dateRange = '___';
+                if (startDate && hotel.hotelNights) {
+                    const endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + parseInt(hotel.hotelNights));
+                    dateRange = `${startDate.toLocaleDateString('he-IL')} - ${endDate.toLocaleDateString('he-IL')}`;
                 }
                 const hotelDiv = document.createElement('div');
                 hotelDiv.className = 'border p-3 rounded-lg bg-white space-y-2 no-split';
                 hotelDiv.innerHTML = `
                     <h4 class="font-bold text-md">${hotel.hotelName}</h4>
-                    <p>${hotel.hotelNights || '___'} לילות מתאריך ${hotel.hotelStartDate ? new Date(hotel.hotelStartDate).toLocaleDateString('he-IL') : '___'}</p>
+                    <p>${hotel.hotelNights || '___'} לילות מתאריך ${dateRange}</p>
                     <p>סוג חדר: ${hotel.hotelRoomDesc || '___'} | פנסיון: ${hotel.hotelPension || '___'}</p>
                     <p class="font-semibold text-right">עלות: $${cost.toLocaleString()}</p>
                     <div class="text-sm">${conditionsText}</div>`;
@@ -1333,12 +1513,14 @@ function updatePreview() {
              conditionsText = '<p>ללא אפשרות ביטול / שינוי.</p>';
         } else if (state.transfersCancelType === 'transfersCancellable') {
             const date = state.transfersCancelDate ? new Date(state.transfersCancelDate).toLocaleDateString('he-IL') : '___';
-            conditionsText = `<p>ניתן לביטול עד ${date} בדמי ביטול בסך ${state.transfersCancelFee || '___'}</p>`;
+            const fee = state.transfersCancelFee || '___';
+            conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
         }
         DOMElements.previewTransfersConditions.innerHTML = conditionsText;
     }
     DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
     DOMElements.previewTotalPrice.textContent = totalPrice.toLocaleString();
+    DOMElements.previewInternalNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? state.quoteNumber : '';
 }
 function addInclusionItem(list, text) {
     const li = document.createElement('li');
