@@ -289,6 +289,10 @@
                         <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
                         <textarea id="customInclusions" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
+                    <div class="flex items-center mt-2">
+                        <input id="hideMealInclusion" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <label for="hideMealInclusion" class="mr-2 text-sm text-gray-700">הסתר סעיף ארוחות קבוע</label>
+                    </div>
                 </div>
                 <div class="mt-8 flex justify-between gap-4">
                     <button id="saveQuoteBtn" class="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">שמור הצעה</button>
@@ -390,7 +394,7 @@
                                 <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
                                 <p class="text-xs text-black mt-2">טל"ח</p>
                                 <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
-                                <p class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                                <p id="importantNote" class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
                             </div>
                         </div>
                     </main>
@@ -735,6 +739,7 @@ const DOMElements = {
     cruiseFields: document.getElementById('cruiseFields'),
     cruiseSectionContainer: document.getElementById('cruiseSectionContainer'),
     customInclusions: document.getElementById('customInclusions'),
+    hideMealInclusion: document.getElementById('hideMealInclusion'),
     flightsContainer: document.getElementById('flightsContainer'),
     addFlightBtn: document.getElementById('addFlightBtn'),
     flightIncludes: document.getElementById('flightIncludes'),
@@ -796,6 +801,7 @@ const DOMElements = {
     previewShipImage: document.getElementById('previewShipImage'),
     previewAdvisor: document.getElementById('previewAdvisor'),
     previewElement: document.getElementById('preview'),
+    importantNote: document.getElementById('importantNote'),
     savedQuotesModal: document.getElementById('savedQuotesModal'),
     showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
@@ -1160,13 +1166,16 @@ function updatePreview() {
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
         DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
+        DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
+        DOMElements.importantNote.classList.remove('hidden');
     } else {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
         DOMElements.previewOpeningLine.textContent = 'מצורפים טפסי אישור הזמנה. אנא קרא/י ואשר/י בהודעה חוזרת.';
+        DOMElements.previewQuoteNumber.textContent = '';
+        DOMElements.importantNote.classList.add('hidden');
     }
     DOMElements.previewClientName.textContent = state.clientName || '___';
     DOMElements.previewDate.textContent = state.offerDate ? `תאריך: ${new Date(state.offerDate).toLocaleDateString('he-IL')}` : '';
-    DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
     DOMElements.previewAdvisor.textContent = advisors[state.advisor]?.details || '';
     const isCruiseHidden = state.hideCruise;
     DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
@@ -1220,7 +1229,9 @@ function updatePreview() {
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
     const inclusionsList = DOMElements.previewInclusions;
     inclusionsList.innerHTML = '';
-    addInclusionItem(inclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+    if (!state.hideMealInclusion) {
+        addInclusionItem(inclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+    }
     if(state.cruiseLine === 'MSC' && !isCruiseHidden) {
         addInclusionItem(inclusionsList, '<strong>כולל תשלום טיפים מראש.</strong>');
     } else if (!isCruiseHidden) {
@@ -1377,4 +1388,3 @@ async function generatePDF() {
 </footer>
 </body>
 </html>
-
