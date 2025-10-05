@@ -1,3 +1,4 @@
+דעתך?
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -37,11 +38,10 @@
             object-fit: cover;
         }
         .preview-section {
-            min-height: 100px; /* Set a minimum height for sections to help with consistent layout */
+            min-height: 100px;
         }
-        /* Modal styles */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -81,11 +81,11 @@
             <div class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">אימייל</label>
-                    <input type="email" id="email" aria-label="אימייל" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <input type="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">סיסמה</label>
-                    <input type="password" id="password" aria-label="סיסמה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <input type="password" id="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
             </div>
             <p id="loginError" class="text-red-500 text-sm mt-2 hidden">פרטי התחברות שגויים.</p>
@@ -94,7 +94,7 @@
             </button>
         </div>
     </div>
-    
+   
     <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden">
         <header class="text-center mb-8 no-print">
             <div class="flex justify-between items-center">
@@ -113,7 +113,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-                
+               
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -124,15 +124,15 @@
                     </div>
                      <div>
                         <label for="offerDate" class="block text-sm font-medium text-gray-700">תאריך ההצעה</label>
-                        <input type="date" id="offerDate" aria-label="תאריך ההצעה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <input type="date" id="offerDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
-                        <input type="text" id="clientName" aria-label="שם הלקוח/ה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="clientName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     </div>
                      <div>
                         <label for="advisor" class="block text-sm font-medium text-gray-700">יועץ שייט</label>
-                        <select id="advisor" aria-label="יועץ שייט" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" disabled>
+                        <select id="advisor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" disabled>
                             <option value="lior">ליאור דובינובסקי</option>
                             <option value="tatiana">טטיאנה לאונוב</option>
                             <option value="koren">קורן אבסעיד</option>
@@ -153,7 +153,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="cruiseLine" class="block text-sm font-medium text-gray-700">חברת שייט</label>
-                                <select id="cruiseLine" aria-label="חברת שייט" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                <select id="cruiseLine" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                     <option>MSC</option>
                                     <option>Royal Caribbean</option>
                                     <option>Norwegian Cruise Line</option>
@@ -163,24 +163,24 @@
                             </div>
                             <div>
                                 <label for="shipName" class="block text-sm font-medium text-gray-700">שם האונייה</label>
-                                <select id="shipName" aria-label="שם האונייה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select>
+                                <select id="shipName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select>
                             </div>
                             <div>
                                 <label for="cruiseDuration" class="block text-sm font-medium text-gray-700">משך ההפלגה (לילות)</label>
-                                <input type="number" id="cruiseDuration" aria-label="משך ההפלגה (לילות)" value="7" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                <input type="number" id="cruiseDuration" value="7" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                             </div>
                              <div>
                                 <label for="cruiseStartDate" class="block text-sm font-medium text-gray-700">תאריך יציאה</label>
-                                <input type="date" id="cruiseStartDate" aria-label="תאריך יציאה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                <input type="date" id="cruiseStartDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                             </div>
                              <div class="col-span-2 grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="departurePort" class="block text-sm font-medium text-gray-700">נמל יציאה</label>
-                                    <input type="text" id="departurePort" aria-label="נמל יציאה" placeholder="לדוגמה: רומא" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <input type="text" id="departurePort" placeholder="לדוגמה: רומא" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                 </div>
                                 <div>
                                     <label for="arrivalPort" class="block text-sm font-medium text-gray-700">נמל חזרה</label>
-                                    <input type="text" id="arrivalPort" aria-label="נמל חזרה" placeholder="לדוגמה: רומא" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <input type="text" id="arrivalPort" placeholder="לדוגמה: רומא" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                 </div>
                             </div>
                         </div>
@@ -195,19 +195,7 @@
                         </div>
                         <button id="addRoomBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
                     </div>
-               </div>
-                <div class="mt-6 border-t pt-4">
-                    <h3 class="text-xl font-bold mb-3">מה כלול</h3>
-                     <div class="flex items-start mb-4">
-                        <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
-                        <label for="hideTotal" class="mr-2 block text-sm text-gray-900">הסתר סה"כ עלות</label>
-                    </div>
-                    <div>
-                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
-                        <textarea id="customInclusions" aria-label="הערות ודגשים נוספים" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                    </div>
-                </div>
-                
+                 </div>
                 <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg">
@@ -215,16 +203,16 @@
                         <button id="addFlightBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף טיסה</button>
                         <div>
                             <label for="flightIncludes" class="block text-sm font-medium text-gray-700">הכרטיס כולל (ניתן לערוך)</label>
-                            <textarea id="flightIncludes" aria-label="הכרטיס כולל" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">מזוודה 20 ק"ג
+                            <textarea id="flightIncludes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">מזוודה 20 ק"ג
 טרולי 7 ק"ג</textarea>
                         </div>
                         <div>
                             <label for="flightFreeText" class="block text-sm font-medium text-gray-700">מלל חופשי לטיסות</label>
-                            <textarea id="flightFreeText" aria-label="מלל חופשי לטיסות" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                            <textarea id="flightFreeText" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                         </div>
                         <div>
                             <label for="flightCost" class="block text-sm font-medium text-gray-700">עלות כרטיס טיסה לאדם ($)</label>
-                            <input type="number" id="flightCost" aria-label="עלות כרטיס טיסה לאדם ($)" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <input type="number" id="flightCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
@@ -241,12 +229,12 @@
                                     <div class="flex items-center">
                                         <input type="checkbox" id="flightCancelCheck" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
                                         <label for="flightCancelCheck" class="mr-2">ביטול</label>
-                                        <input type="text" id="flightCancelFee" aria-label="דמי ביטול לנוסע" placeholder="דמי ביטול לנוסע" class="mr-2 w-32 border-gray-300 rounded-md shadow-sm">
+                                        <input type="text" id="flightCancelFee" placeholder="דמי ביטול לנוסע" class="mr-2 w-32 border-gray-300 rounded-md shadow-sm">
                                     </div>
                                     <div class="flex items-center">
                                         <input type="checkbox" id="flightChangeCheck" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
                                         <label for="flightChangeCheck" class="mr-2">שינוי</label>
-                                        <input type="text" id="flightChangeFee" aria-label="דמי שינוי לנוסע" placeholder="דמי שינוי לנוסע" class="mr-2 w-32 border-gray-300 rounded-md shadow-sm">
+                                        <input type="text" id="flightChangeFee" placeholder="דמי שינוי לנוסע" class="mr-2 w-32 border-gray-300 rounded-md shadow-sm">
                                     </div>
                                 </div>
                             </div>
@@ -265,7 +253,7 @@
                         <button id="addTransferBtn" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף העברה</button>
                         <div>
                             <label for="transfersCost" class="block text-sm font-medium text-gray-700">עלות כל ההעברות ($)</label>
-                            <input type="number" id="transfersCost" aria-label="עלות כל ההעברות ($)" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <input type="number" id="transfersCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
@@ -281,15 +269,26 @@
                                 <div id="transfersCancelDetails" class="hidden space-y-2 mr-6">
                                      <div>
                                         <label for="transfersCancelDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
-                                        <input type="date" id="transfersCancelDate" aria-label="עד תאריך" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                        <input type="date" id="transfersCancelDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                     </div>
                                     <div>
                                         <label for="transfersCancelFee" class="block text-sm font-medium text-gray-700">דמי ביטול</label>
-                                        <input type="text" id="transfersCancelFee" aria-label="דמי ביטול" placeholder="לדוגמה: $50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                        <input type="text" id="transfersCancelFee" placeholder="לדוגמה: $50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+               
+                <div class="mt-6 border-t pt-4">
+                    <div class="flex items-start mb-4">
+                        <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
+                        <label for="hideTotal" class="mr-2 block text-sm text-gray-900">הסתר סה"כ עלות</label>
+                    </div>
+                    <div>
+                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
+                        <textarea id="customInclusions" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
                 </div>
                 <div class="mt-8 flex justify-between gap-4">
@@ -297,12 +296,12 @@
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-            
+           
             <div class="lg:w-1/2">
-                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto overflow-y-auto">
+                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
                         <div class="text-right">
-                            <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" loading="lazy" />
+                            <img src="https://i.postimg.cc/8T2V9VQ8/2-300-X1200.png" alt="באלי קרוז" class="h-16" />
                         </div>
                         <div style="font-size: 40px; color: #3f3c66;">⚓</div>
                     </header>
@@ -314,7 +313,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                        
+                       
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -326,10 +325,10 @@
                                 <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
                             </div>
                         </div>
-                        
+                       
                         <div id="previewItinerarySection" class="my-6 no-split hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">מסלול ההפלגה:</h3>
-                            <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="מסלול ההפלגה" loading="lazy">
+                            <img id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
                         </div>
                         <div id="previewRoomsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי החדרים:</h3>
@@ -342,7 +341,7 @@
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי טיסות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
                                 <div id="previewFlightsList" class="space-y-2"></div>
-                                <div id="previewFlightIncludesContainer">
+                                <div id="previewFlightIncludesContainer" class="hidden">
                                     <p class="font-semibold">הכרטיס כולל:</p>
                                     <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
                                 </div>
@@ -351,12 +350,12 @@
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
-                        
+                       
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                        
+                       
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -365,20 +364,20 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                        
+                       
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
                              <h3 class="text-xl font-bold mb-3 no-break-after">הערות ודגשים:</h3>
                             <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg">
                             </ul>
                         </div>
-                        
+                       
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
                         <div id="previewShipImageSection" class="my-8 no-split hidden preview-section">
-                           <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="אוניית קרוז" loading="lazy">
+                           <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                         </div>
-                        
+                       
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -392,7 +391,7 @@
                                 <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
                                 <p class="text-xs text-black mt-2">טל"ח</p>
                                 <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
-                                <p id="priceNote" class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                                <p class="font-bold mt-4">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
                             </div>
                         </div>
                     </main>
@@ -404,11 +403,11 @@
             </div>
         </div>
     </div>
-    
-    <div id="savedQuotesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="savedQuotesModalTitle">
+   
+    <div id="savedQuotesModal" class="modal">
         <div class="modal-content">
             <span id="closeModalBtn" class="close-btn">&times;</span>
-            <h2 id="savedQuotesModalTitle" class="text-2xl font-bold mb-4">הצעות שמורות</h2>
+            <h2 class="text-2xl font-bold mb-4">הצעות שמורות</h2>
             <div id="savedQuotesList" class="space-y-2 max-h-96 overflow-y-auto">
             </div>
         </div>
@@ -419,7 +418,7 @@
             <div class="space-y-4">
                  <div>
                     <label class="block text-sm font-medium text-gray-700">הרכב</label>
-                    <select name="composition" aria-label="הרכב" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <select name="composition" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">בחר הרכב</option>
                         <option value="נוסע יחיד">נוסע יחיד</option>
                         <option value="זוג">זוג</option>
@@ -440,7 +439,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">תיאור חדר</label>
-                    <select name="roomType" aria-label="תיאור חדר" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <select name="roomType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">בחר סוג חדר</option>
                         <option value="פנימי גרנטי">פנימי גרנטי</option>
                         <option value="פנימי עם בחירת מיקום">פנימי עם בחירת מיקום</option>
@@ -456,20 +455,20 @@
                 <div class="room-details hidden grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">קומה</label>
-                        <input type="text" name="floor" aria-label="קומה" placeholder="לדוגמה: 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="floor" placeholder="לדוגמה: 10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">מספר חדר</label>
-                        <input type="text" name="roomNumber" aria-label="מספר חדר" placeholder="לדוגמה: 1234" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <input type="text" name="roomNumber" placeholder="לדוגמה: 1234" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">תיאור נוסף (לא חובה)</label>
-                    <textarea name="extraDesc" aria-label="תיאור נוסף" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="הוסף פרטים נוספים על החדר..."></textarea>
+                    <textarea name="extraDesc" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="הוסף פרטים נוספים על החדר..."></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">עלות ($)</label>
-                    <input type="number" name="roomCost" aria-label="עלות ($)" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="number" name="roomCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
             </div>
         </div>
@@ -480,27 +479,27 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">חברת תעופה</label>
-                    <input type="text" name="airline" aria-label="חברת תעופה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="airline" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">מוצא</label>
-                    <input type="text" name="from" aria-label="מוצא" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="from" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">יעד</label>
-                    <input type="text" name="to" aria-label="יעד" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="to" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">תאריך</label>
-                    <input type="date" name="date" aria-label="תאריך" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="date" name="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שעת המראה</label>
-                    <input type="text" name="takeoff" aria-label="שעת המראה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="takeoff" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שעת נחיתה</label>
-                    <input type="text" name="landing" aria-label="שעת נחיתה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="landing" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
             </div>
         </div>
@@ -511,17 +510,18 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">סוג העברה</label>
-                    <select name="transferType" aria-label="סוג העברה" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <select name="transferType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">בחר סוג</option>
                         <option value="שדה תעופה - מלון">שדה תעופה - מלון</option>
                         <option value="מלון - נמל קרוזים">מלון - נמל קרוזים</option>
                         <option value="נמל קרוזים - מלון">נמל קרוזים - מלון</option>
+                        <option value="נמל קרוזים - שדה תעופה">נמל קרוזים - שדה תעופה</option>
                         <option value="מלון - שדה תעופה">מלון - שדה תעופה</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">מלל חופשי</label>
-                    <textarea name="transferFreeText" aria-label="מלל חופשי" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                    <textarea name="transferFreeText" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                 </div>
             </div>
         </div>
@@ -532,25 +532,25 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שם המלון</label>
-                    <input type="text" name="hotelName" aria-label="שם המלון" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="text" name="hotelName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">מספר לילות</label>
-                        <input type="number" name="hotelNights" aria-label="מספר לילות" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <input type="number" name="hotelNights" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">מתאריך</label>
-                        <input type="date" name="hotelStartDate" aria-label="מתאריך" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <input type="date" name="hotelStartDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">סוג חדר</label>
-                    <textarea name="hotelRoomDesc" aria-label="סוג חדר" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                    <textarea name="hotelRoomDesc" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">פנסיון</label>
-                    <select name="hotelPension" aria-label="פנסיון" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <select name="hotelPension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">בחר</option>
                         <option value="לינה בלבד">לינה בלבד</option>
                         <option value="לינה וארוחת בוקר">לינה וארוחת בוקר</option>
@@ -561,7 +561,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">עלות מלון ($)</label>
-                    <input type="number" name="hotelCost" aria-label="עלות מלון ($)" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <input type="number" name="hotelCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
@@ -571,9 +571,9 @@
                             <label class="mr-2">ניתן לביטול עם דמי</label>
                         </div>
                         <div class="hotel-cancel-details hidden space-y-2 mr-6">
-                            <input type="text" name="hotelCancelFee" aria-label="דמי ביטול לחדר" placeholder="דמי ביטול לחדר" class="w-full border-gray-300 rounded-md shadow-sm">
+                            <input type="text" name="hotelCancelFee" placeholder="דמי ביטול לחדר" class="w-full border-gray-300 rounded-md shadow-sm">
                             <label class="block text-sm font-medium text-gray-700 mt-2">עד לתאריך</label>
-                            <input type="date" name="hotelCancelDate" aria-label="עד לתאריך" class="w-full border-gray-300 rounded-md shadow-sm">
+                            <input type="date" name="hotelCancelDate" class="w-full border-gray-300 rounded-md shadow-sm">
                         </div>
                         <div class="flex items-center">
                             <input type="checkbox" name="hotelNoCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -584,7 +584,7 @@
             </div>
         </div>
     </template>
-    
+   
 <script>
 // --- DATA ---
 const cruiseData = {
@@ -708,10 +708,7 @@ const detailRoomTypes = [
     "פנימי עם בחירת מיקום", "חלון עם בחירת מיקום", "מרפסת לים עם בחירת מיקום",
     "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
 ];
-// --- GLOBAL STATE ---
 let currentQuoteId = null;
-let lastStateHash = '';
-// --- DOM ELEMENTS CACHE ---
 const DOMElements = {
     loginScreen: document.getElementById('loginScreen'),
     mainContent: document.getElementById('mainContent'),
@@ -804,9 +801,7 @@ const DOMElements = {
     showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
     closeModalBtn: document.getElementById('closeModalBtn'),
     savedQuotesList: document.getElementById('savedQuotesList'),
-    priceNote: document.getElementById('priceNote'),
 };
-// --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
@@ -819,19 +814,16 @@ function setupEventListeners() {
     DOMElements.passwordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleLogin();
     });
-    const debouncedUpdate = debounce(updateStateAndPreview, 300);
-    DOMElements.inputForm.addEventListener('input', debouncedUpdate);
-    DOMElements.inputForm.addEventListener('change', debouncedUpdate);
-    
-    DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); debouncedUpdate(); });
-    DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); debouncedUpdate(); });
-    DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); debouncedUpdate(); });
-    DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); debouncedUpdate(); });
+    DOMElements.inputForm.addEventListener('input', updateStateAndPreview);
+    DOMElements.inputForm.addEventListener('change', updateStateAndPreview);
+    DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); updateStateAndPreview(); });
+    DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); updateStateAndPreview(); });
+    DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); updateStateAndPreview(); });
+    DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); updateStateAndPreview(); });
     DOMElements.cruiseLine.addEventListener('change', () => {
         populateShips();
-        debouncedUpdate();
+        updateStateAndPreview();
     });
-    
     DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
     DOMElements.generatePDFBtn.addEventListener('click', generatePDF);
     DOMElements.saveQuoteBtn.addEventListener('click', saveQuote);
@@ -839,7 +831,6 @@ function setupEventListeners() {
     DOMElements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.flightNoCancel.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
-    
     DOMElements.showSavedQuotesBtn.addEventListener('click', showSavedQuotes);
     DOMElements.closeModalBtn.addEventListener('click', () => DOMElements.savedQuotesModal.style.display = 'none');
     window.addEventListener('click', (event) => {
@@ -848,21 +839,6 @@ function setupEventListeners() {
         }
     });
 }
-// --- HELPER FUNCTIONS ---
-function debounce(func, delay) {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), delay);
-    };
-}
-function validateForm(state) {
-    if (!state.clientName) return 'חובה להזין שם לקוח.';
-    if (state.rooms.some(r => isNaN(parseFloat(r.roomCost)) || parseFloat(r.roomCost) < 0)) return 'מחירי חדרים חייבים להיות מספרים חיוביים.';
-    if (state.offerDate && new Date(state.offerDate) > new Date()) return 'תאריך ההצעה לא יכול להיות בעתיד.';
-    return null;
-}
-// --- LOGIN LOGIC ---
 function handleLogin() {
     const email = DOMElements.emailInput.value.toLowerCase();
     const password = DOMElements.passwordInput.value;
@@ -879,11 +855,9 @@ function showMainContent(advisorKey) {
     DOMElements.mainContent.classList.remove('hidden');
     DOMElements.loggedInAdvisor.textContent = advisors[advisorKey].name;
     DOMElements.advisor.value = advisorKey;
-    
     populateShips();
     startNewQuote();
 }
-// --- QUOTE MANAGEMENT ---
 function getNextQuoteNumber() {
     let lastNumber = parseInt(localStorage.getItem('lastQuoteNumber') || '0');
     lastNumber++;
@@ -891,139 +865,107 @@ function getNextQuoteNumber() {
     return lastNumber;
 }
 function saveQuote() {
-    try {
-        const state = getFormState();
-        const error = validateForm(state);
-        if (error) {
-            alert(error);
-            return;
-        }
-        
-        const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
-        const advisorKey = sessionStorage.getItem('loggedInAdvisor');
-        if (currentQuoteId) {
-            const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
-            if (quoteIndex > -1) {
-                state.quoteNumber = allQuotes[quoteIndex].quoteNumber; // Preserve original quote number
-                allQuotes[quoteIndex].state = state;
-                allQuotes[quoteIndex].clientName = state.clientName;
-                allQuotes[quoteIndex].date = new Date().toISOString();
-            }
-        } else {
-            const quoteNumber = getNextQuoteNumber();
-            currentQuoteId = `Q${quoteNumber}-${Date.now()}`;
-            state.quoteNumber = quoteNumber;
-            
-            allQuotes.push({
-                id: currentQuoteId,
-                quoteNumber: quoteNumber,
-                advisor: advisorKey,
-                clientName: state.clientName,
-                date: new Date().toISOString(),
-                state: state
-            });
-        }
-        DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
-        localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
-        alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
-    } catch (error) {
-        console.error('שגיאה בשמירת הצעה:', error);
-        alert('שגיאה בשמירת ההצעה. נסה שוב.');
+    const state = getFormState();
+    if (!state.clientName) {
+        alert('יש להזין שם לקוח לפני שמירת ההצעה.');
+        return;
     }
+    const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+    const advisorKey = sessionStorage.getItem('loggedInAdvisor');
+    if (currentQuoteId) {
+        const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
+        if (quoteIndex > -1) {
+            state.quoteNumber = allQuotes[quoteIndex].quoteNumber;
+            allQuotes[quoteIndex].state = state;
+            allQuotes[quoteIndex].clientName = state.clientName;
+            allQuotes[quoteIndex].date = new Date().toISOString();
+        }
+    } else {
+        const quoteNumber = getNextQuoteNumber();
+        currentQuoteId = `Q${quoteNumber}-${Date.now()}`;
+        state.quoteNumber = quoteNumber;
+        allQuotes.push({
+            id: currentQuoteId,
+            quoteNumber: quoteNumber,
+            advisor: advisorKey,
+            clientName: state.clientName,
+            date: new Date().toISOString(),
+            state: state
+        });
+    }
+    DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
+    localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
+    alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
 }
 function loadQuote(quoteId) {
-    try {
-        const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
-        const quote = allQuotes.find(q => q.id === quoteId);
-        if (quote) {
-            currentQuoteId = quote.id;
-            DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
-            loadState(quote.state);
-            DOMElements.savedQuotesModal.style.display = 'none';
-        }
-    } catch (error) {
-        console.error('שגיאה בטעינת הצעה:', error);
-        alert('שגיאה בטעינת ההצעה.');
+    const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+    const quote = allQuotes.find(q => q.id === quoteId);
+    if (quote) {
+        currentQuoteId = quote.id;
+        DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
+        loadState(quote.state);
+        DOMElements.savedQuotesModal.style.display = 'none';
     }
 }
 function deleteQuote(quoteId) {
     if (confirm('האם אתה בטוח שברצונך למחוק הצעה זו?')) {
-        try {
-            let allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
-            allQuotes = allQuotes.filter(q => q.id !== quoteId);
-            localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
-            showSavedQuotes();
-        } catch (error) {
-            console.error('שגיאה במחיקת הצעה:', error);
-            alert('שגיאה במחיקת ההצעה.');
-        }
+        let allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+        allQuotes = allQuotes.filter(q => q.id !== quoteId);
+        localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
+        showSavedQuotes();
     }
 }
 function startNewQuote() {
     currentQuoteId = null;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
-    
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
-    
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    let mm = today.getMonth() + 1; // Months start at 0!
-    let dd = today.getDate();
-    if (dd < 10) dd = '0' + dd;
-    if (mm < 10) mm = '0' + mm;
-    DOMElements.offerDate.value = yyyy + '-' + mm + '-' + dd;
+    DOMElements.offerDate.valueAsDate = new Date();
     const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
     if (loggedInUser) {
         DOMElements.advisor.value = loggedInUser;
     }
-    
     addRoom();
-    
+    addFlight();
+    addHotel();
+    addTransfer();
     updateStateAndPreview();
 }
 function showSavedQuotes() {
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
-    try {
-        const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
-        const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
-        
-        DOMElements.savedQuotesList.innerHTML = '';
-        if (advisorQuotes.length === 0) {
-            DOMElements.savedQuotesList.innerHTML = '<p>לא נמצאו הצעות שמורות.</p>';
-        } else {
-            advisorQuotes.forEach(quote => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-2 border rounded';
-                div.innerHTML = `
-                    <div>
-                        <p class="font-bold">הצעה #${quote.quoteNumber} - ${quote.clientName}</p>
-                        <p class="text-sm text-gray-500">${new Date(quote.date).toLocaleDateString('he-IL')}</p>
-                    </div>
-                    <div>
-                        <button data-id="${quote.id}" class="load-quote-btn bg-blue-500 text-white px-3 py-1 rounded text-sm ml-2">טען</button>
-                        <button data-id="${quote.id}" class="delete-quote-btn bg-red-500 text-white px-3 py-1 rounded text-sm">מחק</button>
-                    </div>
-                `;
-                DOMElements.savedQuotesList.appendChild(div);
-            });
-            DOMElements.savedQuotesList.querySelectorAll('.load-quote-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => loadQuote(e.target.dataset.id));
-            });
-            DOMElements.savedQuotesList.querySelectorAll('.delete-quote-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => deleteQuote(e.target.dataset.id));
-            });
-        }
-        DOMElements.savedQuotesModal.style.display = 'block';
-    } catch (error) {
-        console.error('שגיאה בהצגת הצעות שמורות:', error);
-        alert('שגיאה בהצגת ההצעות השמורות.');
+    const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+    const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
+    DOMElements.savedQuotesList.innerHTML = '';
+    if (advisorQuotes.length === 0) {
+        DOMElements.savedQuotesList.innerHTML = '<p>לא נמצאו הצעות שמורות.</p>';
+    } else {
+        advisorQuotes.forEach(quote => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-2 border rounded';
+            div.innerHTML = `
+                <div>
+                    <p class="font-bold">הצעה #${quote.quoteNumber} - ${quote.clientName}</p>
+                    <p class="text-sm text-gray-500">${new Date(quote.date).toLocaleDateString('he-IL')}</p>
+                </div>
+                <div>
+                    <button data-id="${quote.id}" class="load-quote-btn bg-blue-500 text-white px-3 py-1 rounded text-sm ml-2">טען</button>
+                    <button data-id="${quote.id}" class="delete-quote-btn bg-red-500 text-white px-3 py-1 rounded text-sm">מחק</button>
+                </div>
+            `;
+            DOMElements.savedQuotesList.appendChild(div);
+        });
+        DOMElements.savedQuotesList.querySelectorAll('.load-quote-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => loadQuote(e.target.dataset.id));
+        });
+        DOMElements.savedQuotesList.querySelectorAll('.delete-quote-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deleteQuote(e.target.dataset.id));
+        });
     }
+    DOMElements.savedQuotesModal.style.display = 'block';
 }
-// --- STATE MANAGEMENT ---
 function getFormState() {
     const state = {};
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
@@ -1037,7 +979,6 @@ function getFormState() {
             state[input.id] = input.value;
         }
     });
-    
     state.itineraryImageSrc = DOMElements.previewItineraryImage.src;
     state.quoteNumber = DOMElements.currentQuoteNumber.textContent.replace('מספר הצעה: ', '');
     const dynamicFields = {
@@ -1066,12 +1007,10 @@ function getFormState() {
         });
         dynamicFields.hotels.push(data);
     });
-    
     state.dynamicFields = dynamicFields;
     return state;
 }
 function loadState(state) {
-    // Restore static inputs
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
     formInputs.forEach(input => {
         if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry')) return;
@@ -1084,33 +1023,22 @@ function loadState(state) {
         }
     });
     DOMElements.previewItineraryImage.src = state.itineraryImageSrc || 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול';
-    // Restore dynamic fields
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
-    
     populateShips(state.shipName);
-    
     state.dynamicFields.rooms.forEach(data => addRoom(data));
     state.dynamicFields.flights.forEach(data => addFlight(data));
     state.dynamicFields.transfers.forEach(data => addTransfer(data));
     if (state.dynamicFields.hotels) {
         state.dynamicFields.hotels.forEach(data => addHotel(data));
     }
-    
     updatePreview();
 }
 function updateStateAndPreview() {
-    const state = getFormState();
-    const stateHash = JSON.stringify(state);
-    if (stateHash === lastStateHash) {
-        return; // No change, skip update
-    }
-    lastStateHash = stateHash;
     updatePreview();
 }
-// --- DYNAMIC FORM LOGIC ---
 function populateShips(selectedShip) {
     const cruiseLine = DOMElements.cruiseLine.value;
     const shipSelect = DOMElements.shipName;
@@ -1129,15 +1057,13 @@ function addRoom(initialData = {}) {
     const template = document.getElementById('roomTemplate');
     const clone = template.content.cloneNode(true);
     const roomDiv = clone.querySelector('.room-entry');
-    DOMElements.roomsContainer.appendChild(roomDiv);
-    
+    DOMElements.roomsContainer.appendChild(clone);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = roomDiv.querySelector(`[name="${key}"]`);
             if (input) input.value = initialData[key];
         }
     }
-    
     roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => { roomDiv.remove(); updateStateAndPreview(); });
     roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
     toggleRoomDetails(roomDiv);
@@ -1146,8 +1072,7 @@ function addFlight(initialData = {}) {
     const template = document.getElementById('flightTemplate');
     const clone = template.content.cloneNode(true);
     const flightDiv = clone.querySelector('.flight-entry');
-    DOMElements.flightsContainer.appendChild(flightDiv);
-    
+    DOMElements.flightsContainer.appendChild(clone);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = flightDiv.querySelector(`[name="${key}"]`);
@@ -1165,14 +1090,13 @@ function addFlight(initialData = {}) {
             flightDiv.querySelector('input[name="to"]').value = prevFrom;
          }
     }
-    
     flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => { flightDiv.remove(); updateStateAndPreview(); });
 }
 function addTransfer(initialData = {}) {
     const template = document.getElementById('transferTemplate');
     const clone = template.content.cloneNode(true);
     const transferDiv = clone.querySelector('.transfer-entry');
-    DOMElements.transfersContainer.appendChild(transferDiv);
+    DOMElements.transfersContainer.appendChild(clone);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = transferDiv.querySelector(`[name="${key}"]`);
@@ -1185,7 +1109,7 @@ function addHotel(initialData = {}) {
     const template = document.getElementById('hotelTemplate');
     const clone = template.content.cloneNode(true);
     const hotelDiv = clone.querySelector('.hotel-entry');
-    DOMElements.hotelsContainer.appendChild(hotelDiv);
+    DOMElements.hotelsContainer.appendChild(clone);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = hotelDiv.querySelector(`[name="${key}"]`);
@@ -1231,15 +1155,12 @@ function handlePaste(event) {
         }
     }
 }
-// --- PREVIEW UPDATE LOGIC ---
 function updatePreview() {
     const state = getFormState();
-    
-    // Document Type and Header
     const docType = state.docType || 'quote';
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
-        DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעת מחיר';
+        DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
     } else {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
         DOMElements.previewOpeningLine.textContent = 'מצורפים טפסי אישור הזמנה. אנא קרא/י ואשר/י בהודעה חוזרת.';
@@ -1248,20 +1169,15 @@ function updatePreview() {
     DOMElements.previewDate.textContent = state.offerDate ? `תאריך: ${new Date(state.offerDate).toLocaleDateString('he-IL')}` : '';
     DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `הצעה מס': ${state.quoteNumber}` : '';
     DOMElements.previewAdvisor.textContent = advisors[state.advisor]?.details || '';
-    
-    // Cruise section visibility
     const isCruiseHidden = state.hideCruise;
     DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewCruiseDetails.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewItinerarySection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewRoomsSection.classList.toggle('hidden', isCruiseHidden);
     DOMElements.previewShipImageSection.classList.toggle('hidden', isCruiseHidden);
-    
-    // Cruise Details
     DOMElements.previewCruiseLine.textContent = state.cruiseLine;
     DOMElements.previewShipName.textContent = state.shipName;
     DOMElements.previewCruiseDuration.textContent = state.cruiseDuration || '7';
-    // Dates and Ports
     const startDate = state.cruiseStartDate;
     if (startDate) {
         const date = new Date(startDate);
@@ -1272,11 +1188,8 @@ function updatePreview() {
         DOMElements.previewCruiseDate.textContent = '___';
     }
     DOMElements.previewPorts.textContent = (state.departurePort && state.arrivalPort) ? `${state.departurePort} - ${state.arrivalPort}` : '___';
-    // Ship Image
     const ship = cruiseData[state.cruiseLine]?.find(s => s.name === state.shipName);
     DOMElements.previewShipImage.src = (ship && ship.image) ? ship.image : 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה';
-
-    // Rooms
     DOMElements.previewRoomsContainer.innerHTML = '';
     let totalPrice = 0;
     let totalPassengers = 0;
@@ -1284,10 +1197,8 @@ function updatePreview() {
     state.dynamicFields.rooms.forEach((room, index) => {
         const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '5 מבוגרים': 5 }[room.composition] || 0;
         totalPassengers += passengersInRoom;
-        
         if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
         const costValue = parseFloat(room.roomCost) || 0;
-        
         if (room.composition || room.roomType || costValue > 0) {
             let details = [];
             if (room.composition) details.push(`<strong>הרכב:</strong> ${room.composition}`);
@@ -1301,14 +1212,13 @@ function updatePreview() {
             const roomDiv = document.createElement('div');
             roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
             roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong></p>
-                                <p class="space-y-1 my-2">${details.join(' | ')}</p>
-                                <p class="font-semibold text-right">עלות: $${costValue.toLocaleString()}</p>`;
+                                 <p class="space-y-1 my-2">${details.join(' | ')}</p>
+                                 <p class="font-semibold text-right">עלות: $${costValue.toLocaleString()}</p>`;
             DOMElements.previewRoomsContainer.appendChild(roomDiv);
             totalPrice += costValue;
         }
     });
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
-    // Inclusions
     const inclusionsList = DOMElements.previewInclusions;
     inclusionsList.innerHTML = '';
     addInclusionItem(inclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
@@ -1320,7 +1230,6 @@ function updatePreview() {
     if (state.customInclusions) {
         state.customInclusions.split('\n').filter(line => line.trim()).forEach(line => addInclusionItem(inclusionsList, line.trim()));
     }
-    // Flights
     const flightCostPerPerson = parseFloat(state.flightCost) || 0;
     const flightCostValue = flightCostPerPerson * totalPassengers;
     const hasFlights = state.dynamicFields.flights.some(f => f.airline) || flightCostValue > 0;
@@ -1338,13 +1247,12 @@ function updatePreview() {
         const includesList = DOMElements.previewFlightIncludes;
         includesList.innerHTML = '';
         const includesText = state.flightIncludes.trim();
-        DOMElements.previewFlightIncludesContainer.style.display = includesText ? 'block' : 'none';
+        DOMElements.previewFlightIncludesContainer.classList.toggle('hidden', !includesText);
         if (includesText) {
             includesText.split('\n').forEach(line => {
                 if (line.trim()) addInclusionItem(includesList, line.trim());
             });
         }
-        
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
         if (flightCostPerPerson > 0 && totalPassengers > 0) {
             DOMElements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
@@ -1354,23 +1262,21 @@ function updatePreview() {
             DOMElements.previewFlightCost.textContent = '';
         }
         totalPrice += flightCostValue;
-        
         let conditionsText = '';
         if (state.flightCancelType === 'flightNoCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
         } else if (state.flightCancelType === 'flightCancellable') {
             let parts = [];
             if (state.flightCancelCheck && state.flightCancelFee) {
-                parts.push(`ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב-${state.flightCancelFee} לנוסע.`);
+                parts.push(`ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב ${state.flightCancelFee} לנוסע.`);
             }
             if (state.flightChangeCheck && state.flightChangeFee) {
-                parts.push(`שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב-${state.flightChangeFee} לנוסע ומותנה באותה מחלקת שירות.`);
+                parts.push(`שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב ${state.flightChangeFee} לנוסע ומותנה באותה מחלקת שירות.`);
             }
             conditionsText = parts.map(p => `<p>${p}</p>`).join('');
         }
         DOMElements.previewFlightConditions.innerHTML = conditionsText;
     }
-    // Hotels
     DOMElements.previewHotelsContainer.innerHTML = '';
     const hasHotels = state.dynamicFields.hotels.some(h => h.hotelName || h.hotelCost > 0);
     DOMElements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
@@ -1398,7 +1304,6 @@ function updatePreview() {
             }
         });
     }
-    // Transfers
     const transfersCost = parseFloat(state.transfersCost) || 0;
     const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType) || transfersCost > 0;
     DOMElements.previewTransfersContainer.classList.toggle('hidden', !hasTransfers);
@@ -1422,75 +1327,50 @@ function updatePreview() {
         }
         DOMElements.previewTransfersConditions.innerHTML = conditionsText;
     }
-    // Total Price
     DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
     DOMElements.previewTotalPrice.textContent = totalPrice.toLocaleString();
-    
-    // Hide price note for confirmation
-    DOMElements.priceNote.classList.toggle('hidden', docType === 'confirmation');
 }
 function addInclusionItem(list, text) {
     const li = document.createElement('li');
     li.innerHTML = text;
     list.appendChild(li);
 }
-// --- PDF GENERATION ---
 async function generatePDF() {
-    try {
-        const state = getFormState();
-        const error = validateForm(state);
-        if (error) {
-            alert(error);
-            return;
-        }
-        DOMElements.previewElement.classList.remove('shadow-lg');
-        
-        const { jsPDF } = window.jspdf;
-        
-        const clone = DOMElements.previewElement.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
-        clone.style.width = '794px';
-        document.body.appendChild(clone);
-        
-        // This line was removed from the original broken code, it's not needed here
-        // clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
-        
-        // **FIXED LOGIC**: Using `useCORS: true` instead of the proxy and allowTaint
-        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
-        
-        clone.remove();
-        
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgHeight = canvas.height * pdfWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-        
+    DOMElements.previewElement.classList.remove('shadow-lg');
+    const { jsPDF } = window.jspdf;
+    const clone = DOMElements.previewElement.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.width = '794px';
+    document.body.appendChild(clone);
+    clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
+    const images = clone.querySelectorAll('img');
+    const promises = Array.from(images).map(img => new Promise(resolve => {
+        if (img.complete && img.naturalHeight !== 0) resolve();
+        else { img.onload = resolve; img.onerror = resolve; }
+    }));
+    await Promise.all(promises);
+    const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
+    clone.remove();
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgHeight = canvas.height * pdfWidth / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+    while (heightLeft > 0) {
+        position -= pdfHeight;
+        pdf.addPage();
         pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
-        
-        while (heightLeft > 0) {
-            position -= pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdfHeight;
-        }
-        
-        const clientName = DOMElements.clientName.value || 'הצעה';
-        const shipName = DOMElements.shipName.value || 'קרוז';
-        pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
-        
-        DOMElements.previewElement.classList.add('shadow-lg');
-        
-    } catch (error) {
-        console.error('שגיאה ביצירת PDF:', error);
-        alert('שגיאה ביצירת ה-PDF. נסה שוב או בדוק קישורים לתמונות.');
-        // Restore class just in case error happened before the end
-        DOMElements.previewElement.classList.add('shadow-lg');
     }
+    const clientName = DOMElements.clientName.value || 'הצעה';
+    const shipName = DOMElements.shipName.value || 'קרוז';
+    pdf.save(`הצעת מחיר ${shipName} - ${clientName}.pdf`);
+    DOMElements.previewElement.classList.add('shadow-lg');
 }
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
