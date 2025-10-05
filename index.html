@@ -2492,7 +2492,7 @@ function handlePaste(event) {
 
 // --- PREVIEW UPDATE LOGIC ---
 
-function updatePreview() {
+async function updatePreview() {
 
     const state = getFormState();
 
@@ -2586,37 +2586,37 @@ function updatePreview() {
 
     const ship = cruiseData[state.cruiseLine]?.find(s => s.name === state.shipName);
 
+    const placeholder = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22300%22 viewBox=%220 0 800 300%22%3E%3Crect width=%22800%22 height=%22300%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%22400%22 y=%22150%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23adb5bd%22 font-family=%22sans-serif%22%3Eתמונת האונייה%3C/text%3E%3C/svg%3E';
+
     if (ship) {
 
         const cacheKey = `ship_${state.cruiseLine}_${state.shipName}`;
 
-        const cached = localStorage.getItem(cacheKey);
+        let src = localStorage.getItem(cacheKey);
 
-        DOMElements.previewShipImage.src = cached || ship.image;
+        if (!src) {
 
-        if (!cached) {
+            try {
 
-            fetch(ship.image).then(res => res.blob()).then(blob => {
+                src = await loadImageAsDataURL(ship.image);
 
-                const reader = new FileReader();
+                localStorage.setItem(cacheKey, src);
 
-                reader.onload = () => localStorage.setItem(cacheKey, reader.result);
+            } catch (e) {
 
-                reader.readAsDataURL(blob);
+                console.warn('שגיאה בטעינת תמונת אונייה:', e);
 
-            }).catch(() => {
+                src = placeholder;
 
-                console.warn('שגיאה בטעינת תמונת אונייה.');
-
-                DOMElements.previewShipImage.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22300%22 viewBox=%220 0 800 300%22%3E%3Crect width=%22800%22 height=%22300%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%22400%22 y=%22150%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23adb5bd%22 font-family=%22sans-serif%22%3Eתמונת האונייה%3C/text%3E%3C/svg%3E';
-
-            });
+            }
 
         }
 
+        DOMElements.previewShipImage.src = src;
+
     } else {
 
-        DOMElements.previewShipImage.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22300%22 viewBox=%220 0 800 300%22%3E%3Crect width=%22800%22 height=%22300%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%22400%22 y=%22150%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23adb5bd%22 font-family=%22sans-serif%22%3Eתמונת האונייה%3C/text%3E%3C/svg%3E';
+        DOMElements.previewShipImage.src = placeholder;
 
     }
 
@@ -2944,7 +2944,9 @@ async function loadImageAsDataURL(url) {
 
   try {
 
-    const response = await fetch(url);
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+    const response = await fetch(proxyUrl);
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
