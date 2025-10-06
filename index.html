@@ -93,7 +93,7 @@
             </button>
         </div>
     </div>
-   
+  
     <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden">
         <header class="text-center mb-8 no-print">
             <div class="flex justify-between items-center">
@@ -112,7 +112,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-               
+              
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -147,6 +147,10 @@
                             <input id="hideCruise" type="checkbox" class="h-4 w-4 text-red-600 border-gray-300 rounded mt-1">
                             <label for="hideCruise" class="mr-2 block text-sm text-red-700 font-semibold">הסתר שייט מההצעה</label>
                         </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <input id="hideMealInclusion" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <label for="hideMealInclusion" class="mr-2 text-sm text-gray-700">הסתר סעיף ארוחות קבוע</label>
                     </div>
                     <div id="cruiseFields" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -295,7 +299,7 @@
                         </div>
                     </div>
                 </div>
-               
+              
                 <div class="mt-6 border-t pt-4">
                     <div class="flex items-start mb-4">
                         <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
@@ -305,17 +309,13 @@
                         <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
                         <textarea id="customInclusions" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <input id="hideMealInclusion" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                        <label for="hideMealInclusion" class="mr-2 text-sm text-gray-700">הסתר סעיף ארוחות קבוע</label>
-                    </div>
                 </div>
                 <div class="mt-8 flex justify-between gap-4">
                     <button id="saveQuoteBtn" class="w-full lg:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">שמור הצעה</button>
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-           
+          
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
@@ -332,7 +332,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                       
+                      
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -372,12 +372,12 @@
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
-                       
+                      
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                       
+                      
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -386,7 +386,7 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                       
+                      
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
@@ -399,7 +399,7 @@
                            <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                            <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a></p>
                         </div>
-                       
+                      
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -421,12 +421,12 @@
                         <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
                         <p id="previewAdvisor">ליאור דובינובסקי | יועץ שייט | 03-3106454 | lior@balicruise.co.il</p>
                     </footer>
-                    <p id="previewInternalQuote" class="absolute bottom-0 left-0 text-xs text-gray-400">מספר הצעה פנימי: <span id="previewInternalNumber"></span></p>
+                    <p id="previewInternalQuote" class="absolute bottom-0 left-0 text-xs text-gray-400"><span id="previewInternalNumber"></span></p>
                 </div>
             </div>
         </div>
     </div>
-   
+  
     <div id="savedQuotesModal" class="modal">
         <div class="modal-content">
             <span id="closeModalBtn" class="close-btn">&times;</span>
@@ -607,7 +607,7 @@
             </div>
         </div>
     </template>
-   
+  
 <script>
 // --- DATA ---
 const cruiseData = {
@@ -1406,7 +1406,9 @@ function updatePreview() {
     const cruiseInclusionsList = DOMElements.previewCruiseInclusionsList;
     cruiseInclusionsList.innerHTML = '';
     if (!isCruiseHidden) {
-        addInclusionItem(cruiseInclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+        if (!state.hideMealInclusion) {
+            addInclusionItem(cruiseInclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+        }
     }
     if(state.cruiseLine === 'MSC' && !isCruiseHidden) {
         addInclusionItem(cruiseInclusionsList, '<strong>כולל תשלום טיפים מראש.</strong>');
