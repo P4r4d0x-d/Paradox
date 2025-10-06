@@ -93,7 +93,7 @@
             </button>
         </div>
     </div>
-  
+ 
     <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden">
         <header class="text-center mb-8 no-print">
             <div class="flex justify-between items-center">
@@ -112,7 +112,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-              
+             
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -299,7 +299,7 @@
                         </div>
                     </div>
                 </div>
-              
+             
                 <div class="mt-6 border-t pt-4">
                     <div class="flex items-start mb-4">
                         <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
@@ -315,7 +315,7 @@
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-          
+         
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
@@ -332,7 +332,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                      
+                     
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -372,12 +372,12 @@
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
-                      
+                     
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                      
+                     
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -386,7 +386,7 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                      
+                     
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
@@ -399,7 +399,7 @@
                            <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                            <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a></p>
                         </div>
-                      
+                     
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -426,7 +426,7 @@
             </div>
         </div>
     </div>
-  
+ 
     <div id="savedQuotesModal" class="modal">
         <div class="modal-content">
             <span id="closeModalBtn" class="close-btn">&times;</span>
@@ -590,24 +590,29 @@
                     <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
                     <div class="space-y-2">
                         <div class="flex items-center">
-                            <input type="checkbox" name="hotelCancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <input type="radio" name="hotelCancelType" value="noCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <label class="mr-2">ללא אפשרות ביטול/שינוי</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" name="hotelCancelType" value="cancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
                             <label class="mr-2">ניתן לביטול עם דמי</label>
                         </div>
                         <div class="hotel-cancel-details hidden space-y-2 mr-6">
-                            <input type="text" name="hotelCancelFee" placeholder="דמי ביטול לחדר" class="w-full border-gray-300 rounded-md shadow-sm">
-                            <label class="block text-sm font-medium text-gray-700 mt-2">עד לתאריך</label>
-                            <input type="date" name="hotelCancelDate" class="w-full border-gray-300 rounded-md shadow-sm">
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="hotelNoCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                            <label class="mr-2">ללא אפשרות ביטול/שינוי</label>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">דמי ביטול</label>
+                                <input type="text" name="hotelCancelFee" placeholder="לדוגמה: $50" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">עד תאריך</label>
+                                <input type="date" name="hotelCancelDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </template>
-  
+ 
 <script>
 // --- DATA ---
 const cruiseData = {
@@ -997,6 +1002,7 @@ function setupEventListeners() {
     DOMElements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.flightNoCancel.addEventListener('change', toggleFlightCancelDetails);
     DOMElements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
+    DOMElements.transfersNoCancel.addEventListener('change', toggleTransfersCancelDetails);
     DOMElements.showSavedQuotesBtn.addEventListener('click', showSavedQuotes);
     DOMElements.closeModalBtn.addEventListener('click', () => DOMElements.savedQuotesModal.style.display = 'none');
     window.addEventListener('click', (event) => {
@@ -1028,7 +1034,7 @@ function getNextQuoteNumber() {
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
     const initialBases = { lior: 2000, tatiana: 3000, koren: 1000, yarden: 4000, nir: 5000 };
     const storageKey = `lastQuoteNumber_${advisorKey}`;
-    let lastNumber = parseInt(localStorage.getItem(storageKey));
+    let lastNumber = parseInt(localStorage.getItem(storageKey) || '');
     if (isNaN(lastNumber)) {
         lastNumber = initialBases[advisorKey] || 0;
     }
@@ -1176,8 +1182,13 @@ function getFormState() {
     DOMElements.hotelsContainer.querySelectorAll('.hotel-entry').forEach(div => {
         const data = {};
         div.querySelectorAll('input, select, textarea').forEach(input => {
-            if (input.type === 'checkbox') data[input.name] = input.checked;
-            else data[input.name] = input.value;
+            if (input.type === 'radio') {
+                if (input.checked) data[input.name] = input.value;
+            } else if (input.type === 'checkbox') {
+                data[input.name] = input.checked;
+            } else {
+                data[input.name] = input.value;
+            }
         });
         dynamicFields.hotels.push(data);
     });
@@ -1206,7 +1217,17 @@ function loadState(state) {
     state.dynamicFields.flights.forEach(data => addFlight(data));
     state.dynamicFields.transfers.forEach(data => addTransfer(data));
     if (state.dynamicFields.hotels) {
-        state.dynamicFields.hotels.forEach(data => addHotel(data));
+        state.dynamicFields.hotels.forEach(data => {
+            // Backward compatibility for old checkbox data
+            if (data.hotelNoCancel !== undefined || data.hotelCancellable !== undefined) {
+                if (data.hotelNoCancel) {
+                    data.hotelCancelType = 'noCancel';
+                } else if (data.hotelCancellable) {
+                    data.hotelCancelType = 'cancellable';
+                }
+            }
+            addHotel(data);
+        });
     }
     updatePreview();
 }
@@ -1288,17 +1309,27 @@ function addHotel(initialData = {}) {
         for (const key in initialData) {
             const input = hotelDiv.querySelector(`[name="${key}"]`);
             if (input) {
-                if (input.type === 'checkbox') input.checked = initialData[key];
-                else input.value = initialData[key];
+                if (input.type === 'radio') {
+                    if (initialData[key] === input.value) input.checked = true;
+                } else {
+                    input.value = initialData[key];
+                }
             }
         }
     }
-    const cancellableCheckbox = hotelDiv.querySelector('[name="hotelCancellable"]');
-    const cancelDetailsDiv = hotelDiv.querySelector('.hotel-cancel-details');
-    const toggleDetails = () => cancelDetailsDiv.classList.toggle('hidden', !cancellableCheckbox.checked);
-    cancellableCheckbox.addEventListener('change', toggleDetails);
+    const cancelTypeRadios = hotelDiv.querySelectorAll('input[name="hotelCancelType"]');
+    const cancelDetails = hotelDiv.querySelector('.hotel-cancel-details');
+    cancelTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            cancelDetails.classList.toggle('hidden', radio.value !== 'cancellable');
+        });
+    });
+    // Initial toggle
+    const selected = hotelDiv.querySelector('input[name="hotelCancelType"]:checked');
+    if (selected) {
+        cancelDetails.classList.toggle('hidden', selected.value !== 'cancellable');
+    }
     hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => { hotelDiv.remove(); updateStateAndPreview(); });
-    toggleDetails();
 }
 function toggleTransfersCancelDetails() {
     DOMElements.transfersCancelDetails.classList.toggle('hidden', !DOMElements.transfersCancellable.checked);
@@ -1476,9 +1507,9 @@ function updatePreview() {
             if (hotel.hotelName || cost > 0) {
                 totalPrice += cost;
                 let conditionsText = '';
-                if (hotel.hotelNoCancel) {
+                if (hotel.hotelCancelType === 'noCancel') {
                     conditionsText = '<p>ללא אפשרות ביטול/שינוי.</p>';
-                } else if (hotel.hotelCancellable) {
+                } else if (hotel.hotelCancelType === 'cancellable') {
                     const date = hotel.hotelCancelDate ? new Date(hotel.hotelCancelDate).toLocaleDateString('he-IL') : '___';
                     const fee = hotel.hotelCancelFee || '___';
                     conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
@@ -1536,6 +1567,58 @@ function addInclusionItem(list, text) {
     list.appendChild(li);
 }
 async function generatePDF() {
+    const state = getFormState();
+    if (state.docType === 'confirmation') {
+        let errors = [];
+        // Validate flights
+        const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || (parseFloat(state.flightCost) > 0);
+        if (hasFlights) {
+            if (!state.flightCancelType) {
+                errors.push('יש לבחור סוג ביטול/שינוי לטיסות');
+            } else if (state.flightCancelType === 'flightCancellable') {
+                if (state.flightCancelCheck && !state.flightCancelFee) {
+                    errors.push('יש למלא דמי ביטול לטיסות');
+                }
+                if (state.flightChangeCheck && !state.flightChangeFee) {
+                    errors.push('יש למלא דמי שינוי לטיסות');
+                }
+            }
+        }
+        // Validate hotels
+        state.dynamicFields.hotels.forEach((hotel, i) => {
+            const hasHotel = hotel.hotelName || parseFloat(hotel.hotelCost) > 0 || hotel.hotelNights || hotel.hotelStartDate || hotel.hotelRoomDesc || hotel.hotelPension;
+            if (hasHotel) {
+                if (!hotel.hotelCancelType) {
+                    errors.push(`יש לבחור סוג ביטול למלון ${i + 1}`);
+                } else if (hotel.hotelCancelType === 'cancellable') {
+                    if (!hotel.hotelCancelFee) {
+                        errors.push(`יש למלא דמי ביטול למלון ${i + 1}`);
+                    }
+                    if (!hotel.hotelCancelDate) {
+                        errors.push(`יש למלא תאריך ביטול למלון ${i + 1}`);
+                    }
+                }
+            }
+        });
+        // Validate transfers
+        const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType || t.transferFreeText) || (parseFloat(state.transfersCost) > 0);
+        if (hasTransfers) {
+            if (!state.transfersCancelType) {
+                errors.push('יש לבחור סוג ביטול להעברות');
+            } else if (state.transfersCancelType === 'transfersCancellable') {
+                if (!state.transfersCancelDate) {
+                    errors.push('יש למלא תאריך ביטול להעברות');
+                }
+                if (!state.transfersCancelFee) {
+                    errors.push('יש למלא דמי ביטול להעברות');
+                }
+            }
+        }
+        if (errors.length > 0) {
+            alert(errors.join('\n'));
+            return;
+        }
+    }
     DOMElements.previewElement.classList.remove('shadow-lg');
     const { jsPDF } = window.jspdf;
     const clone = DOMElements.previewElement.cloneNode(true);
