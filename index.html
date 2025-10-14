@@ -398,7 +398,7 @@
                                     <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
                                 </div>
                                 <p id="previewFlightFreeText" style="white-space: pre-wrap;"></p>
-                                <p class="font-semibold text-right" id="previewFlightCost"></p>
+                                <div class="font-semibold text-right" id="previewFlightCost"></div>
                                 <div id="previewFlightConditions" class="text-sm"></div>
                             </div>
                         </div>
@@ -1543,19 +1543,12 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-        let costText = 'עלות: ';
-        let parts = [];
-        if (adults > 0 && adultPrice > 0) parts.push(`$${adultPrice.toLocaleString()} למבוגר X ${adults} מבוגרים`);
-        if (children > 0 && childPrice > 0) parts.push(`$${childPrice.toLocaleString()} לילד X ${children} ילדים`);
-        if (infants > 0 && infantPrice > 0) parts.push(`$${infantPrice.toLocaleString()} לתינוק X ${infants} תינוקות`);
-        if (parts.length > 0) {
-            costText += parts.join(' + ') + ` = $${flightCostValue.toLocaleString()}`;
-        } else if (flightCostValue > 0) {
-            costText += `$${flightCostValue.toLocaleString()}`;
-        } else {
-            costText = '';
-        }
-        DOMElements.previewFlightCost.textContent = costText;
+        let costHTML = '<span class="font-semibold">עלות:</span><br>';
+        if (adults > 0 && adultPrice > 0) costHTML += `מבוגרים: $${adultPrice.toLocaleString()} X ${adults} = $${(adultPrice * adults).toLocaleString()}<br>`;
+        if (children > 0 && childPrice > 0) costHTML += `ילדים: $${childPrice.toLocaleString()} X ${children} = $${(childPrice * children).toLocaleString()}<br>`;
+        if (infants > 0 && infantPrice > 0) costHTML += `תינוקות: $${infantPrice.toLocaleString()} X ${infants} = $${(infantPrice * infants).toLocaleString()}<br>`;
+        costHTML += `<strong>סה"כ: $${flightCostValue.toLocaleString()}</strong>`;
+        DOMElements.previewFlightCost.innerHTML = costHTML;
         totalPrice += flightCostValue;
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
