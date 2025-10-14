@@ -229,8 +229,39 @@
                             <textarea id="flightFreeText" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
                         </div>
                         <div>
-                            <label for="flightCost" class="block text-sm font-medium text-gray-700">עלות כרטיס טיסה לאדם ($)</label>
-                            <input type="number" id="flightCost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <h4 class="text-md font-bold mt-4">כמות נוסעים ומחירים</h4>
+                            <div class="space-y-2">
+                                <div class="flex gap-4">
+                                    <div class="w-1/3">
+                                        <label class="block text-sm font-medium text-gray-700">מבוגרים</label>
+                                        <input type="number" id="adultsCount" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                    <div class="w-2/3">
+                                        <label class="block text-sm font-medium text-gray-700">מחיר למבוגר ($)</label>
+                                        <input type="number" id="adultPrice" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-1/3">
+                                        <label class="block text-sm font-medium text-gray-700">ילדים</label>
+                                        <input type="number" id="childrenCount" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                    <div class="w-2/3">
+                                        <label class="block text-sm font-medium text-gray-700">מחיר לילד ($)</label>
+                                        <input type="number" id="childPrice" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-1/3">
+                                        <label class="block text-sm font-medium text-gray-700">תינוקות</label>
+                                        <input type="number" id="infantsCount" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                    <div class="w-2/3">
+                                        <label class="block text-sm font-medium text-gray-700">מחיר לתינוק ($)</label>
+                                        <input type="number" id="infantPrice" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">תנאי ביטול/שינוי</label>
@@ -896,7 +927,12 @@ const DOMElements = {
     addFlightBtn: document.getElementById('addFlightBtn'),
     flightIncludes: document.getElementById('flightIncludes'),
     flightFreeText: document.getElementById('flightFreeText'),
-    flightCost: document.getElementById('flightCost'),
+    adultsCount: document.getElementById('adultsCount'),
+    adultPrice: document.getElementById('adultPrice'),
+    childrenCount: document.getElementById('childrenCount'),
+    childPrice: document.getElementById('childPrice'),
+    infantsCount: document.getElementById('infantsCount'),
+    infantPrice: document.getElementById('infantPrice'),
     flightNoCancel: document.getElementById('flightNoCancel'),
     flightCancellable: document.getElementById('flightCancellable'),
     flightCancelDetails: document.getElementById('flightCancelDetails'),
@@ -1436,11 +1472,9 @@ function updatePreview() {
     if (state.shipVideo) DOMElements.previewShipVideo.querySelector('a').href = state.shipVideo;
     DOMElements.previewRoomsContainer.innerHTML = '';
     let totalPrice = 0;
-    let totalPassengers = 0;
     let hasGuarantee = false;
     state.dynamicFields.rooms.forEach((room, index) => {
         const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '5 מבוגרים': 5 }[room.composition] || 0;
-        totalPassengers += passengersInRoom;
         if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
         const costValue = parseFloat(room.roomCost) || 0;
         if (room.composition || room.roomType || costValue > 0) {
@@ -1480,8 +1514,13 @@ function updatePreview() {
     if (state.customInclusions) {
         state.customInclusions.split('\n').filter(line => line.trim()).forEach(line => addInclusionItem(inclusionsList, line.trim()));
     }
-    const flightCostPerPerson = parseFloat(state.flightCost) || 0;
-    const flightCostValue = flightCostPerPerson * totalPassengers;
+    const adults = parseInt(state.adultsCount) || 0;
+    const adultPrice = parseFloat(state.adultPrice) || 0;
+    const children = parseInt(state.childrenCount) || 0;
+    const childPrice = parseFloat(state.childPrice) || 0;
+    const infants = parseInt(state.infantsCount) || 0;
+    const infantPrice = parseFloat(state.infantPrice) || 0;
+    const flightCostValue = (adults * adultPrice) + (children * childPrice) + (infants * infantPrice);
     const hasFlights = state.dynamicFields.flights.some(f => f.airline) || flightCostValue > 0;
     DOMElements.previewFlightsContainer.classList.toggle('hidden', !hasFlights);
     if (hasFlights) {
@@ -1504,13 +1543,19 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-        if (flightCostPerPerson > 0 && totalPassengers > 0) {
-            DOMElements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם X ${totalPassengers} נוסעים = $${flightCostValue.toLocaleString()}`;
-        } else if (flightCostPerPerson > 0) {
-            DOMElements.previewFlightCost.textContent = `עלות: $${flightCostPerPerson.toLocaleString()} לאדם`;
+        let costText = 'עלות: ';
+        let parts = [];
+        if (adults > 0 && adultPrice > 0) parts.push(`$${adultPrice.toLocaleString()} למבוגר X ${adults} מבוגרים`);
+        if (children > 0 && childPrice > 0) parts.push(`$${childPrice.toLocaleString()} לילד X ${children} ילדים`);
+        if (infants > 0 && infantPrice > 0) parts.push(`$${infantPrice.toLocaleString()} לתינוק X ${infants} תינוקות`);
+        if (parts.length > 0) {
+            costText += parts.join(' + ') + ` = $${flightCostValue.toLocaleString()}`;
+        } else if (flightCostValue > 0) {
+            costText += `$${flightCostValue.toLocaleString()}`;
         } else {
-            DOMElements.previewFlightCost.textContent = '';
+            costText = '';
         }
+        DOMElements.previewFlightCost.textContent = costText;
         totalPrice += flightCostValue;
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
@@ -1600,7 +1645,7 @@ async function generatePDF() {
     if (state.docType === 'confirmation') {
         let errors = [];
         // Validate flights
-        const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || (parseFloat(state.flightCost) > 0);
+        const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || ((parseInt(state.adultsCount) || 0) > 0 || (parseInt(state.childrenCount) || 0) > 0 || (parseInt(state.infantsCount) || 0) > 0);
         if (hasFlights) {
             if (!state.flightCancelType) {
                 errors.push('יש לבחור סוג ביטול/שינוי לטיסות');
