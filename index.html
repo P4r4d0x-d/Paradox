@@ -860,24 +860,24 @@ const cruiseData = {
         { "name": "Zuiderdam", "video": "", "image": "" }
     ],
     "Disney Cruise Line": [
-        { "name": "Disney Adventure", "video": "", "image": "" },
-        { "name": "Disney Destiny", "video": "", "image": "" },
-        { "name": "Disney Dream", "video": "", "image": "" },
-        { "name": "Disney Fantasy", "video": "", "image": "" },
-        { "name": "Disney Magic", "video": "", "image": "" },
-        { "name": "Disney Treasure", "video": "", "image": "" },
-        { "name": "Disney Wish", "video": "", "image": "" },
-        { "name": "Disney Wonder", "video": "", "image": "" }
+        { "name": "Disney Adventure", "video": "https://www.youtube.com/watch?v=hCXJl5f87es", "image": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Disney_Adventure_final_outfitting_in_Wismar_02.jpg" },
+        { "name": "Disney Destiny", "video": "https://www.youtube.com/watch?v=ShYCuwpBiQY", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1680/840/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/destiny/overview/DCL_Destiny_5x2.jpg?2024-07-24T21:44:12+00:00" },
+        { "name": "Disney Dream", "video": "https://www.youtube.com/watch?v=qIHcNpP2l80", "image": "https://www.cruisemapper.com/images/ships/548-large-8d34201a5b85900908db6cae92723617.jpg" },
+        { "name": "Disney Fantasy", "video": "https://www.youtube.com/watch?v=Xbux3Z9vHcw", "image": "https://i0.wp.com/magicguides.com/wp-content/uploads/2023/01/DCL-Disney-Fantasy-Cruise-Ship.jpg" },
+        { "name": "Disney Magic", "video": "https://www.youtube.com/watch?v=LpDiL8-Io7Y", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/fleet-overview/magic/1205ZX_2167MS-16x9.jpg?2024-06-28T19:14:24+00:00" },
+        { "name": "Disney Treasure", "video": "https://www.youtube.com/watch?v=3qoOC42WpLU", "image": "https://cdn.abcotvs.com/dip/images/15563544_112024-cc-disney-ship-img.jpg" },
+        { "name": "Disney Wish", "video": "https://www.youtube.com/watch?v=I6s0N6pKhyg", "image": "https://www.disneyholidays.co.uk/disney-cruise-line/images/ships/mobile/disney-wish-header.jpg" },
+        { "name": "Disney Wonder", "video": "https://www.youtube.com/watch?v=6Fx1eBg7RX0", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/wonder/959939327_0505ZZ_0333DZ-16x9.jpg?2022-03-23T05:13:12+00:00" }
     ],
     "Cunard": [
-        { "name": "Queen Mary 2", "video": "", "image": "" },
-        { "name": "Queen Anne", "video": "", "image": "" },
-        { "name": "Queen Elizabeth", "video": "", "image": "" },
-        { "name": "Queen Victoria", "video": "", "image": "" }
+        { "name": "Queen Mary 2", "video": "https://www.youtube.com/watch?v=jHvzphIxT2o", "image": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Queen_Mary_2_Boston_July_2015_01_%28cropped%29.jpg" },
+        { "name": "Queen Anne", "video": "https://www.youtube.com/watch?v=5xYs4Xdx378", "image": "https://upload.wikimedia.org/wikipedia/commons/a/a7/MS_Queen_Anne_at_Carbo_San_Lucas%2C_Mexico_on_January_31%2C_2025.jpg" },
+        { "name": "Queen Elizabeth", "video": "https://www.youtube.com/watch?v=9nP2NB8D7x0", "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Queen_Elizabeth_%28ship%2C_2010%29_in_Sydney%2C_December_2022%2C_10.jpg" },
+        { "name": "Queen Victoria", "video": "https://www.youtube.com/watch?v=odjCWV6z78Y", "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/Queen_Victoria_%2852322173455%29.jpg" }
     ],
     "Crystal": [
-        { "name": "Crystal Serenity", "video": "", "image": "" },
-        { "name": "Crystal Symphony", "video": "", "image": "" }
+        { "name": "Crystal Serenity", "video": "https://www.youtube.com/watch?v=ycLSSVmXHUo", "image": "https://cdn.crystalcruises.com/images/scp71evy/production/205f8dcfa8befa3a419bb0982bfe43289801f4a2-2720x1710.jpg?auto=format" },
+        { "name": "Crystal Symphony", "video": "https://www.youtube.com/watch?v=4i1CTMJW6l4", "image": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Crystal_Symphony%2C_Fremantle%2C_2018_%2803%29.jpg" }
     ]
 };
 const advisors = {
@@ -1415,7 +1415,6 @@ function handlePaste(event) {
                 reader.onload = (e) => {
                     DOMElements.previewItineraryImage.src = e.target.result;
                     DOMElements.itineraryPasteTarget.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה!</span>`;
-                    updateStateAndPreview();
                 };
                 reader.readAsDataURL(blob);
             }
