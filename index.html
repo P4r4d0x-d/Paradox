@@ -398,8 +398,8 @@
                                     <ul id="previewFlightIncludes" class="list-disc list-inside"></ul>
                                 </div>
                                 <p id="previewFlightFreeText" style="white-space: pre-wrap;"></p>
-                                <div class="font-semibold text-right" id="previewFlightCost"></div>
-                                <div id="previewFlightConditions" class="text-sm"></div>
+                                <div id="previewFlightCost" class="text-sm mt-3 p-3 bg-gray-50 rounded-lg"></div>
+                                <div id="previewFlightConditions" class="text-sm mt-2"></div>
                             </div>
                         </div>
                     
@@ -720,7 +720,7 @@ const cruiseData = {
         { "name": "Star of the Seas", "video": "https://www.youtube.com/watch?v=Dzy3kbEqXXQ", "image": "https://i.postimg.cc/Sx8xX0cM/1752847327-star-departure-17072025-037.jpg" },
         { "name": "Symphony of the Seas", "video": "https://www.youtube.com/watch?v=GOPIRTWBNMc", "image": "https://i.postimg.cc/HLqKVK0F/1684771879-RCI-SY-Europe-April2018-Dana-Neibert-Aerial-Mullen-4196-RET-V1.jpg" },
         { "name": "Utopia of the Seas", "video": "https://www.youtube.com/watch?v=dEQsBIA0jnE", "image": "https://i.postimg.cc/Z5bQ1pjM/1721752604-UT24r-0082.jpg" },
-        { "name": "Wonder of the Seas", "video": "", "image": "https://i.postimg.cc/cLKc7stn/Wonder-of-the-Seas-Image-courtesy-of-Royal-Caribbean.jpg" }
+        { "name": "Wonder of the Seas", "video": "", "image": "https://i.postimg.cc/K12LxhNG/image.png" }
     ],
     "CELEBRITY": [
         { "name": "Celebrity Apex", "video": "https://www.youtube.com/watch?v=tP2rwE33VlU", "image": "https://i.postimg.cc/XvnySv66/1727383416-Celebrity-Cruises-Deployment-2026-27-Norway.jpg" },
@@ -1543,13 +1543,54 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-        let costHTML = '<span class="font-semibold">עלות:</span><br>';
-        if (adults > 0 && adultPrice > 0) costHTML += `מבוגרים: $${adultPrice.toLocaleString()} X ${adults} = $${(adultPrice * adults).toLocaleString()}<br>`;
-        if (children > 0 && childPrice > 0) costHTML += `ילדים: $${childPrice.toLocaleString()} X ${children} = $${(childPrice * children).toLocaleString()}<br>`;
-        if (infants > 0 && infantPrice > 0) costHTML += `תינוקות: $${infantPrice.toLocaleString()} X ${infants} = $${(infantPrice * infants).toLocaleString()}<br>`;
-        costHTML += `<strong>סה"כ: $${flightCostValue.toLocaleString()}</strong>`;
-        DOMElements.previewFlightCost.innerHTML = costHTML;
+        
+        const costContainer = DOMElements.previewFlightCost;
+        costContainer.innerHTML = '';
+
+        if (flightCostValue > 0) {
+            costContainer.innerHTML = '<p class="font-semibold mb-2 text-base">עלות:</p>';
+            const costDetailsDiv = document.createElement('div');
+            costDetailsDiv.className = 'space-y-1';
+
+            if (adults > 0 && adultPrice > 0) {
+                costDetailsDiv.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>מבוגרים: ${adults} x $${adultPrice.toLocaleString()}</span>
+                        <span>$${(adults * adultPrice).toLocaleString()}</span>
+                    </div>`;
+            }
+            if (children > 0 && childPrice > 0) {
+                costDetailsDiv.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>ילדים: ${children} x $${childPrice.toLocaleString()}</span>
+                        <span>$${(children * childPrice).toLocaleString()}</span>
+                    </div>`;
+            }
+            if (infants > 0 && infantPrice > 0) {
+                costDetailsDiv.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>תינוקות: ${infants} x $${infantPrice.toLocaleString()}</span>
+                        <span>$${(infants * infantPrice).toLocaleString()}</span>
+                    </div>`;
+            }
+            costContainer.appendChild(costDetailsDiv);
+
+            const hr = document.createElement('hr');
+            hr.className = 'my-2 border-gray-300';
+            costContainer.appendChild(hr);
+
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'flex justify-between font-bold text-base';
+            totalDiv.innerHTML = `
+                <span>סה"כ טיסות:</span>
+                <span>$${flightCostValue.toLocaleString()}</span>`;
+            costContainer.appendChild(totalDiv);
+        } else {
+            costContainer.innerHTML = '';
+        }
+        
         totalPrice += flightCostValue;
+        
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1700,23 +1741,31 @@ async function generatePDF() {
         else { img.onload = resolve; img.onerror = resolve; }
     }));
     await Promise.all(promises);
-    const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
+    
+    // --- IMPROVED RESOLUTION ---
+    const canvas = await html2canvas(clone, { scale: 3, useCORS: true, logging: false });
+    
     clone.remove();
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    
+    // --- USE PNG FOR BETTER QUALITY ---
+    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const imgHeight = canvas.height * pdfWidth / canvas.width;
     let heightLeft = imgHeight;
     let position = 0;
-    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+    
+    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
     heightLeft -= pdfHeight;
+    
     while (heightLeft > 0) {
         position -= pdfHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
     }
+    
     const clientName = DOMElements.clientName.value || 'הצעה';
     const shipName = DOMElements.shipName.value || 'קרוז';
     const docTitle = state.docType === 'confirmation' ? 'אישור הזמנה' : 'הצעת מחיר';
@@ -1729,4 +1778,3 @@ async function generatePDF() {
 </footer>
 </body>
 </html>
-
