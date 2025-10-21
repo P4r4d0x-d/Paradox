@@ -173,6 +173,9 @@
                                     <option>Disney Cruise Line</option>
                                     <option>Cunard</option>
                                     <option>Crystal</option>
+                                    <option>Princess</option>
+                                    <option>Mano</option>
+                                    <option>Explora Journeys</option>
                                 </select>
                             </div>
                             <div>
@@ -878,6 +881,35 @@ const cruiseData = {
     "Crystal": [
         { "name": "Crystal Serenity", "video": "https://www.youtube.com/watch?v=ycLSSVmXHUo", "image": "https://cdn.crystalcruises.com/images/scp71evy/production/205f8dcfa8befa3a419bb0982bfe43289801f4a2-2720x1710.jpg?auto=format" },
         { "name": "Crystal Symphony", "video": "https://www.youtube.com/watch?v=4i1CTMJW6l4", "image": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Crystal_Symphony%2C_Fremantle%2C_2018_%2803%29.jpg" }
+    ],
+    "Princess": [
+        { "name": "Caribbean Princess", "video": "", "image": "" },
+        { "name": "Coral Princess", "video": "", "image": "" },
+        { "name": "Crown Princess", "video": "", "image": "" },
+        { "name": "Diamond Princess", "video": "", "image": "" },
+        { "name": "Discovery Princess", "video": "", "image": "" },
+        { "name": "Emerald Princess", "video": "", "image": "" },
+        { "name": "Enchanted Princess", "video": "", "image": "" },
+        { "name": "Grand Princess", "video": "", "image": "" },
+        { "name": "Island Princess", "video": "", "image": "" },
+        { "name": "Majestic Princess", "video": "", "image": "" },
+        { "name": "Regal Princess", "video": "", "image": "" },
+        { "name": "Royal Princess", "video": "", "image": "" },
+        { "name": "Ruby Princess", "video": "", "image": "" },
+        { "name": "Sapphire Princess", "video": "", "image": "" },
+        { "name": "Sky Princess", "video": "", "image": "" },
+        { "name": "Star Princess", "video": "", "image": "" },
+        { "name": "Sun Princess", "video": "", "image": "" }
+    ],
+    "Mano": [
+        { "name": "CROWN IRIS", "video": "", "image": "" }
+    ],
+    "Explora Journeys": [
+        { "name": "EXPLORA I", "video": "", "image": "" },
+        { "name": "EXPLORA II", "video": "", "image": "" },
+        { "name": "EXPLORA III", "video": "", "image": "" },
+        { "name": "EXPLORA IV", "video": "", "image": "" },
+        { "name": "EXPLORA V", "video": "", "image": "" }
     ]
 };
 const advisors = {
@@ -893,6 +925,7 @@ const detailRoomTypes = [
     "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
 ];
 let currentQuoteId = null;
+let isLoaded = false;
 const DOMElements = {
     loginScreen: document.getElementById('loginScreen'),
     mainContent: document.getElementById('mainContent'),
@@ -1112,6 +1145,7 @@ function loadQuote(quoteId) {
     const quote = allQuotes.find(q => q.id === quoteId);
     if (quote) {
         currentQuoteId = quote.id;
+        isLoaded = true;
         DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
         loadState(quote.state);
         DOMElements.savedQuotesModal.style.display = 'none';
@@ -1127,6 +1161,7 @@ function deleteQuote(quoteId) {
 }
 function startNewQuote() {
     currentQuoteId = null;
+    isLoaded = false;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
@@ -1428,7 +1463,11 @@ function updatePreview() {
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
         DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
-        DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `${state.quoteNumber}` : '';
+        if (!isLoaded) {
+            DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `${state.quoteNumber}` : '';
+        } else {
+            DOMElements.previewQuoteNumber.textContent = '';
+        }
         DOMElements.importantNote.classList.remove('hidden');
     } else {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
