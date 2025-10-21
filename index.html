@@ -111,7 +111,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-            
+           
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -329,7 +329,7 @@
                         </div>
                     </div>
                 </div>
-            
+           
                 <div class="mt-6 border-t pt-4">
                     <div class="flex items-start mb-4">
                         <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
@@ -345,7 +345,7 @@
                     <button id="generatePDFBtn" class="w-full lg:w-auto bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
             </div>
-        
+       
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
@@ -362,7 +362,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                    
+                   
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -402,12 +402,12 @@
                                 <div id="previewFlightConditions" class="text-sm mt-2"></div>
                             </div>
                         </div>
-                    
+                   
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                    
+                   
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -416,7 +416,7 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                    
+                   
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                             סה"כ עלות: $<span id="previewTotalPrice">0</span>
                         </div>
@@ -429,7 +429,7 @@
                             <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                             <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a></p>
                         </div>
-                    
+                   
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -893,7 +893,6 @@ const detailRoomTypes = [
     "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
 ];
 let currentQuoteId = null;
-let isLoaded = false;
 const DOMElements = {
     loginScreen: document.getElementById('loginScreen'),
     mainContent: document.getElementById('mainContent'),
@@ -1113,7 +1112,6 @@ function loadQuote(quoteId) {
     const quote = allQuotes.find(q => q.id === quoteId);
     if (quote) {
         currentQuoteId = quote.id;
-        isLoaded = true;
         DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
         loadState(quote.state);
         DOMElements.savedQuotesModal.style.display = 'none';
@@ -1129,7 +1127,6 @@ function deleteQuote(quoteId) {
 }
 function startNewQuote() {
     currentQuoteId = null;
-    isLoaded = false;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
@@ -1418,6 +1415,7 @@ function handlePaste(event) {
                 reader.onload = (e) => {
                     DOMElements.previewItineraryImage.src = e.target.result;
                     DOMElements.itineraryPasteTarget.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה!</span>`;
+                    updateStateAndPreview();
                 };
                 reader.readAsDataURL(blob);
             }
@@ -1431,11 +1429,7 @@ function updatePreview() {
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
         DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
-        if (!isLoaded) {
-            DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `${state.quoteNumber}` : '';
-        } else {
-            DOMElements.previewQuoteNumber.textContent = '';
-        }
+        DOMElements.previewQuoteNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? `${state.quoteNumber}` : '';
         DOMElements.importantNote.classList.remove('hidden');
     } else {
         DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
@@ -1543,15 +1537,13 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-        
+       
         const costContainer = DOMElements.previewFlightCost;
         costContainer.innerHTML = '';
-
         if (flightCostValue > 0) {
             costContainer.innerHTML = '<p class="font-semibold mb-2 text-base">עלות:</p>';
             const costDetailsDiv = document.createElement('div');
             costDetailsDiv.className = 'space-y-1';
-
             if (adults > 0 && adultPrice > 0) {
                 costDetailsDiv.innerHTML += `
                     <div class="flex justify-between">
@@ -1574,11 +1566,9 @@ function updatePreview() {
                     </div>`;
             }
             costContainer.appendChild(costDetailsDiv);
-
             const hr = document.createElement('hr');
             hr.className = 'my-2 border-gray-300';
             costContainer.appendChild(hr);
-
             const totalDiv = document.createElement('div');
             totalDiv.className = 'flex justify-between font-bold text-base';
             totalDiv.innerHTML = `
@@ -1588,9 +1578,9 @@ function updatePreview() {
         } else {
             costContainer.innerHTML = '';
         }
-        
+       
         totalPrice += flightCostValue;
-        
+       
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1741,12 +1731,12 @@ async function generatePDF() {
         else { img.onload = resolve; img.onerror = resolve; }
     }));
     await Promise.all(promises);
-    
+   
     // --- IMPROVED RESOLUTION ---
     const canvas = await html2canvas(clone, { scale: 3, useCORS: true, logging: false });
-    
+   
     clone.remove();
-    
+   
     // --- USE PNG FOR BETTER QUALITY ---
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1755,17 +1745,17 @@ async function generatePDF() {
     const imgHeight = canvas.height * pdfWidth / canvas.width;
     let heightLeft = imgHeight;
     let position = 0;
-    
+   
     pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
     heightLeft -= pdfHeight;
-    
+   
     while (heightLeft > 0) {
         position -= pdfHeight;
         pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
     }
-    
+   
     const clientName = DOMElements.clientName.value || 'הצעה';
     const shipName = DOMElements.shipName.value || 'קרוז';
     const docTitle = state.docType === 'confirmation' ? 'אישור הזמנה' : 'הצעת מחיר';
