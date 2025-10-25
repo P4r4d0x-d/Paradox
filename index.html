@@ -420,7 +420,6 @@
                         </div>
                   
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
-                            סה"כ עלות: <span id="previewTotalCurrency">$</span><span id="previewTotalPrice">0</span>
                         </div>
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">הערות ודגשים:</h3>
@@ -870,8 +869,8 @@ const cruiseData = {
     ],
     "Disney Cruise Line": [
         { "name": "Disney Adventure", "video": "https://www.youtube.com/watch?v=hCXJl5f87es", "image": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Disney_Adventure_final_outfitting_in_Wismar_02.jpg" },
-        { "name": "Disney Destiny", "video": "https://www.youtube.com/watch?v=ShYCuwpwpBiQY", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1680/840/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/destiny/overview/DCL_Destiny_5x2.jpg?2024-07-24T21:44:12+00:00" },
-        { "name": "Disney Dream", "video": "https://www.youtube.com/watch?v=qIHcwpwpL80", "image": "https://www.cruisemapper.com/images/ships/548-large-8d34201a5b85900908db6cae92723617.jpg" },
+        { "name": "Disney Destiny", "video": "https://www.youtube.com/watch?v=ShYCuwpBiQY", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1680/840/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/destiny/overview/DCL_Destiny_5x2.jpg?2024-07-24T21:44:12+00:00" },
+        { "name": "Disney Dream", "video": "https://www.youtube.com/watch?v=qIHcNpP2l80", "image": "https://www.cruisemapper.com/images/ships/548-large-8d34201a5b85900908db6cae92723617.jpg" },
         { "name": "Disney Fantasy", "video": "https://www.youtube.com/watch?v=Xbux3Z9vHcw", "image": "https://i0.wp.com/magicguides.com/wp-content/uploads/2023/01/DCL-Disney-Fantasy-Cruise-Ship.jpg" },
         { "name": "Disney Magic", "video": "https://www.youtube.com/watch?v=LpDiL8-Io7Y", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/fleet-overview/magic/1205ZX_2167MS-16x9.jpg?2024-06-28T19:14:24+00:00" },
         { "name": "Disney Treasure", "video": "https://www.youtube.com/watch?v=3qoOC42WpLU", "image": "https://cdn.abcotvs.com/dip/images/15563544_112024-cc-disney-ship-img.jpg" },
@@ -1029,8 +1028,6 @@ const DOMElements = {
     previewTransfersCost: document.getElementById('previewTransfersCost'),
     previewTransfersConditions: document.getElementById('previewTransfersConditions'),
     previewTotalContainer: document.getElementById('previewTotalContainer'),
-    previewTotalCurrency: document.getElementById('previewTotalCurrency'),
-    previewTotalPrice: document.getElementById('previewTotalPrice'),
     previewShipImageSection: document.getElementById('previewShipImageSection'),
     previewShipImage: document.getElementById('previewShipImage'),
     previewShipVideo: document.getElementById('previewShipVideo'),
@@ -1151,7 +1148,7 @@ function saveQuote() {
     }
     DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
     localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
-    return state.quoteNumber;
+    alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
 }
 function loadQuote(quoteId) {
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
@@ -1190,7 +1187,6 @@ function startNewQuote() {
     addFlight();
     addHotel();
     addTransfer();
-    updateCurrencyLabels();
     updateStateAndPreview();
 }
 function showSavedQuotes() {
@@ -1336,8 +1332,7 @@ function loadState(state) {
             addHotel(data);
         });
     }
-    updateCurrencyLabels();
-    updatePreview();
+    updateStateAndPreview();
 }
 function updateStateAndPreview() {
     updatePreview();
@@ -1484,8 +1479,6 @@ function updatePreview() {
     const state = getFormState();
     const docType = state.docType || 'quote';
     DOMElements.noAmexNote.classList.toggle('hidden', docType !== 'confirmation');
-    const cruiseLine = state.cruiseLine;
-    const cruiseCurrency = currencies[cruiseLine] || '$';
     if (docType === 'quote') {
         DOMElements.previewDocTitle.textContent = 'לכבוד';
         DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
@@ -1529,12 +1522,14 @@ function updatePreview() {
     DOMElements.previewShipVideo.classList.toggle('hidden', !state.shipVideo);
     if (state.shipVideo) DOMElements.previewShipVideo.querySelector('a').href = state.shipVideo;
     DOMElements.previewRoomsContainer.innerHTML = '';
-    let totalPrice = 0;
+    let cruiseTotal = 0;
     let hasGuarantee = false;
+    const cruiseCurrency = currencies[state.cruiseLine] || '$';
     state.dynamicFields.rooms.forEach((room, index) => {
         const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'זוג + 4': 6, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, 'מבוגר + 5 ילדים': 6, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '3 מבוגרים + 3': 6, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '4 מבוגרים + 2': 6, '5 מבוגרים': 5, '5 מבוגרים + 1': 6, '6 מבוגרים': 6 }[room.composition] || 0;
         if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
         const costValue = parseFloat(room.roomCost) || 0;
+        cruiseTotal += costValue;
         if (room.composition || room.roomType || costValue > 0) {
             let details = [];
             if (room.composition) details.push(`<strong>הרכב:</strong> ${room.composition}`);
@@ -1551,7 +1546,6 @@ function updatePreview() {
                                     <p class="space-y-1 my-2">${details.join(' | ')}</p>
                                     <p class="font-semibold text-right">עלות: ${cruiseCurrency}${costValue.toLocaleString()}</p>`;
             DOMElements.previewRoomsContainer.appendChild(roomDiv);
-            totalPrice += costValue;
         }
     });
     DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
@@ -1581,6 +1575,7 @@ function updatePreview() {
     const flightCostValue = (adults * adultPrice) + (children * childPrice) + (infants * infantPrice);
     const hasFlights = state.dynamicFields.flights.some(f => f.airline) || flightCostValue > 0;
     DOMElements.previewFlightsContainer.classList.toggle('hidden', !hasFlights);
+    let additionalTotal = 0;
     if (hasFlights) {
         DOMElements.previewFlightsList.innerHTML = '';
         state.dynamicFields.flights.forEach(flight => {
@@ -1643,7 +1638,7 @@ function updatePreview() {
             costContainer.innerHTML = '';
         }
       
-        totalPrice += flightCostValue;
+        additionalTotal += flightCostValue;
       
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
@@ -1663,11 +1658,12 @@ function updatePreview() {
     DOMElements.previewHotelsContainer.innerHTML = '';
     const hasHotels = state.dynamicFields.hotels.some(h => h.hotelName || h.hotelCost > 0);
     DOMElements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
+    let hotelsTotal = 0;
     if (hasHotels) {
         state.dynamicFields.hotels.forEach(hotel => {
             const cost = parseFloat(hotel.hotelCost) || 0;
+            hotelsTotal += cost;
             if (hotel.hotelName || cost > 0) {
-                totalPrice += cost;
                 let conditionsText = '';
                 if (hotel.hotelCancelType === 'noCancel') {
                     conditionsText = '<p>ללא אפשרות ביטול/שינוי.</p>';
@@ -1694,6 +1690,7 @@ function updatePreview() {
                 DOMElements.previewHotelsContainer.appendChild(hotelDiv);
             }
         });
+        additionalTotal += hotelsTotal;
     }
     const transfersCost = parseFloat(state.transfersCost) || 0;
     const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType) || transfersCost > 0;
@@ -1708,7 +1705,6 @@ function updatePreview() {
             }
         });
         DOMElements.previewTransfersCost.textContent = `עלות: $${transfersCost.toLocaleString()}`;
-        totalPrice += transfersCost;
         let conditionsText = '';
         if (state.transfersCancelType === 'noCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי.</p>';
@@ -1718,10 +1714,22 @@ function updatePreview() {
             conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
         }
         DOMElements.previewTransfersConditions.innerHTML = conditionsText;
+        additionalTotal += transfersCost;
     }
     DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
-    DOMElements.previewTotalCurrency.textContent = cruiseCurrency;
-    DOMElements.previewTotalPrice.textContent = totalPrice.toLocaleString();
+    if (!state.hideTotal) {
+        DOMElements.previewTotalContainer.innerHTML = '';
+        if (cruiseCurrency === '$' || additionalTotal === 0) {
+            const grandTotal = cruiseTotal + additionalTotal;
+            DOMElements.previewTotalContainer.innerHTML = `סה"כ עלות: ${cruiseCurrency}${grandTotal.toLocaleString()}`;
+        } else if (cruiseTotal === 0) {
+            DOMElements.previewTotalContainer.innerHTML = `סה"כ עלות: $${additionalTotal.toLocaleString()}`;
+        } else {
+            let html = `סה"כ שייט: ${cruiseCurrency}${cruiseTotal.toLocaleString()}<br>`;
+            html += `סה"כ תוספות: $${additionalTotal.toLocaleString()}`;
+            DOMElements.previewTotalContainer.innerHTML = html;
+        }
+    }
     DOMElements.previewInternalNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? state.quoteNumber : '';
 }
 function addInclusionItem(list, text) {
