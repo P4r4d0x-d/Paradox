@@ -33,8 +33,9 @@
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         #previewItineraryImage, #previewShipImage {
-            height: 300px;
-            object-fit: cover;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
         }
         .preview-section {
             min-height: 100px;
@@ -109,9 +110,9 @@
             <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעת מחיר מקצועית בפורמט PDF.</p>
         </header>
         <div class="flex flex-col lg:flex-row gap-8">
-            <div id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
+            <form id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-        
+       
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -302,7 +303,7 @@
                         </div>
                     </div>
                 </div>
-        
+       
                 <div class="mt-6 border-t pt-4">
                     <div class="flex items-start mb-4">
                         <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
@@ -316,8 +317,8 @@
                 <div class="mt-8 flex justify-between gap-4">
                     <button id="generatePDFBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg">הורד PDF</button>
                 </div>
-            </div>
-    
+            </form>
+ 
             <div class="lg:w-1/2">
                 <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
                     <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
@@ -334,7 +335,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-                
+               
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -374,12 +375,12 @@
                                 <div id="previewFlightConditions" class="text-sm mt-2"></div>
                             </div>
                         </div>
-                
+               
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-                
+               
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -388,7 +389,7 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-                
+               
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                         </div>
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
@@ -400,7 +401,7 @@
                             <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                             <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a> <span id="previewShipVideoUrl" class="text-blue-600"></span></p>
                         </div>
-                
+               
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -1118,13 +1119,19 @@ function saveQuote() {
     }
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
+    const now = new Date().toISOString();
     if (currentQuoteId) {
         const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
         if (quoteIndex > -1) {
-            state.quoteNumber = allQuotes[quoteIndex].quoteNumber;
-            allQuotes[quoteIndex].state = state;
-            allQuotes[quoteIndex].clientName = state.clientName;
-            allQuotes[quoteIndex].date = new Date().toISOString();
+            const quote = allQuotes[quoteIndex];
+            if (!quote.versions) {
+                quote.versions = [{date: quote.date, state: quote.state || state}];
+                delete quote.state;
+            }
+            quote.versions.push({date: now, state});
+            quote.date = now;
+            quote.clientName = state.clientName;
+            state.quoteNumber = quote.quoteNumber;
         }
     } else {
         const quoteNumber = getNextQuoteNumber();
@@ -1135,22 +1142,26 @@ function saveQuote() {
             quoteNumber: quoteNumber,
             advisor: advisorKey,
             clientName: state.clientName,
-            date: new Date().toISOString(),
-            state: state
+            date: now,
+            versions: [{date: now, state}]
         });
     }
     DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
     localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
     alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
 }
-function loadQuote(quoteId) {
+function loadQuote(quoteId, versionIndex = -1) {
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const quote = allQuotes.find(q => q.id === quoteId);
     if (quote) {
         currentQuoteId = quote.id;
         isLoaded = true;
         DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
-        loadState(quote.state);
+        if (!quote.versions) {
+            quote.versions = [{date: quote.date, state: quote.state}];
+        }
+        const vi = versionIndex === -1 ? quote.versions.length - 1 : versionIndex;
+        loadState(quote.versions[vi].state);
         DOMElements.savedQuotesModal.style.display = 'none';
     }
 }
@@ -1189,6 +1200,7 @@ function showSavedQuotes() {
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
     DOMElements.savedQuotesList.innerHTML = '';
+    document.querySelector('.modal-content h2').textContent = 'הצעות שמורות';
     if (advisorQuotes.length === 0) {
         DOMElements.savedQuotesList.innerHTML = '<p>לא נמצאו הצעות שמורות.</p>';
     } else {
@@ -1205,6 +1217,13 @@ function showSavedQuotes() {
                     <button data-id="${quote.id}" class="delete-quote-btn bg-red-500 text-white px-3 py-1 rounded text-sm">מחק</button>
                 </div>
             `;
+            if (quote.versions && quote.versions.length > 1) {
+                const historyBtn = document.createElement('button');
+                historyBtn.textContent = 'היסטוריה';
+                historyBtn.className = 'bg-yellow-500 text-white px-3 py-1 rounded text-sm ml-2';
+                historyBtn.addEventListener('click', () => showHistory(quote));
+                div.querySelector('div:last-child').appendChild(historyBtn);
+            }
             DOMElements.savedQuotesList.appendChild(div);
         });
         DOMElements.savedQuotesList.querySelectorAll('.load-quote-btn').forEach(btn => {
@@ -1215,6 +1234,35 @@ function showSavedQuotes() {
         });
     }
     DOMElements.savedQuotesModal.style.display = 'block';
+}
+function showHistory(quote) {
+    document.querySelector('.modal-content h2').textContent = `היסטוריה להצעה #${quote.quoteNumber} - ${quote.clientName}`;
+    DOMElements.savedQuotesList.innerHTML = '';
+    const sortedVersions = [...quote.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    sortedVersions.forEach((version, index) => {
+        const originalIndex = quote.versions.findIndex(v => v.date === version.date);
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center p-2 border rounded';
+        div.innerHTML = `
+            <div>
+                <p class="font-bold">${new Date(version.date).toLocaleDateString('he-IL')} ${new Date(version.date).toLocaleTimeString('he-IL')}</p>
+            </div>
+            <button data-id="${quote.id}" data-version="${originalIndex}" class="load-version-btn bg-blue-500 text-white px-3 py-1 rounded text-sm ml-2">טען</button>
+        `;
+        DOMElements.savedQuotesList.appendChild(div);
+    });
+    DOMElements.savedQuotesList.querySelectorAll('.load-version-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const qid = e.target.dataset.id;
+            const vi = parseInt(e.target.dataset.version);
+            loadQuote(qid, vi);
+        });
+    });
+    const backBtn = document.createElement('button');
+    backBtn.textContent = 'חזור לרשימה';
+    backBtn.className = 'bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mt-4';
+    backBtn.addEventListener('click', showSavedQuotes);
+    DOMElements.savedQuotesList.appendChild(backBtn);
 }
 function getFormState() {
     const state = {};
@@ -1619,7 +1667,7 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-    
+   
         const costContainer = DOMElements.previewFlightCost;
         costContainer.innerHTML = '';
         let flightCostValue = 0;
@@ -1654,9 +1702,9 @@ function updatePreview() {
         } else {
             costContainer.innerHTML = '';
         }
-    
+   
         additionalTotal += flightCostValue;
-    
+   
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1860,4 +1908,3 @@ async function generatePDF() {
 </footer>
 </body>
 </html>
-
