@@ -32,10 +32,14 @@
             .no-print { display: none; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
-        #previewItineraryImage, #previewShipImage {
+        #previewItineraryImage {
             width: 100%;
             height: auto;
             object-fit: contain;
+        }
+        #previewShipImage {
+            height: 300px;
+            object-fit: cover;
         }
         .preview-section {
             min-height: 100px;
@@ -1148,7 +1152,6 @@ function saveQuote() {
     }
     DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
     localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
-    alert(`הצעה מספר ${state.quoteNumber} עבור ${state.clientName} נשמרה בהצלחה!`);
 }
 function loadQuote(quoteId, versionIndex = -1) {
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
@@ -1810,7 +1813,6 @@ function addInclusionItem(list, text) {
     list.appendChild(li);
 }
 async function generatePDF() {
-    saveQuote();
     const state = getFormState();
     if (state.docType === 'confirmation') {
         let errors = [];
@@ -1901,6 +1903,7 @@ async function generatePDF() {
     const docTitle = state.docType === 'confirmation' ? 'אישור הזמנה' : 'הצעת מחיר';
     pdf.save(`${docTitle} ${shipName} - ${clientName}.pdf`);
     DOMElements.previewElement.classList.add('shadow-lg');
+    saveQuote();
 }
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
