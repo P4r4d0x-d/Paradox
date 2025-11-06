@@ -663,6 +663,8 @@
         </div>
     </template>
 <script>
+(function() {
+'use strict';
 const cruiseData = {
     "MSC": [
         { "name": "MSC Preziosa", "video": "https://www.youtube.com/watch?v=LzWd7k_JqwE", "image": "https://i.postimg.cc/vBPv6qWq/MSC16008892.jpg" },
@@ -702,7 +704,7 @@ const cruiseData = {
         { "name": "Norwegian Jade", "video": "https://www.youtube.com/watch?v=HQ-X6Vr0Pu4", "image": "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg" },
         { "name": "Norwegian Jewel", "video": "https://www.youtube.com/watch?v=DKwxb8UHJq8", "image": "https://i.postimg.cc/sgR8t41D/norwegianjewel-indestinationjuneaualaska.jpg" },
         { "name": "Norwegian Joy", "video": "https://www.youtube.com/watch?v=HoKjNrNww0o", "image": "https://i.postimg.cc/ZnmmVzk4/norwegianjoy.jpg" },
-        { "name": "Norwegian Luna", "video": "https://www.youtube.com/watch?v=uK2CuwpBiQY", "image": "https://i.postimg.cc/0NSh3X0Q/norwegianlunaoverhead.jpg" },
+        { "name": "Norwegian Luna", "video": "https://www.youtube.com/watch?v=uK2uUAHEs3Q", "image": "https://i.postimg.cc/0NSh3X0Q/norwegianlunaoverhead.jpg" },
         { "name": "Norwegian Pearl", "video": "https://www.youtube.com/watch?v=bV977mnd8FY", "image": "https://i.postimg.cc/nr3W7ypd/norwegianpearl-aerial.jpg" },
         { "name": "Norwegian Prima", "video": "https://www.youtube.com/watch?v=ugOF9hHC5U0", "image": "https://i.postimg.cc/7h53sdSt/norwegianprima-aerial-stern.jpg" },
         { "name": "Norwegian Sky", "video": "https://www.youtube.com/watch?v=3k_inYuoEho", "image": "https://i.postimg.cc/zfPSCqgH/norwegiansky-aerial.jpg" },
@@ -888,13 +890,13 @@ const cruiseData = {
         { "name": "Disney Magic", "video": "https://www.youtube.com/watch?v=LpDiL8-Io7Y", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/fleet-overview/magic/1205ZX_2167MS-16x9.jpg?2024-06-28T19:14:24+00:00" },
         { "name": "Disney Treasure", "video": "https://www.youtube.com/watch?v=3qoOC42WpLU", "image": "https://cdn.abcotvs.com/dip/images/15563544_112024-cc-disney-ship-img.jpg" },
         { "name": "Disney Wish", "video": "https://www.youtube.com/watch?v=I6s0N6pKhyg", "image": "https://www.disneyholidays.co.uk/disney-cruise-line/images/ships/mobile/disney-wish-header.jpg" },
-        { "name": "Disney Wonder", "video": "https://www.youtube.com/watch?v=6FxCuwpBiQY", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/wonder/959939327_0505ZZ_0333DZ-16x9.jpg?2022-03-23T05:13:12+00:00" }
+        { "name": "Disney Wonder", "video": "https://www.youtube.com/watch?v=6Fx1eBg7RX0", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/wonder/959939327_0505ZZ_0333DZ-16x9.jpg?2022-03-23T05:13:12+00:00" }
     ],
     "Cunard": [
         { "name": "Queen Mary 2", "video": "https://www.youtube.com/watch?v=jHvzphIxT2o", "image": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Queen_Mary_2_Boston_July_2015_01_%28cropped%29.jpg" },
         { "name": "Queen Anne", "video": "https://www.youtube.com/watch?v=5xYs4Xdx378", "image": "https://upload.wikimedia.org/wikipedia/commons/a/a7/MS_Queen_Anne_at_Carbo_San_Lucas%2C_Mexico_on_January_31%2C_2025.jpg" },
         { "name": "Queen Elizabeth", "video": "https://www.youtube.com/watch?v=9nP2NB8D7x0", "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Queen_Elizabeth_%28ship%2C_2010%29_in_Sydney%2C_December_2022%2C_10.jpg" },
-        { "name": "Queen Victoria", "video": "https://www.youtube.com/watch?v=odjCuwpBiQY", "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/Queen_Victoria_%2852322173455%29.jpg" }
+        { "name": "Queen Victoria", "video": "https://www.youtube.com/watch?v=odjCWV6z78Y", "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/Queen_Victoria_%2852322173455%29.jpg" }
     ],
     "Crystal": [
         { "name": "Crystal Serenity", "video": "https://www.youtube.com/watch?v=ycLSSVmXHUo", "image": "https://cdn.crystalcruises.com/images/scp71evy/production/205f8dcfa8befa3a419bb0982bfe43289801f4a2-2720x1710.jpg?auto=format" },
@@ -981,6 +983,7 @@ const depositAmounts = {
 };
 let currentQuoteId = null;
 let isLoaded = false;
+let isVersionLoaded = false;
 let totalPassengers = 0;
 let totalRooms = 0;
 let cruiseTotal = 0;
@@ -1106,24 +1109,25 @@ function setupEventListeners() {
     DOMElements.passwordInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleLogin();
     });
-    DOMElements.inputForm.addEventListener('input', updateStateAndPreview);
-    DOMElements.inputForm.addEventListener('change', updateStateAndPreview);
-    DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); updateStateAndPreview(); });
-    DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); updateStateAndPreview(); });
-    DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); updateStateAndPreview(); });
-    DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); updateStateAndPreview(); });
-    DOMElements.addPassengerTypeBtn.addEventListener('click', () => { addPassengerType(); updateStateAndPreview(); });
+    const debouncedUpdate = debounce(updateStateAndPreview, 300);
+    DOMElements.inputForm.addEventListener('input', debouncedUpdate);
+    DOMElements.inputForm.addEventListener('change', debouncedUpdate);
+    DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); debouncedUpdate(); });
+    DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); debouncedUpdate(); });
+    DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); debouncedUpdate(); });
+    DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); debouncedUpdate(); });
+    DOMElements.addPassengerTypeBtn.addEventListener('click', () => { addPassengerType(); debouncedUpdate(); });
     DOMElements.cruiseLine.addEventListener('change', () => {
         populateShips();
         updateCurrencyLabels();
-        updateStateAndPreview();
+        debouncedUpdate();
     });
     DOMElements.shipName.addEventListener('change', () => {
         const cruiseLine = DOMElements.cruiseLine.value;
         const shipName = DOMElements.shipName.value;
         const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
         DOMElements.shipVideo.value = ship?.video || '';
-        updateStateAndPreview();
+        debouncedUpdate();
     });
     DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
     DOMElements.generatePDFBtn.addEventListener('click', generatePDF);
@@ -1139,6 +1143,13 @@ function setupEventListeners() {
             DOMElements.savedQuotesModal.style.display = 'none';
         }
     });
+}
+function debounce(func, delay) {
+  let timeout;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, arguments), delay);
+  };
 }
 function handleLogin() {
     const email = DOMElements.emailInput.value.toLowerCase();
@@ -1171,15 +1182,24 @@ function getNextQuoteNumber() {
     localStorage.setItem(storageKey, lastNumber);
     return lastNumber;
 }
+function validateForm(state) {
+  let errors = [];
+  if (!state.clientName) errors.push('שם לקוח');
+  if (!state.cruiseLine) errors.push('חברת שייט');
+  // Add more required fields as needed, e.g.,
+  // if (!state.offerDate) errors.push('תאריך ההצעה');
+  if (errors.length) {
+    alert('חובה למלא: ' + errors.join(', '));
+    return false;
+  }
+  return true;
+}
 function saveQuote() {
     const state = getFormState();
-    if (!state.clientName) {
-        alert('יש להזין שם לקוח לפני שמירת ההצעה.');
-        return;
-    }
+    if (!validateForm(state)) return;
     const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
-    const now = new Date().toISOString();
+    const now = new Date().toUTCString();
     if (currentQuoteId) {
         const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
         if (quoteIndex > -1) {
@@ -1188,7 +1208,11 @@ function saveQuote() {
                 quote.versions = [{date: quote.date, state: quote.state || state}];
                 delete quote.state;
             }
-            quote.versions.push({date: now, state});
+            if (isVersionLoaded) {
+                isVersionLoaded = false;
+            } else {
+                quote.versions.push({date: now, state});
+            }
             quote.date = now;
             quote.clientName = state.clientName;
             state.quoteNumber = quote.quoteNumber;
@@ -1215,6 +1239,7 @@ function loadQuote(quoteId, versionIndex = -1) {
     if (quote) {
         currentQuoteId = quote.id;
         isLoaded = true;
+        isVersionLoaded = true;
         DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
         if (!quote.versions) {
             quote.versions = [{date: quote.date, state: quote.state}];
@@ -1235,12 +1260,13 @@ function deleteQuote(quoteId) {
 function startNewQuote() {
     currentQuoteId = null;
     isLoaded = false;
+    isVersionLoaded = false;
     DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
     DOMElements.inputForm.reset();
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
-    DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.transfersContainer.innerHTML = '';
+    DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.passengerTypesContainer.innerHTML = '';
     DOMElements.offerDate.valueAsDate = new Date();
     const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
@@ -1438,6 +1464,11 @@ function loadState(state) {
     if (state.dynamicFields.passengerTypes) {
         state.dynamicFields.passengerTypes.forEach(data => addPassengerType(data));
     }
+    if (state.dynamicFields.rooms.length === 0) addRoom();
+    if (state.dynamicFields.flights.length === 0) addFlight();
+    if (state.dynamicFields.hotels.length === 0) addHotel();
+    if (state.dynamicFields.transfers.length === 0) addTransfer();
+    if (state.dynamicFields.passengerTypes.length === 0) addPassengerType();
     updateStateAndPreview();
 }
 function updateStateAndPreview() {
@@ -1711,8 +1742,6 @@ function updatePreview() {
     DOMElements.previewFlightsContainer.classList.toggle('hidden', !hasFlights);
     let additionalTotal = 0;
     let flightCostValue = 0;
-    let hotelsTotal = 0;
-    let transfersCost = parseFloat(state.transfersCost) || 0;
     if (hasFlights) {
         DOMElements.previewFlightsList.innerHTML = '';
         state.dynamicFields.flights.forEach(flight => {
@@ -1785,6 +1814,7 @@ function updatePreview() {
     DOMElements.previewHotelsContainer.innerHTML = '';
     const hasHotels = state.dynamicFields.hotels.some(h => h.hotelName || h.hotelCost > 0);
     DOMElements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
+    let hotelsTotal = 0;
     if (hasHotels) {
         state.dynamicFields.hotels.forEach(hotel => {
             const cost = parseFloat(hotel.hotelCost) || 0;
@@ -1825,6 +1855,7 @@ function updatePreview() {
         });
         additionalTotal += hotelsTotal;
     }
+    const transfersCost = parseFloat(state.transfersCost) || 0;
     const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType) || transfersCost > 0;
     DOMElements.previewTransfersContainer.classList.toggle('hidden', !hasTransfers);
     if (hasTransfers) {
@@ -1864,18 +1895,10 @@ function updatePreview() {
     }
     DOMElements.previewInternalNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? state.quoteNumber : '';
     if (docType === 'confirmation') {
-        let totalText = '';
-        if (cruiseTotal > 0) {
-            totalText += `שייט: ${cruiseCurrency}${cruiseTotal.toLocaleString()}`;
-        }
-        if (additionalTotal > 0) {
-            if (totalText) totalText += ' + ';
-            totalText += `תוספות: $${additionalTotal.toLocaleString()}`;
-        }
-        DOMElements.previewTotalCost.textContent = totalText || '0$';
+        let grandTotal = cruiseTotal + additionalTotal;
+        DOMElements.previewTotalCost.textContent = `${cruiseCurrency}${grandTotal.toLocaleString()}`;
         let depositText = DOMElements.previewDepositAmount.textContent;
-        let additionalText = additionalTotal > 0 ? ` + $${additionalTotal.toLocaleString()}` : '';
-        DOMElements.previewDownPayment.textContent = depositText + additionalText;
+        DOMElements.previewDownPayment.textContent = depositText + ` (מקדמה על הקרוז + תשלום מלא כל שאר השירותים השונים שבהזמנה)`;
         if (state.cruiseStartDate) {
             const departure = new Date(state.cruiseStartDate);
             const daysText = DOMElements.previewCancelDays.textContent.replace(' ימים', '');
@@ -1909,57 +1932,7 @@ async function generatePDF() {
     try {
         console.log('generatePDF started');
         const state = getFormState();
-        if (state.docType === 'confirmation') {
-            let errors = [];
-            // Validate flights
-            const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || (state.dynamicFields.passengerTypes.length > 0);
-            if (hasFlights) {
-                if (!state.flightCancelType) {
-                    errors.push('יש לבחור סוג ביטול/שינוי לטיסות');
-                } else if (state.flightCancelType === 'cancellable') {
-                    if (state.flightCancelCheck && !state.flightCancelFee) {
-                        errors.push('יש למלא דמי ביטול לטיסות');
-                    }
-                    if (state.flightChangeCheck && !state.flightChangeFee) {
-                        errors.push('יש למלא דמי שינוי לטיסות');
-                    }
-                }
-            }
-            // Validate hotels
-            state.dynamicFields.hotels.forEach((hotel, i) => {
-                const hasHotel = hotel.hotelName || parseFloat(hotel.hotelCost) > 0 || hotel.hotelNights || hotel.hotelStartDate || hotel.hotelRoomDesc || hotel.hotelPension;
-                if (hasHotel) {
-                    if (!hotel.hotelCancelType) {
-                        errors.push(`יש לבחור סוג ביטול למלון ${i + 1}`);
-                    } else if (hotel.hotelCancelType === 'cancellable') {
-                        if (!hotel.hotelCancelFee) {
-                            errors.push(`יש למלא דמי ביטול למלון ${i + 1}`);
-                        }
-                        if (!hotel.hotelCancelDate) {
-                            errors.push(`יש למלא תאריך ביטול למלון ${i + 1}`);
-                        }
-                    }
-                }
-            });
-            // Validate transfers
-            const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType || t.transferFreeText) || (parseFloat(state.transfersCost) > 0);
-            if (hasTransfers) {
-                if (!state.transfersCancelType) {
-                    errors.push('יש לבחור סוג ביטול להעברות');
-                } else if (state.transfersCancelType === 'cancellable') {
-                    if (!state.transfersCancelDate) {
-                        errors.push('יש למלא תאריך ביטול להעברות');
-                    }
-                    if (!state.transfersCancelFee) {
-                        errors.push('יש למלא דמי ביטול להעברות');
-                    }
-                }
-            }
-            if (errors.length > 0) {
-                alert(errors.join('\n'));
-                return;
-            }
-        }
+        if (!validateForm(state)) return;
         DOMElements.previewElement.classList.remove('shadow-lg');
         const { jsPDF } = window.jspdf;
         const clone = DOMElements.previewElement.cloneNode(true);
@@ -1969,15 +1942,22 @@ async function generatePDF() {
         document.body.appendChild(clone);
         clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
         const images = clone.querySelectorAll('img');
-        const promises = Array.from(images).map(img => new Promise(resolve => {
-            if (img.complete && img.naturalHeight !== 0) resolve();
-            else { img.onload = resolve; img.onerror = resolve; }
+        const promises = Array.from(images).map(img => new Promise((resolve, reject) => {
+            if (img.complete) {
+                if (img.naturalHeight === 0) reject(new Error('Image load failed'));
+                else resolve();
+            } else {
+                img.onload = resolve;
+                img.onerror = reject;
+            }
         }));
-        await Promise.all(promises);
-        // --- IMPROVED RESOLUTION ---
+        const results = await Promise.allSettled(promises);
+        const failed = results.filter(r => r.status === 'rejected');
+        if (failed.length > 0) {
+            alert(`${failed.length} תמונות נכשלו בטעינה.`);
+        }
         const canvas = await html2canvas(clone, { scale: 3, useCORS: true, logging: false });
         clone.remove();
-        // --- USE JPEG FOR BETTER QUALITY ---
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -2003,6 +1983,7 @@ async function generatePDF() {
         alert('שגיאה בהפקת PDF: ' + error.message);
     }
 }
+})();
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
     פותח על ידי ליאור דובינובסקי
