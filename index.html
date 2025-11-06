@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.0/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
@@ -116,7 +116,7 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <form id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
-      
+     
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
@@ -307,7 +307,7 @@
                         </div>
                     </div>
                 </div>
-      
+     
                 <div class="mt-6 border-t pt-4">
                     <div class="flex items-start mb-4">
                         <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
@@ -338,7 +338,7 @@
                                 <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                             </div>
                         </div>
-              
+             
                         <p id="previewOpeningLine" class="mb-6"></p>
                         <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 no-split hidden preview-section">
                             <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
@@ -378,12 +378,12 @@
                                 <div id="previewFlightConditions" class="text-sm mt-2"></div>
                             </div>
                         </div>
-              
+             
                         <div id="previewHotelsSection" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי מלונות:</h3>
                             <div id="previewHotelsContainer" class="space-y-4"></div>
                         </div>
-              
+             
                         <div id="previewTransfersContainer" class="my-6 hidden preview-section">
                             <h3 class="text-xl font-bold mb-3 no-break-after">פרטי העברות:</h3>
                             <div class="border p-3 rounded-lg bg-white space-y-2 no-split">
@@ -392,7 +392,7 @@
                                 <div id="previewTransfersConditions" class="text-sm"></div>
                             </div>
                         </div>
-              
+             
                         <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg no-split">
                         </div>
                         <div class="mt-8 text-sm space-y-3 no-split preview-section">
@@ -404,7 +404,7 @@
                             <img id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
                             <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline">צפה בסרטון האונייה</a> <span id="previewShipVideoUrl" class="text-blue-600"></span></p>
                         </div>
-              
+             
                         <div class="mt-8 text-sm space-y-3">
                             <div class="border-t pt-4 mt-4 no-split">
                                 <h4 class="font-bold no-break-after">תנאי תשלום וביטול:</h4>
@@ -1425,6 +1425,7 @@ function loadState(state) {
     updateStateAndPreview();
 }
 function updateStateAndPreview() {
+    console.log('updateStateAndPreview called');
     updatePreview();
 }
 function populateShips(selectedShip) {
@@ -1452,7 +1453,7 @@ function addRoom(initialData = {}) {
     const template = document.getElementById('roomTemplate');
     const clone = template.content.cloneNode(true);
     const roomDiv = clone.querySelector('.room-entry');
-    DOMElements.roomsContainer.appendChild(clone);
+    DOMElements.roomsContainer.appendChild(roomDiv);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = roomDiv.querySelector(`[name="${key}"]`);
@@ -1468,7 +1469,7 @@ function addFlight(initialData = {}) {
     const template = document.getElementById('flightTemplate');
     const clone = template.content.cloneNode(true);
     const flightDiv = clone.querySelector('.flight-entry');
-    DOMElements.flightsContainer.appendChild(clone);
+    DOMElements.flightsContainer.appendChild(flightDiv);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = flightDiv.querySelector(`[name="${key}"]`);
@@ -1492,7 +1493,7 @@ function addPassengerType(initialData = {}) {
     const template = document.getElementById('passengerTypeTemplate');
     const clone = template.content.cloneNode(true);
     const passengerDiv = clone.querySelector('.passenger-type-entry');
-    DOMElements.passengerTypesContainer.appendChild(clone);
+    DOMElements.passengerTypesContainer.appendChild(passengerDiv);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = passengerDiv.querySelector(`[name="${key}"]`);
@@ -1505,7 +1506,7 @@ function addTransfer(initialData = {}) {
     const template = document.getElementById('transferTemplate');
     const clone = template.content.cloneNode(true);
     const transferDiv = clone.querySelector('.transfer-entry');
-    DOMElements.transfersContainer.appendChild(clone);
+    DOMElements.transfersContainer.appendChild(transferDiv);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = transferDiv.querySelector(`[name="${key}"]`);
@@ -1518,7 +1519,7 @@ function addHotel(initialData = {}) {
     const template = document.getElementById('hotelTemplate');
     const clone = template.content.cloneNode(true);
     const hotelDiv = clone.querySelector('.hotel-entry');
-    DOMElements.hotelsContainer.appendChild(clone);
+    DOMElements.hotelsContainer.appendChild(hotelDiv);
     if (Object.keys(initialData).length > 0) {
         for (const key in initialData) {
             const input = hotelDiv.querySelector(`[name="${key}"]`);
@@ -1579,6 +1580,7 @@ function handlePaste(event) {
     }
 }
 function updatePreview() {
+    console.log('updatePreview called');
     const state = getFormState();
     const docType = state.docType || 'quote';
     DOMElements.noAmexNote.classList.toggle('hidden', docType !== 'confirmation');
@@ -1708,7 +1710,7 @@ function updatePreview() {
             });
         }
         DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
-  
+ 
         const costContainer = DOMElements.previewFlightCost;
         costContainer.innerHTML = '';
         let flightCostValue = 0;
@@ -1743,9 +1745,9 @@ function updatePreview() {
         } else {
             costContainer.innerHTML = '';
         }
-  
+ 
         additionalTotal += flightCostValue;
-  
+ 
         let conditionsText = '';
         if (state.flightCancelType === 'noCancel') {
             conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
@@ -1864,96 +1866,102 @@ function addInclusionItem(list, text) {
     list.appendChild(li);
 }
 async function generatePDF() {
-    const state = getFormState();
-    if (state.docType === 'confirmation') {
-        let errors = [];
-        // Validate flights
-        const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || (state.dynamicFields.passengerTypes.length > 0);
-        if (hasFlights) {
-            if (!state.flightCancelType) {
-                errors.push('יש לבחור סוג ביטול/שינוי לטיסות');
-            } else if (state.flightCancelType === 'cancellable') {
-                if (state.flightCancelCheck && !state.flightCancelFee) {
-                    errors.push('יש למלא דמי ביטול לטיסות');
-                }
-                if (state.flightChangeCheck && !state.flightChangeFee) {
-                    errors.push('יש למלא דמי שינוי לטיסות');
-                }
-            }
-        }
-        // Validate hotels
-        state.dynamicFields.hotels.forEach((hotel, i) => {
-            const hasHotel = hotel.hotelName || parseFloat(hotel.hotelCost) > 0 || hotel.hotelNights || hotel.hotelStartDate || hotel.hotelRoomDesc || hotel.hotelPension;
-            if (hasHotel) {
-                if (!hotel.hotelCancelType) {
-                    errors.push(`יש לבחור סוג ביטול למלון ${i + 1}`);
-                } else if (hotel.hotelCancelType === 'cancellable') {
-                    if (!hotel.hotelCancelFee) {
-                        errors.push(`יש למלא דמי ביטול למלון ${i + 1}`);
+    try {
+        console.log('generatePDF started');
+        const state = getFormState();
+        if (state.docType === 'confirmation') {
+            let errors = [];
+            // Validate flights
+            const hasFlights = state.dynamicFields.flights.some(f => f.airline || f.from || f.to || f.date || f.takeoff || f.landing) || (state.dynamicFields.passengerTypes.length > 0);
+            if (hasFlights) {
+                if (!state.flightCancelType) {
+                    errors.push('יש לבחור סוג ביטול/שינוי לטיסות');
+                } else if (state.flightCancelType === 'cancellable') {
+                    if (state.flightCancelCheck && !state.flightCancelFee) {
+                        errors.push('יש למלא דמי ביטול לטיסות');
                     }
-                    if (!hotel.hotelCancelDate) {
-                        errors.push(`יש למלא תאריך ביטול למלון ${i + 1}`);
+                    if (state.flightChangeCheck && !state.flightChangeFee) {
+                        errors.push('יש למלא דמי שינוי לטיסות');
                     }
                 }
             }
-        });
-        // Validate transfers
-        const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType || t.transferFreeText) || (parseFloat(state.transfersCost) > 0);
-        if (hasTransfers) {
-            if (!state.transfersCancelType) {
-                errors.push('יש לבחור סוג ביטול להעברות');
-            } else if (state.transfersCancelType === 'cancellable') {
-                if (!state.transfersCancelDate) {
-                    errors.push('יש למלא תאריך ביטול להעברות');
+            // Validate hotels
+            state.dynamicFields.hotels.forEach((hotel, i) => {
+                const hasHotel = hotel.hotelName || parseFloat(hotel.hotelCost) > 0 || hotel.hotelNights || hotel.hotelStartDate || hotel.hotelRoomDesc || hotel.hotelPension;
+                if (hasHotel) {
+                    if (!hotel.hotelCancelType) {
+                        errors.push(`יש לבחור סוג ביטול למלון ${i + 1}`);
+                    } else if (hotel.hotelCancelType === 'cancellable') {
+                        if (!hotel.hotelCancelFee) {
+                            errors.push(`יש למלא דמי ביטול למלון ${i + 1}`);
+                        }
+                        if (!hotel.hotelCancelDate) {
+                            errors.push(`יש למלא תאריך ביטול למלון ${i + 1}`);
+                        }
+                    }
                 }
-                if (!state.transfersCancelFee) {
-                    errors.push('יש למלא דמי ביטול להעברות');
+            });
+            // Validate transfers
+            const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType || t.transferFreeText) || (parseFloat(state.transfersCost) > 0);
+            if (hasTransfers) {
+                if (!state.transfersCancelType) {
+                    errors.push('יש לבחור סוג ביטול להעברות');
+                } else if (state.transfersCancelType === 'cancellable') {
+                    if (!state.transfersCancelDate) {
+                        errors.push('יש למלא תאריך ביטול להעברות');
+                    }
+                    if (!state.transfersCancelFee) {
+                        errors.push('יש למלא דמי ביטול להעברות');
+                    }
                 }
             }
+            if (errors.length > 0) {
+                alert(errors.join('\n'));
+                return;
+            }
         }
-        if (errors.length > 0) {
-            alert(errors.join('\n'));
-            return;
-        }
-    }
-    DOMElements.previewElement.classList.remove('shadow-lg');
-    const { jsPDF } = window.jspdf;
-    const clone = DOMElements.previewElement.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.width = '794px';
-    document.body.appendChild(clone);
-    clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
-    const images = clone.querySelectorAll('img');
-    const promises = Array.from(images).map(img => new Promise(resolve => {
-        if (img.complete && img.naturalHeight !== 0) resolve();
-        else { img.onload = resolve; img.onerror = resolve; }
-    }));
-    await Promise.all(promises);
-    // --- IMPROVED RESOLUTION ---
-    const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
-    clone.remove();
-    // --- USE JPEG FOR BETTER QUALITY ---
-    const imgData = canvas.toDataURL('image/jpeg', 0.8);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgHeight = canvas.height * pdfWidth / canvas.width;
-    let heightLeft = imgHeight;
-    let position = 0;
-    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-    heightLeft -= pdfHeight;
-    while (heightLeft > 0) {
-        position -= pdfHeight;
-        pdf.addPage();
+        DOMElements.previewElement.classList.remove('shadow-lg');
+        const { jsPDF } = window.jspdf;
+        const clone = DOMElements.previewElement.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.width = '794px';
+        document.body.appendChild(clone);
+        clone.querySelectorAll('.preview-container *').forEach(el => el.style.pointerEvents = 'auto');
+        const images = clone.querySelectorAll('img');
+        const promises = Array.from(images).map(img => new Promise(resolve => {
+            if (img.complete && img.naturalHeight !== 0) resolve();
+            else { img.onload = resolve; img.onerror = resolve; }
+        }));
+        await Promise.all(promises);
+        // --- IMPROVED RESOLUTION ---
+        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false });
+        clone.remove();
+        // --- USE JPEG FOR BETTER QUALITY ---
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgHeight = canvas.height * pdfWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
         pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
+        while (heightLeft > 0) {
+            position -= pdfHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+        }
+        const clientName = DOMElements.clientName.value || 'הצעה';
+        const docTitle = state.docType === 'confirmation' ? 'אישור הזמנה' : 'הצעת מחיר';
+        pdf.save(`${docTitle} - ${clientName}.pdf`);
+        DOMElements.previewElement.classList.add('shadow-lg');
+        saveQuote();
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('שגיאה בהפקת PDF: ' + error.message);
     }
-    const clientName = DOMElements.clientName.value || 'הצעה';
-    const docTitle = state.docType === 'confirmation' ? 'אישור הזמנה' : 'הצעת מחיר';
-    pdf.save(`${docTitle} - ${clientName}.pdf`);
-    DOMElements.previewElement.classList.add('shadow-lg');
-    saveQuote();
 }
 </script>
 <footer class="text-center mt-8 text-xs text-gray-500 no-print">
