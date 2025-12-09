@@ -13,7 +13,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* === הגדרות עיצוב בסיסיות === */
         body {
             font-family: 'Assistant', sans-serif;
             background-color: #f3f4f6;
@@ -22,33 +21,51 @@
             padding: 0;
         }
 
-        /* === הגדרות הדפסה ו-PDF === */
+        /* הגדרות לתצוגה מקדימה קבועה (Sticky) */
+        .sticky-preview {
+            position: sticky;
+            top: 20px;
+            max-height: 95vh;
+            overflow-y: auto; /* מאפשר גלילה בתוך התצוגה המקדימה אם היא ארוכה מדי */
+        }
+
+        /* עיצוב גלילה עדין */
+        .sticky-preview::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sticky-preview::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* הגדרות הדפסה */
         @media print {
             .no-print { display: none !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #preview { box-shadow: none !important; margin: 0; width: 100%; }
+            #preview { box-shadow: none !important; margin: 0; width: 100%; max-width: none; }
+            .sticky-preview { position: static; overflow: visible; }
         }
 
-        /* מחלקות עזר ל-PDF (מונע חיתוך אלמנטים) */
+        /* עזרים ל-PDF */
         .preview-container * { pointer-events: none; }
         .no-split { break-inside: avoid; page-break-inside: avoid; }
         .pdf-spacer { display: block; width: 100%; background: white; }
 
-        /* === טיפול בתמונות ומדיה === */
+        /* מדיה */
         #previewItineraryImage {
             width: 100%;
-            max-height: 500px;
+            max-height: 400px;
             object-fit: contain;
             background-color: #fff;
         }
         #previewShipImage {
             width: 100%;
-            height: 300px;
+            height: 250px;
             object-fit: cover;
             border-radius: 0.5rem;
         }
 
-        /* === פופאפ (Modal) === */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -82,19 +99,14 @@
         }
         .close-btn:hover { color: black; }
         
-        /* === התאמות רזולוציה לתצוגה === */
+        /* דף A4 לתצוגה */
         #preview {
-            width: 794px; /* רוחב A4 קבוע לתצוגה */
-            min-height: 1123px;
+            width: 100%;
+            max-width: 794px; /* רוחב A4 */
+            min-height: 1123px; /* גובה A4 */
             margin-left: auto;
             margin-right: auto;
             background: white;
-        }
-        
-        @media (max-width: 850px) {
-            #previewWrapper {
-                overflow-x: auto;
-            }
         }
     </style>
 </head>
@@ -120,9 +132,9 @@
         </div>
     </div>
 
-    <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden flex-grow">
+    <div id="mainContent" class="w-full max-w-[1800px] mx-auto p-4 lg:p-6 hidden flex-grow">
         <header class="text-center mb-8 no-print">
-            <div class="flex justify-between items-center flex-wrap gap-4">
+            <div class="flex justify-between items-center flex-wrap gap-4 px-4">
                 <div>
                     <button id="showSavedQuotesBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow">הצעות שמורות</button>
                     <button id="newQuoteBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg ml-2 shadow">הצעה חדשה</button>
@@ -133,11 +145,11 @@
                     <p id="currentQuoteNumber" class="text-sm text-gray-600"></p>
                 </div>
             </div>
-            <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעה מקצועית בפורמט PDF.</p>
         </header>
 
-        <div class="flex flex-col lg:flex-row gap-8">
-            <form id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
+        <div class="flex flex-col xl:flex-row gap-8 items-start">
+            
+            <form id="inputForm" class="w-full xl:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print order-2 xl:order-1">
                 <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -268,11 +280,15 @@
                                 <textarea id="itineraryTextContent" rows="4" class="block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="הזן את פירוט המסלול כאן..."></textarea>
                             </div>
                         </div>
+
                         <div id="roomsContainer" class="mt-4">
-                        <h3 class="text-xl font-bold mb-3">חדרים</h3>
+                            <h3 class="text-xl font-bold mb-3">חדרים</h3>
                         </div>
-                    <button id="addRoomBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
-                </div> <div class="mt-6 border-t pt-4">
+                        <button id="addRoomBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
                     <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
                     <div class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div id="flightsContainer" class="space-y-4"></div>
@@ -379,144 +395,146 @@
                 </div>
             </form>
 
-            <div class="lg:w-1/2" id="previewWrapper">
-                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
-                    <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
-                        <div class="text-right">
-                            <img decoding="async" src="https://balicruise.co.il/wp-content/uploads/2023/02/bali-cruise-logo500-X-145-Custom.png" alt="באלי קרוז" class="h-16" title="באלי קרוז לוגו">
-                        </div>
-                        <div style="font-size: 40px; color: #3f3c66;">⚓</div>
-                    </header>
-                    
-                    <main id="preview-main" class="mt-8">
-                        <div class="flex justify-between items-start">
-                            <p class="text-xl mb-6"><span id="previewDocTitle"></span> <span id="previewClientName" class="font-bold"></span><span id="previewClientPhone"></span>,</p>
-                            <div>
-                                <p class="mb-1 text-left text-sm"><span id="previewDate" class="font-semibold"></span></p>
-                                <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
+            <div class="w-full xl:w-1/2 order-1 xl:order-2">
+                <div class="sticky-preview">
+                    <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg relative">
+                        <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
+                            <div class="text-right">
+                                <img decoding="async" src="https://balicruise.co.il/wp-content/uploads/2023/02/bali-cruise-logo500-X-145-Custom.png" alt="באלי קרוז" class="h-16" title="באלי קרוז לוגו">
                             </div>
-                        </div>
+                            <div style="font-size: 40px; color: #3f3c66;">⚓</div>
+                        </header>
                         
-                        <p id="previewOpeningLine" class="mb-6"></p>
-
-                        <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 preview-section border border-blue-100">
-                            <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
-                            <div class="grid grid-cols-2 gap-4 text-md">
-                                <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
-                                <p><strong>אונייה:</strong> <span id="previewShipName"></span></p>
-                                <p><strong>משך הפלגה:</strong> <span id="previewCruiseDuration"></span> לילות</p>
-                                <p><strong>תאריכים:</strong> <span id="previewCruiseDate"></span></p>
-                                <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
-                                
-                                <p id="previewBookingNumContainer" class="col-span-2 hidden bg-white p-2 rounded border border-blue-100">
-                                    <strong>מספר הזמנה:</strong> <span id="previewBookingNum" class="font-bold text-blue-900"></span>
-                                </p>
-                                <p id="previewBenefitsContainer" class="col-span-2 hidden bg-green-50 p-2 rounded border border-green-100 text-green-800">
-                                    <strong>הטבות לקרוז:</strong> <span id="previewBenefits" class="font-bold"></span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div id="previewCruiseInclusions" class="mt-4 text-sm space-y-3 preview-section hidden">
-                            <ul id="previewCruiseInclusionsList" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
-                        </div>
-
-                        <div id="previewItinerarySection" class="my-6 hidden preview-section">
-                            <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
-                            <img decoding="async" id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md mb-2" alt="Itinerary Map">
-                            <div id="previewItineraryTextDisplay" class="hidden whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded border border-gray-200"></div>
-                        </div>
-
-                        <div id="previewRoomsSection" class="my-6 hidden preview-section">
-                            <h3 class="text-xl font-bold mb-3">פרטי החדרים:</h3>
-                            <div id="previewRoomsContainer" class="space-y-4"></div>
-                            <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden border border-yellow-200">
-                                חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>
-                                💡 <strong>חשוב לדעת!</strong><br>
-                                חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
-                            </div>
-                        </div>
-
-                        <div id="previewFlightsContainer" class="my-6 hidden preview-section">
-                            <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
-                            <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
-                                <div id="previewFlightsList" class="space-y-2"></div>
-                                <div id="previewFlightIncludesContainer" class="hidden mt-2">
-                                    <p class="font-semibold">הכרטיס כולל:</p>
-                                    <ul id="previewFlightIncludes" class="list-disc list-inside text-sm"></ul>
+                        <main id="preview-main" class="mt-8">
+                            <div class="flex justify-between items-start">
+                                <p class="text-xl mb-6"><span id="previewDocTitle"></span> <span id="previewClientName" class="font-bold"></span><span id="previewClientPhone"></span>,</p>
+                                <div>
+                                    <p class="mb-1 text-left text-sm"><span id="previewDate" class="font-semibold"></span></p>
+                                    <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
                                 </div>
-                                <p id="previewFlightFreeText" style="white-space: pre-wrap;" class="mt-2 text-sm"></p>
-                                <div id="previewFlightCost" class="text-sm mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100"></div>
-                                <div id="previewFlightConditions" class="text-sm mt-2 text-gray-600"></div>
                             </div>
-                        </div>
+                            
+                            <p id="previewOpeningLine" class="mb-6"></p>
 
-                        <div id="previewHotelsSection" class="my-6 hidden preview-section">
-                            <h3 class="text-xl font-bold mb-3">פרטי מלונות:</h3>
-                            <div id="previewHotelsContainer" class="space-y-4"></div>
-                        </div>
-
-                        <div id="previewTransfersContainer" class="my-6 hidden preview-section">
-                            <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
-                            <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
-                                <div id="previewTransfersList" class="space-y-2"></div>
-                                <p class="font-semibold text-right" id="previewTransfersCost"></p>
-                                <div id="previewTransfersConditions" class="text-sm text-gray-600"></div>
+                            <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 preview-section border border-blue-100">
+                                <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
+                                <div class="grid grid-cols-2 gap-4 text-md">
+                                    <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
+                                    <p><strong>אונייה:</strong> <span id="previewShipName"></span></p>
+                                    <p><strong>משך הפלגה:</strong> <span id="previewCruiseDuration"></span> לילות</p>
+                                    <p><strong>תאריכים:</strong> <span id="previewCruiseDate"></span></p>
+                                    <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
+                                    
+                                    <p id="previewBookingNumContainer" class="col-span-2 hidden bg-white p-2 rounded border border-blue-100">
+                                        <strong>מספר הזמנה:</strong> <span id="previewBookingNum" class="font-bold text-blue-900"></span>
+                                    </p>
+                                    <p id="previewBenefitsContainer" class="col-span-2 hidden bg-green-50 p-2 rounded border border-green-100 text-green-800">
+                                        <strong>הטבות לקרוז:</strong> <span id="previewBenefits" class="font-bold"></span>
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg border border-gray-200 preview-section">
-                        </div>
-
-                        <div class="mt-8 text-sm space-y-3 preview-section">
-                            <h3 class="text-xl font-bold mb-3">הערות ודגשים:</h3>
-                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
-                        </div>
-
-                        <div id="previewShipImageSection" class="my-8 hidden preview-section">
-                            <img decoding="async" id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
-                            <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline font-semibold">צפה בסרטון האונייה</a> <span id="previewShipVideoUrl" class="text-blue-600"></span></p>
-                        </div>
-
-                        <div id="previewPaymentSummary" class="hidden mt-6 text-sm border-t-2 border-gray-200 pt-4 preview-section">
-                            <h4 class="font-bold text-lg mb-2">סיכום תשלומים:</h4>
-                            <p class="text-base">עלות כוללת = <span id="previewTotalCost" class="font-bold"></span></p>
-                            <p id="previewDownPayment" class="mt-1 text-base"></p>
-                            <p id="previewFinalPaymentDate" class="mt-1 text-base"></p>
-                        </div>
-
-                        <div id="previewConfirmationTerms" class="hidden mt-4 text-sm bg-yellow-50 p-3 rounded-lg border border-yellow-200 preview-section">
-                            <h4 class="font-bold mb-2">תנאים ספציפיים לחברת השייט:</h4>
-                            <div class="grid grid-cols-1 gap-2">
-                                <p><strong>ימים לביטול (לפי מדיניות חברה):</strong> <span id="previewCancelDays"></span></p>
-                                <p><strong>סכום מקדמה נדרש:</strong> <span id="previewDepositAmount"></span></p>
+                            <div id="previewCruiseInclusions" class="mt-4 text-sm space-y-3 preview-section hidden">
+                                <ul id="previewCruiseInclusionsList" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
                             </div>
-                        </div>
 
-                        <div class="mt-8 text-sm space-y-3">
-                            <div class="border-t-2 border-gray-200 pt-4 mt-4 preview-section">
-                                <h4 class="font-bold text-lg">תנאי תשלום וביטול:</h4>
-                                <p><strong>אפשרויות תשלום:</strong></p>
-                                <ul class="list-disc list-inside">
-                                    <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
-                                    <li>העברה בנקאית שקל/דולר/יורו</li>
-                                    <li>מזומן לפי חוק המזומן במשרדנו</li>
-                                </ul>
-                                <p id="noAmexNote" class="hidden font-bold text-red-600">לא מקבלים אמריקן אקספרס / דיינרס</p>
-                                <p><strong>תנאי ביטול:</strong> בהתאם לתנאי חברת השייט המצורפים בנפרד.</p>
-                                <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
-                                <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
-                                <p class="text-xs text-black mt-2">טל"ח</p>
-                                <p id="importantNote" class="font-bold mt-4 text-base text-red-700">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                            <div id="previewItinerarySection" class="my-6 hidden preview-section">
+                                <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
+                                <img decoding="async" id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md mb-2" alt="Itinerary Map">
+                                <div id="previewItineraryTextDisplay" class="hidden whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded border border-gray-200"></div>
                             </div>
-                        </div>
-                    </main>
-                    
-                    <footer class="text-center mt-12 border-t-2 pt-6 border-gray-200">
-                        <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
-                        <p id="previewAdvisor" class="text-gray-700 mt-2"></p>
-                    </footer>
-                    <p id="previewInternalQuote" class="absolute bottom-2 left-4 text-xs text-gray-300"><span id="previewInternalNumber"></span></p>
+
+                            <div id="previewRoomsSection" class="my-6 hidden preview-section">
+                                <h3 class="text-xl font-bold mb-3">פרטי החדרים:</h3>
+                                <div id="previewRoomsContainer" class="space-y-4"></div>
+                                <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden border border-yellow-200">
+                                    חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>
+                                    💡 <strong>חשוב לדעת!</strong><br>
+                                    חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
+                                </div>
+                            </div>
+
+                            <div id="previewFlightsContainer" class="my-6 hidden preview-section">
+                                <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
+                                <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
+                                    <div id="previewFlightsList" class="space-y-2"></div>
+                                    <div id="previewFlightIncludesContainer" class="hidden mt-2">
+                                        <p class="font-semibold">הכרטיס כולל:</p>
+                                        <ul id="previewFlightIncludes" class="list-disc list-inside text-sm"></ul>
+                                    </div>
+                                    <p id="previewFlightFreeText" style="white-space: pre-wrap;" class="mt-2 text-sm"></p>
+                                    <div id="previewFlightCost" class="text-sm mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100"></div>
+                                    <div id="previewFlightConditions" class="text-sm mt-2 text-gray-600"></div>
+                                </div>
+                            </div>
+
+                            <div id="previewHotelsSection" class="my-6 hidden preview-section">
+                                <h3 class="text-xl font-bold mb-3">פרטי מלונות:</h3>
+                                <div id="previewHotelsContainer" class="space-y-4"></div>
+                            </div>
+
+                            <div id="previewTransfersContainer" class="my-6 hidden preview-section">
+                                <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
+                                <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
+                                    <div id="previewTransfersList" class="space-y-2"></div>
+                                    <p class="font-semibold text-right" id="previewTransfersCost"></p>
+                                    <div id="previewTransfersConditions" class="text-sm text-gray-600"></div>
+                                </div>
+                            </div>
+
+                            <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg border border-gray-200 preview-section">
+                            </div>
+
+                            <div class="mt-8 text-sm space-y-3 preview-section">
+                                <h3 class="text-xl font-bold mb-3">הערות ודגשים:</h3>
+                                <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
+                            </div>
+
+                            <div id="previewShipImageSection" class="my-8 hidden preview-section">
+                                <img decoding="async" id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
+                                <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline font-semibold">צפה בסרטון האונייה</a> <span id="previewShipVideoUrl" class="text-blue-600"></span></p>
+                            </div>
+
+                            <div id="previewPaymentSummary" class="hidden mt-6 text-sm border-t-2 border-gray-200 pt-4 preview-section">
+                                <h4 class="font-bold text-lg mb-2">סיכום תשלומים:</h4>
+                                <p class="text-base">עלות כוללת = <span id="previewTotalCost" class="font-bold"></span></p>
+                                <p id="previewDownPayment" class="mt-1 text-base"></p>
+                                <p id="previewFinalPaymentDate" class="mt-1 text-base"></p>
+                            </div>
+
+                            <div id="previewConfirmationTerms" class="hidden mt-4 text-sm bg-yellow-50 p-3 rounded-lg border border-yellow-200 preview-section">
+                                <h4 class="font-bold mb-2">תנאים ספציפיים לחברת השייט:</h4>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <p><strong>ימים לביטול (לפי מדיניות חברה):</strong> <span id="previewCancelDays"></span></p>
+                                    <p><strong>סכום מקדמה נדרש:</strong> <span id="previewDepositAmount"></span></p>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 text-sm space-y-3">
+                                <div class="border-t-2 border-gray-200 pt-4 mt-4 preview-section">
+                                    <h4 class="font-bold text-lg">תנאי תשלום וביטול:</h4>
+                                    <p><strong>אפשרויות תשלום:</strong></p>
+                                    <ul class="list-disc list-inside">
+                                        <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
+                                        <li>העברה בנקאית שקל/דולר/יורו</li>
+                                        <li>מזומן לפי חוק המזומן במשרדנו</li>
+                                    </ul>
+                                    <p id="noAmexNote" class="hidden font-bold text-red-600">לא מקבלים אמריקן אקספרס / דיינרס</p>
+                                    <p><strong>תנאי ביטול:</strong> בהתאם לתנאי חברת השייט המצורפים בנפרד.</p>
+                                    <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
+                                    <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
+                                    <p class="text-xs text-black mt-2">טל"ח</p>
+                                    <p id="importantNote" class="font-bold mt-4 text-base text-red-700">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                                </div>
+                            </div>
+                        </main>
+                        
+                        <footer class="text-center mt-12 border-t-2 pt-6 border-gray-200">
+                            <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
+                            <p id="previewAdvisor" class="text-gray-700 mt-2"></p>
+                        </footer>
+                        <p id="previewInternalQuote" class="absolute bottom-2 left-4 text-xs text-gray-300"><span id="previewInternalNumber"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -757,7 +775,8 @@
             </div>
         </div>
     </template>
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script>
 (function() { 
 'use strict';
@@ -2272,25 +2291,31 @@ async function generatePDF() {
         const state = getFormState();
         if (!validateForm(state)) return;
 
+        // הסתרת הצללה וגלילה לראש העמוד
         DOMElements.previewElement.classList.remove('shadow-lg');
         window.scrollTo(0,0);
 
         const { jsPDF } = window.jspdf;
         
+        // יצירת עותק מוחלט של האלמנט לצורך צילום
         const clone = DOMElements.previewElement.cloneNode(true);
         clone.style.position = 'absolute';
         clone.style.left = '-9999px';
-        clone.style.width = '794px'; 
-        clone.style.height = 'auto';
+        clone.style.width = '794px'; // רוחב A4 בפיקסלים
+        clone.style.height = 'auto'; // גובה אוטומטי
+        // חשוב: ביטול כל המגבלות ששמנו לתצוגה במסך
+        clone.style.maxWidth = 'none'; 
+        clone.style.margin = '0';
         document.body.appendChild(clone);
 
         const content = clone.querySelector('#preview-main');
         const children = Array.from(content.children);
-        const pageHeight = 1122; 
+        const pageHeight = 1122; // גובה A4 בפיקסלים
         
         const headerElement = clone.querySelector('header');
         let currentHeight = headerElement ? headerElement.offsetHeight + 40 : 40; 
 
+        // לוגיקת חיתוך דפים חכם
         children.forEach(child => {
             if (child.classList.contains('hidden') || child.style.display === 'none') return;
 
@@ -2310,6 +2335,7 @@ async function generatePDF() {
             currentHeight += elementHeight;
         });
 
+        // טעינת תמונות לפני הצילום
         const images = clone.querySelectorAll('img');
         const promises = Array.from(images).map(img => new Promise((resolve) => {
             if (img.complete) resolve();
@@ -2317,8 +2343,9 @@ async function generatePDF() {
         }));
         await Promise.all(promises);
 
+        // יצירת הקנבס
         const canvas = await html2canvas(clone, {
-            scale: 3, 
+            scale: 2, // איכות טובה (3 יכול להיות כבד מדי לפעמים)
             useCORS: true, 
             logging: false,
             windowWidth: 794,
@@ -2355,6 +2382,7 @@ async function generatePDF() {
 
         pdf.save(fileName);
 
+        // ניקוי
         document.body.removeChild(clone);
         DOMElements.previewElement.classList.add('shadow-lg');
 
