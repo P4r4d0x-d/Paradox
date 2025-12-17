@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחולל הצעות מחיר - באלי קרוז</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* הגדרות עיצוב בסיסיות */
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            margin: 0;
+            padding: 0;
+        }
+        /* הסתרת אלמנטים בהדפסה */
+        @media print {
+            .no-print { display: none !important; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+        /* הגדרות לתצוגה מקדימה ולמניעת חיתוך ב-PDF */
+        .preview-container * { pointer-events: none; }
+        .no-split { break-inside: avoid; page-break-inside: avoid; }
+        
+        /* טיפול בתמונות למניעת עיוות וחיתוך */
+        #previewItineraryImage {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain; /* מבטיח שכל המפה תיכנס למסגרת ללא חיתוך */
+            background-color: #fff;
+        }
+        #previewShipImage {
+            width: 100%;
+            height: 300px;
+            object-fit: cover; /* ממלא את המסגרת בצורה אסתטית */
+            border-radius: 0.5rem;
+        }
+        
+        /* מחלקת עזר לרווחים ב-PDF */
+        .pdf-spacer {
+            display: block;
+            width: 100%;
+            background: white;
+        }
+
+        /* פופאפ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+            top: 10%;
+        }
+        .close-btn {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover { color: black; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
+
+    <div id="loginScreen" class="fixed inset-0 bg-gray-200 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">כניסה למערכת</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">אימייל</label>
+                    <input type="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">סיסמה</label>
+                    <input type="password" id="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            <p id="loginError" class="text-red-500 text-sm mt-2 hidden">פרטי התחברות שגויים.</p>
+            <button id="loginBtn" class="mt-6 w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg transition">
+                התחבר
+            </button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="container mx-auto p-4 lg:p-8 hidden flex-grow">
+        <header class="text-center mb-8 no-print">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <button id="showSavedQuotesBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow">הצעות שמורות</button>
+                    <button id="newQuoteBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg ml-2 shadow">הצעה חדשה</button>
+                </div>
+                <h1 class="text-4xl font-bold text-blue-800">מחולל הצעות מחיר</h1>
+                <div class="text-left">
+                    <p>שלום, <span id="loggedInAdvisor" class="font-bold"></span></p>
+                    <p id="currentQuoteNumber" class="text-sm text-gray-600"></p>
+                </div>
+            </div>
+            <p class="text-gray-600 mt-2">מלא את הפרטים בטופס כדי ליצור הצעה מקצועית בפורמט PDF.</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <form id="inputForm" class="lg:w-1/2 bg-white p-6 rounded-2xl shadow-lg no-print">
+                <h2 class="text-2xl font-bold mb-6 border-b pb-3">פרטי ההצעה</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">סוג מסמך</label>
+                        <div class="flex items-center space-x-4 space-x-reverse mt-1">
+                            <label><input type="radio" name="docType" value="quote" checked class="ml-1"> הצעת מחיר</label>
+                            <label><input type="radio" name="docType" value="confirmation" class="ml-1"> אישור הזמנה</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="offerDate" class="block text-sm font-medium text-gray-700">תאריך ההצעה</label>
+                        <input type="date" id="offerDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="clientName" class="block text-sm font-medium text-gray-700">שם הלקוח/ה</label>
+                        <input type="text" id="clientName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="clientPhone" class="block text-sm font-medium text-gray-700">טלפון לקוח</label>
+                        <input type="text" id="clientPhone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="advisor" class="block text-sm font-medium text-gray-700">יועץ שייט</label>
+                        <select id="advisor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" disabled>
+                            <option value="lior">ליאור דובינובסקי</option>
+                            <option value="tatiana">טטיאנה לאונוב</option>
+                            <option value="koren">קורן אבסעיד</option>
+                            <option value="yarden">ירדן שקד</option>
+                            <option value="nir">ניר</option>
+                            <option value="natan">נתן</option>
+                            <option value="aviv">אביב</option>
+                            <option value="adi">עדי</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="cruiseSectionContainer" class="mt-6 border-t pt-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-bold">שייט</h3>
+                        <div class="flex items-start">
+                            <input id="hideCruise" type="checkbox" class="h-4 w-4 text-red-600 border-gray-300 rounded mt-1">
+                            <label for="hideCruise" class="mr-2 block text-sm text-red-700 font-semibold">הסתר שייט מההצעה</label>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2 mb-4">
+                        <input id="hideMealInclusion" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <label for="hideMealInclusion" class="mr-2 text-sm text-gray-700">הסתר סעיף ארוחות קבוע</label>
+                    </div>
+                    
+                    <div id="cruiseFields" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="cruiseLine" class="block text-sm font-medium text-gray-700">חברת שייט</label>
+                                <select id="cruiseLine" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                                    <option>MSC</option>
+                                    <option>Royal Caribbean</option>
+                                    <option>Norwegian Cruise Line</option>
+                                    <option>CELEBRITY</option>
+                                    <option>COSTA</option>
+                                    <option>Carnival</option>
+                                    <option>Azamara</option>
+                                    <option>Virgin Voyages</option>
+                                    <option>Seabourn</option>
+                                    <option>Regent Seven Seas</option>
+                                    <option>Ponant</option>
+                                    <option>P&O Cruises</option>
+                                    <option>Oceania Cruises</option>
+                                    <option>Holland America</option>
+                                    <option>Disney Cruise Line</option>
+                                    <option>Cunard</option>
+                                    <option>Crystal</option>
+                                    <option>Princess</option>
+                                    <option>Mano</option>
+                                    <option>Explora Journeys</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="shipName" class="block text-sm font-medium text-gray-700">שם האונייה</label>
+                                <select id="shipName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></select>
+                            </div>
+                            <div>
+                                <label for="shipVideo" class="block text-sm font-medium text-gray-700">קישור וידאו (YouTube)</label>
+                                <input type="text" id="shipVideo" placeholder="https://www.youtube.com/..." class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="cruiseDuration" class="block text-sm font-medium text-gray-700">משך ההפלגה (לילות)</label>
+                                <input type="number" id="cruiseDuration" value="7" min="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div>
+                                <label for="cruiseStartDate" class="block text-sm font-medium text-gray-700">תאריך יציאה</label>
+                                <input type="date" id="cruiseStartDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            </div>
+                            <div class="col-span-2 grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="departurePort" class="block text-sm font-medium text-gray-700">נמל יציאה</label>
+                                    <input type="text" id="departurePort" placeholder="לדוגמה: רומא" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                                </div>
+                                <div>
+                                    <label for="arrivalPort" class="block text-sm font-medium text-gray-700">נמל חזרה</label>
+                                    <input type="text" id="arrivalPort" placeholder="לדוגמה: רומא" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">תמונת מסלול</label>
+                            <div id="itineraryPasteTarget" contenteditable="true" tabindex="0" class="mt-1 flex justify-center items-center w-full h-24 border-2 border-dashed border-gray-300 rounded-md cursor-pointer text-gray-500 p-2 text-center transition-colors bg-gray-50 hover:bg-gray-100">
+                                <span>הדבק תמונה כאן (Ctrl+V)</span>
+                            </div>
+                        </div>
+                        <div id="roomsContainer">
+                            <h3 class="text-xl font-bold mb-3">חדרים</h3>
+                        </div>
+                        <button id="addRoomBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="text-xl font-bold mb-3">טיסות (אופציונלי)</h3>
+                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div id="flightsContainer" class="space-y-4"></div>
+                        <button id="addFlightBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף טיסה</button>
+                        
+                        <div class="mt-4">
+                            <label for="flightIncludes" class="block text-sm font-medium text-gray-700">הכרטיס כולל (ניתן לערוך)</label>
+                            <textarea id="flightIncludes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">מזוודה 20 ק"ג
+טרולי 7 ק"ג</textarea>
+                        </div>
+                        <div>
+                            <label for="flightFreeText" class="block text-sm font-medium text-gray-700">מלל חופשי לטיסות</label>
+                            <textarea id="flightFreeText" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                        </div>
+                        <div>
+                            <h4 class="text-md font-bold mt-4">כמות נוסעים ומחירים</h4>
+                            <div id="passengerTypesContainer" class="space-y-2 mt-2"></div>
+                            <button id="addPassengerTypeBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף סוג נוסע</button>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mt-2">תנאי ביטול/שינוי</label>
+                            <div class="space-y-2 mt-1">
+                                <div class="flex items-center">
+                                    <input type="radio" id="flightNoCancel" name="flightCancelType" value="noCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="flightNoCancel" class="mr-2 text-sm">ללא אפשרות ביטול / שינוי</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="flightCancellable" name="flightCancelType" value="cancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="flightCancellable" class="mr-2 text-sm">ניתן לביטול / שינוי</label>
+                                </div>
+                                <div id="flightCancelDetails" class="hidden space-y-2 mr-6">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="flightCancelCheck" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <label for="flightCancelCheck" class="mr-2 text-sm">ביטול</label>
+                                        <input type="text" id="flightCancelFee" placeholder="דמי ביטול לנוסע" class="mr-2 w-32 border border-gray-300 rounded-md shadow-sm p-1 text-sm">
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="flightChangeCheck" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                        <label for="flightChangeCheck" class="mr-2 text-sm">שינוי</label>
+                                        <input type="text" id="flightChangeFee" placeholder="דמי שינוי לנוסע" class="mr-2 w-32 border border-gray-300 rounded-md shadow-sm p-1 text-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="text-xl font-bold mb-3">מלונות (אופציונלי)</h3>
+                    <div id="hotelsContainer" class="space-y-4"></div>
+                    <button id="addHotelBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף מלון</button>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="text-xl font-bold mb-3">העברות (אופציונלי)</h3>
+                    <div class="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div id="transfersContainer" class="space-y-4"></div>
+                        <button id="addTransferBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף העברה</button>
+                        <div>
+                            <label for="transfersCost" class="block text-sm font-medium text-gray-700 mt-2">עלות כל ההעברות ($)</label>
+                            <input type="number" id="transfersCost" min="0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mt-2">תנאי ביטול</label>
+                            <div class="space-y-2 mt-1">
+                                <div class="flex items-center">
+                                    <input type="radio" id="transfersNoCancel" name="transfersCancelType" value="noCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="transfersNoCancel" class="mr-2 text-sm">ללא אפשרות ביטול / שינוי</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="transfersCancellable" name="transfersCancelType" value="cancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="transfersCancellable" class="mr-2 text-sm">ניתן לביטול</label>
+                                </div>
+                                <div id="transfersCancelDetails" class="hidden space-y-2 mr-6">
+                                    <div>
+                                        <label for="transfersCancelDate" class="block text-sm font-medium text-gray-700">עד תאריך</label>
+                                        <input type="date" id="transfersCancelDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                                    </div>
+                                    <div>
+                                        <label for="transfersCancelFee" class="block text-sm font-medium text-gray-700">דמי ביטול</label>
+                                        <input type="text" id="transfersCancelFee" placeholder="לדוגמה: $50" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
+                    <div class="flex items-start mb-4">
+                        <input id="hideTotal" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded mt-1">
+                        <label for="hideTotal" class="mr-2 block text-sm text-gray-900">הסתר סה"כ עלות</label>
+                    </div>
+                    <div>
+                        <label for="customInclusions" class="block text-sm font-medium text-gray-700">הערות ודגשים נוספים (כל שורה תופיע כסעיף נפרד)</label>
+                        <textarea id="customInclusions" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between gap-4">
+                    <button id="generatePDFBtn" type="button" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:scale-105">
+                        הורד PDF
+                    </button>
+                </div>
+            </form>
+
+            <div class="lg:w-1/2">
+                <div id="preview" class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-[794px] mx-auto relative">
+                    <header class="flex justify-between items-center border-b-2 pb-4 border-gray-200">
+                        <div class="text-right">
+                            <img decoding="async" src="https://balicruise.co.il/wp-content/uploads/2023/02/bali-cruise-logo500-X-145-Custom.png" alt="באלי קרוז" class="h-16" title="באלי קרוז לוגו">
+                        </div>
+                        <div style="font-size: 40px; color: #3f3c66;">⚓</div>
+                    </header>
+                    
+                    <main id="preview-main" class="mt-8">
+                        <div class="flex justify-between items-start">
+                            <p class="text-xl mb-6"><span id="previewDocTitle"></span> <span id="previewClientName" class="font-bold"></span><span id="previewClientPhone"></span>,</p>
+                            <div>
+                                <p class="mb-1 text-left text-sm"><span id="previewDate" class="font-semibold"></span></p>
+                                <p class="mb-4 text-left text-sm"><span id="previewQuoteNumber" class="font-semibold"></span></p>
+                            </div>
+                        </div>
+                        
+                        <p id="previewOpeningLine" class="mb-6"></p>
+
+                        <div id="previewCruiseDetails" class="bg-blue-50 rounded-lg p-4 mb-6 preview-section border border-blue-100">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-800">פרטי ההפלגה</h2>
+                            <div class="grid grid-cols-2 gap-4 text-md">
+                                <p><strong>חברת שייט:</strong> <span id="previewCruiseLine"></span></p>
+                                <p><strong>אונייה:</strong> <span id="previewShipName"></span></p>
+                                <p><strong>משך הפלגה:</strong> <span id="previewCruiseDuration"></span> לילות</p>
+                                <p><strong>תאריכים:</strong> <span id="previewCruiseDate"></span></p>
+                                <p class="col-span-2"><strong>מסלול:</strong> <span id="previewPorts"></span></p>
+                            </div>
+                        </div>
+
+                        <div id="previewCruiseInclusions" class="mt-4 text-sm space-y-3 preview-section hidden">
+                            <ul id="previewCruiseInclusionsList" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
+                        </div>
+
+                        <div id="previewItinerarySection" class="my-6 hidden preview-section">
+                            <h3 class="text-xl font-bold mb-3">מסלול ההפלגה:</h3>
+                            <img decoding="async" id="previewItineraryImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול" class="w-full rounded-lg shadow-md" alt="Itinerary Map">
+                        </div>
+
+                        <div id="previewRoomsSection" class="my-6 hidden preview-section">
+                            <h3 class="text-xl font-bold mb-3">פרטי החדרים:</h3>
+                            <div id="previewRoomsContainer" class="space-y-4"></div>
+                            <div id="previewGuaranteeNote" class="mt-4 text-sm bg-yellow-100 p-3 rounded-lg hidden border border-yellow-200">
+                                חדר מסוג "גרנטי" הוא חדר שבו חברת השייט מתחייבת לסוג החדר שבחרתם, אך מיקום החדר (קומה או מיקום ספציפי באונייה) אינו מובטח. מכיוון שמיקום החדר אינו ידוע מראש, לא ניתן לדעת אם הנוף מהחדר יהיה נוף מלא, חלקי או מוסתר.<br>
+                                💡 <strong>חשוב לדעת!</strong><br>
+                                חדרים מסוג "גרנטי" לעיתים קרובות עשויים להיות משודרגים במקרים של אוברבוקינג, כך שיש סיכוי לקבל שדרוג לסוג חדר טוב יותר 😊
+                            </div>
+                        </div>
+
+                        <div id="previewFlightsContainer" class="my-6 hidden preview-section">
+                            <h3 class="text-xl font-bold mb-3">פרטי טיסות:</h3>
+                            <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
+                                <div id="previewFlightsList" class="space-y-2"></div>
+                                <div id="previewFlightIncludesContainer" class="hidden mt-2">
+                                    <p class="font-semibold">הכרטיס כולל:</p>
+                                    <ul id="previewFlightIncludes" class="list-disc list-inside text-sm"></ul>
+                                </div>
+                                <p id="previewFlightFreeText" style="white-space: pre-wrap;" class="mt-2 text-sm"></p>
+                                <div id="previewFlightCost" class="text-sm mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100"></div>
+                                <div id="previewFlightConditions" class="text-sm mt-2 text-gray-600"></div>
+                            </div>
+                        </div>
+
+                        <div id="previewHotelsSection" class="my-6 hidden preview-section">
+                            <h3 class="text-xl font-bold mb-3">פרטי מלונות:</h3>
+                            <div id="previewHotelsContainer" class="space-y-4"></div>
+                        </div>
+
+                        <div id="previewTransfersContainer" class="my-6 hidden preview-section">
+                            <h3 class="text-xl font-bold mb-3">פרטי העברות:</h3>
+                            <div class="border border-gray-300 p-3 rounded-lg bg-white space-y-2">
+                                <div id="previewTransfersList" class="space-y-2"></div>
+                                <p class="font-semibold text-right" id="previewTransfersCost"></p>
+                                <div id="previewTransfersConditions" class="text-sm text-gray-600"></div>
+                            </div>
+                        </div>
+
+                        <div id="previewTotalContainer" class="mt-6 text-2xl font-bold text-right text-blue-900 bg-gray-100 p-4 rounded-lg border border-gray-200 preview-section">
+                        </div>
+
+                        <div class="mt-8 text-sm space-y-3 preview-section">
+                            <h3 class="text-xl font-bold mb-3">הערות ודגשים:</h3>
+                            <ul id="previewInclusions" class="list-disc list-inside bg-gray-50 p-4 rounded-lg border border-gray-200"></ul>
+                        </div>
+
+                        <div id="previewShipImageSection" class="my-8 hidden preview-section">
+                            <img decoding="async" id="previewShipImage" src="https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה" class="w-full rounded-lg shadow-md" alt="Cruise Ship">
+                            <p id="previewShipVideo" class="text-center mt-2 hidden"><a href="" target="_blank" class="text-blue-600 hover:underline font-semibold">צפה בסרטון האונייה</a> <span id="previewShipVideoUrl" class="text-blue-600"></span></p>
+                        </div>
+
+                        <div id="previewPaymentSummary" class="hidden mt-6 text-sm border-t-2 border-gray-200 pt-4 preview-section">
+                            <h4 class="font-bold text-lg mb-2">סיכום תשלומים:</h4>
+                            <p class="text-base">עלות כוללת = <span id="previewTotalCost" class="font-bold"></span></p>
+                            <p id="previewDownPayment" class="mt-1 text-base"></p>
+                            <p id="previewFinalPaymentDate" class="mt-1 text-base"></p>
+                        </div>
+
+                        <div id="previewConfirmationTerms" class="hidden mt-4 text-sm bg-yellow-50 p-3 rounded-lg border border-yellow-200 preview-section">
+                            <h4 class="font-bold mb-2">תנאים ספציפיים לחברת השייט:</h4>
+                            <div class="grid grid-cols-1 gap-2">
+                                <p><strong>ימים לביטול (לפי מדיניות חברה):</strong> <span id="previewCancelDays"></span></p>
+                                <p><strong>סכום מקדמה נדרש:</strong> <span id="previewDepositAmount"></span></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 text-sm space-y-3">
+                            <div class="border-t-2 border-gray-200 pt-4 mt-4 preview-section">
+                                <h4 class="font-bold text-lg">תנאי תשלום וביטול:</h4>
+                                <p><strong>אפשרויות תשלום:</strong></p>
+                                <ul class="list-disc list-inside">
+                                    <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
+                                    <li>העברה בנקאית שקל/דולר/יורו</li>
+                                    <li>מזומן לפי חוק המזומן במשרדנו</li>
+                                </ul>
+                                <p id="noAmexNote" class="hidden font-bold text-red-600">לא מקבלים אמריקן אקספרס / דיינרס</p>
+                                <p><strong>תנאי ביטול:</strong> בהתאם לתנאי חברת השייט המצורפים בנפרד.</p>
+                                <p class="text-xs text-black mt-2">לתשומת לבך: חוק הגנת הצרכן אינו תקף להזמנות שירותי תיירות המתחילים ומסתיימים מחוץ לישראל.</p>
+                                <p class="text-xs text-black mt-2">*רכישת כל מוצר וביטולו אינה כפופה לשום מוצר אחר!</p>
+                                <p class="text-xs text-black mt-2">טל"ח</p>
+                                <p id="importantNote" class="font-bold mt-4 text-base text-red-700">חשוב לי לציין שכל המחירים נכונים להרגע ויכולים להשתנות בכל רגע נתון.</p>
+                            </div>
+                        </div>
+                    </main>
+                    
+                    <footer class="text-center mt-12 border-t-2 pt-6 border-gray-200">
+                        <p class="font-bold text-lg text-blue-800">תודה שבחרתם להפליג איתנו!</p>
+                        <p id="previewAdvisor" class="text-gray-700 mt-2"></p>
+                    </footer>
+                    <p id="previewInternalQuote" class="absolute bottom-2 left-4 text-xs text-gray-300"><span id="previewInternalNumber"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="savedQuotesModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalBtn" class="close-btn">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">הצעות שמורות</h2>
+            <div id="savedQuotesList" class="space-y-2 max-h-96 overflow-y-auto">
+            </div>
+        </div>
+    </div>
+
+    <template id="roomTemplate">
+        <div class="room-entry border p-4 rounded-lg mt-2 bg-gray-50 relative border-gray-200">
+            <button class="remove-room-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print px-2">X</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">הרכב</label>
+                    <select name="composition" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <option value="">בחר הרכב</option>
+                        <option value="נוסע יחיד">נוסע יחיד</option>
+                        <option value="זוג">זוג</option>
+                        <option value="זוג + 1">זוג + 1</option>
+                        <option value="זוג + 2">זוג + 2</option>
+                        <option value="זוג + 3">זוג + 3</option>
+                        <option value="זוג + 4">זוג + 4</option>
+                        <option value="מבוגר + ילד">מבוגר + ילד</option>
+                        <option value="מבוגר + 2 ילדים">מבוגר + 2 ילדים</option>
+                        <option value="מבוגר + 3 ילדים">מבוגר + 3 ילדים</option>
+                        <option value="מבוגר + 4 ילדים">מבוגר + 4 ילדים</option>
+                        <option value="מבוגר + 5 ילדים">מבוגר + 5 ילדים</option>
+                        <option value="3 מבוגרים">3 מבוגרים</option>
+                        <option value="3 מבוגרים + 1">3 מבוגרים + 1</option>
+                        <option value="3 מבוגרים + 2">3 מבוגרים + 2</option>
+                        <option value="3 מבוגרים + 3">3 מבוגרים + 3</option>
+                        <option value="4 מבוגרים">4 מבוגרים</option>
+                        <option value="4 מבוגרים + 1">4 מבוגרים + 1</option>
+                        <option value="4 מבוגרים + 2">4 מבוגרים + 2</option>
+                        <option value="5 מבוגרים">5 מבוגרים</option>
+                        <option value="5 מבוגרים + 1">5 מבוגרים + 1</option>
+                        <option value="6 מבוגרים">6 מבוגרים</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תיאור חדר</label>
+                    <select name="roomType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <option value="">בחר סוג חדר</option>
+                        <option value="פנימי גרנטי">פנימי גרנטי</option>
+                        <option value="פנימי עם בחירת מיקום">פנימי עם בחירת מיקום</option>
+                        <option value="חלון גרנטי">חלון גרנטי</option>
+                        <option value="חלון עם בחירת מיקום">חלון עם בחירת מיקום</option>
+                        <option value="מרפסת לים גרנטי">מרפסת לים גרנטי</option>
+                        <option value="מרפסת לפנים האונייה גרנטי">מרפסת לפנים האונייה גרנטי</option>
+                        <option value="מרפסת לים עם בחירת מיקום">מרפסת לים עם בחירת מיקום</option>
+                        <option value="מרפסת לפנים האונייה עם בחירת מיקום">מרפסת לפנים האונייה עם בחירת מיקום</option>
+                        <option value="סוויטה">סוויטה</option>
+                    </select>
+                </div>
+                <div class="room-details hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">קומה</label>
+                        <input type="text" name="floor" placeholder="לדוגמה: 10" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">מספר חדר</label>
+                        <input type="text" name="roomNumber" placeholder="לדוגמה: 1234" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תיאור נוסף (לא חובה)</label>
+                    <textarea name="extraDesc" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="הוסף פרטים נוספים על החדר..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 room-cost-label">עלות ($)</label>
+                    <input type="number" name="roomCost" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="flightTemplate">
+        <div class="flight-entry border p-4 rounded-lg bg-gray-50 relative border-gray-200">
+            <button class="remove-flight-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print px-2">X</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">חברת תעופה</label>
+                    <input type="text" name="airline" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">מוצא</label>
+                    <input type="text" name="from" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">יעד</label>
+                    <input type="text" name="to" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תאריך</label>
+                    <input type="date" name="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שעת המראה</label>
+                    <input type="text" name="takeoff" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שעת נחיתה</label>
+                    <input type="text" name="landing" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="passengerTypeTemplate">
+        <div class="passenger-type-entry flex gap-4 items-end">
+            <div class="w-1/3">
+                <label class="block text-sm font-medium text-gray-700">סוג נוסע</label>
+                <select name="passengerType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    <option value="adult">מבוגר</option>
+                    <option value="child">ילד</option>
+                    <option value="infant">תינוק</option>
+                </select>
+            </div>
+            <div class="w-1/3">
+                <label class="block text-sm font-medium text-gray-700">כמות</label>
+                <input type="number" name="passengerCount" min="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <div class="w-1/3">
+                <label class="block text-sm font-medium text-gray-700">מחיר ($)</label>
+                <input type="number" name="passengerPrice" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <button class="remove-passenger-type-btn text-red-500 hover:text-red-700 font-bold mb-2">X</button>
+        </div>
+    </template>
+
+    <template id="transferTemplate">
+        <div class="transfer-entry border p-4 rounded-lg bg-gray-50 relative border-gray-200">
+            <button class="remove-transfer-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print px-2">X</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">סוג העברה</label>
+                    <select name="transferType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <option value="">בחר סוג</option>
+                        <option value="שדה תעופה - מלון">שדה תעופה - מלון</option>
+                        <option value="מלון - נמל קרוזים">מלון - נמל קרוזים</option>
+                        <option value="נמל קרוזים - מלון">נמל קרוזים - מלון</option>
+                        <option value="נמל קרוזים - שדה תעופה">נמל קרוזים - שדה תעופה</option>
+                        <option value="מלון - שדה תעופה">מלון - שדה תעופה</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">מלל חופשי</label>
+                    <textarea name="transferFreeText" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="hotelTemplate">
+        <div class="hotel-entry border p-4 rounded-lg bg-gray-50 relative border-gray-200">
+            <button class="remove-hotel-btn absolute top-2 left-2 text-red-500 hover:text-red-700 font-bold no-print px-2">X</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">שם המלון</label>
+                    <input type="text" name="hotelName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">מספר לילות</label>
+                        <input type="number" name="hotelNights" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">מתאריך</label>
+                        <input type="date" name="hotelStartDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">כמות חדרים</label>
+                    <input type="number" name="hotelNumRooms" min="1" value="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">סוג חדר</label>
+                    <textarea name="hotelRoomDesc" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">פנסיון</label>
+                    <select name="hotelPension" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <option value="">בחר</option>
+                        <option value="לינה בלבד">לינה בלבד</option>
+                        <option value="לינה וארוחת בוקר">לינה וארוחת בוקר</option>
+                        <option value="חצי פנסיון">חצי פנסיון</option>
+                        <option value="פנסיון מלא">פנסיון מלא</option>
+                        <option value="הכל כלול">הכל כלול</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">עלות מלון ($)</label>
+                    <input type="number" name="hotelCost" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">תנאי ביטול</label>
+                    <div class="space-y-2 mt-1">
+                        <div class="flex items-center">
+                            <input type="radio" name="hotelCancelType" value="noCancel" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <label class="mr-2 text-sm">ללא אפשרות ביטול/שינוי</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" name="hotelCancelType" value="cancellable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            <label class="mr-2 text-sm">ניתן לביטול עם דמי</label>
+                        </div>
+                        <div class="hotel-cancel-details hidden space-y-2 mr-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">דמי ביטול</label>
+                                <input type="text" name="hotelCancelFee" placeholder="לדוגמה: $50" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">עד תאריך</label>
+                                <input type="date" name="hotelCancelDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-1 text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+(function() { 
+'use strict';
+
+// =====================
+// 1. נתוני קרוזים (Data)
+// =====================
+const cruiseData = {
+    "MSC": [
+        { "name": "MSC Preziosa", "video": "https://www.youtube.com/watch?v=LzWd7k_JqwE", "image": "https://i.postimg.cc/vBPv6qWq/MSC16008892.jpg" },
+        { "name": "MSC Splendida", "video": "https://www.youtube.com/watch?v=wuI1iqyS80o", "image": "https://i.postimg.cc/250WHqV3/MSC13015955.jpg" },
+        { "name": "MSC Magnifica", "video": "https://www.youtube.com/watch?v=3VNHV9rVLjk", "image": "https://i.postimg.cc/ZqbsQDxH/MSC19019079.jpg" },
+        { "name": "MSC Musica", "video": "https://www.youtube.com/watch?v=ze1A0OJ5ddw", "image": "https://i.postimg.cc/5Nmwr9Kc/MSC13014701.jpg" },
+        { "name": "MSC Orchestra", "video": "https://www.youtube.com/watch?v=eRnLETQwMLA", "image": "https://i.postimg.cc/nhPQ8XvW/MSC16006817.jpg" },
+        { "name": "MSC Poesia", "video": "https://www.youtube.com/watch?v=Pfo49__jig0", "image": "https://i.postimg.cc/yxRmyYrN/MSC25037328.jpg" },
+        { "name": "MSC Armonia", "video": "https://www.youtube.com/watch?v=QkVpYGrpb2M", "image": "https://i.postimg.cc/KzSpXwS4/MSC16006221-1.jpg" },
+        { "name": "MSC Lirica", "video": "https://www.youtube.com/watch?v=hj0E3bOObdA", "image": "https://i.postimg.cc/MKSqwZJb/MSC16006932.jpg" },
+        { "name": "MSC Opera", "video": "https://www.youtube.com/watch?v=TwdHj0Cod1M", "image": "https://i.postimg.cc/VvFTm8XD/MSC15004313.jpg" },
+        { "name": "MSC Sinfonia", "video": "https://www.youtube.com/watch?v=LWH-o-XGAi4", "image": "https://i.postimg.cc/Y90j1rCm/MSC16006204.jpg" },
+        { "name": "MSC Divina", "video": "https://www.youtube.com/watch?v=GnJp5B8jZbc", "image": "https://i.postimg.cc/HkTMrCXb/MSC13011902.jpg" },
+        { "name": "MSC Fantasia", "video": "https://www.youtube.com/watch?v=m_UlYTVhBzY", "image": "https://i.postimg.cc/MTwJSthZ/MSC13012071.jpg" },
+        { "name": "MSC World America", "video": "https://www.youtube.com/watch?v=jYPYZEQxpHI", "image": "https://i.postimg.cc/MGkh7dZ0/MSC25040915.jpg" },
+        { "name": "MSC World Asia", "video": "", "image": "https://i.postimg.cc/C1xJkq8H/MSC25035094.jpg" },
+        { "name": "MSC World Europa", "video": "https://www.youtube.com/watch?v=DL6hnxPqUUo", "image": "https://i.postimg.cc/NM2DdwN5/MSC22013055.jpg" },
+        { "name": "MSC Seashore", "video": "https://www.youtube.com/watch?v=KHqmnA5UDZo", "image": "https://i.postimg.cc/R0HJ8VB5/MSC21007729.jpg" },
+        { "name": "MSC Seaside", "video": "https://www.youtube.com/watch?v=1ZNpczW1bL8", "image": "https://i.postimg.cc/4xrmzkh8/MSC18014069.jpg" },
+        { "name": "MSC Seascape", "video": "https://www.youtube.com/watch?v=H2IwM2uoon0", "image": "https://i.postimg.cc/7PsswmzH/MSC21008179.jpg" },
+        { "name": "MSC Seaview", "video": "https://www.youtube.com/watch?v=Fmxi2uJcjQg", "image": "https://i.postimg.cc/pdWz9tNg/MSC19018890.jpg" },
+        { "name": "MSC Bellissima", "video": "https://www.youtube.com/watch?v=dkL4LSiilQo", "image": "https://i.postimg.cc/xjwxFgbc/MSC18013997.jpg" },
+        { "name": "MSC Euribia", "video": "https://www.youtube.com/watch?v=PDtK-GM5MRM", "image": "https://i.postimg.cc/Sswr3NRw/MSC23019432.jpg" },
+        { "name": "MSC Grandiosa", "video": "https://www.youtube.com/watch?v=5URU14l8EgE", "image": "https://i.postimg.cc/nr62DVqH/MSC19001443.jpg" },
+        { "name": "MSC Meraviglia", "video": "https://www.youtube.com/watch?v=ql-b48h1oUw", "image": "https://i.postimg.cc/DzMxTcmJ/MSC17011157.jpg" },
+        { "name": "MSC Virtuosa", "video": "https://www.youtube.com/watch?v=OLS9W9cMj1o", "image": "https://i.postimg.cc/bwF5yPBw/MSC18017765.jpg" }
+    ],
+    "Norwegian Cruise Line": [
+        { "name": "Norwegian Aqua", "video": "https://www.youtube.com/watch?v=omxujspTlJw", "image": "https://i.postimg.cc/YCVXc3v4/norwegianaquainmiami4.jpg" },
+        { "name": "Norwegian Bliss", "video": "https://www.youtube.com/watch?v=OtTbM6KUKCk", "image": "https://i.postimg.cc/8ctHZB8z/norwegianbliss-ketchikanalaska-bird039seyeview.jpg" },
+        { "name": "Norwegian Breakaway", "video": "https://www.youtube.com/watch?v=v2kFn36kW7w", "image": "https://i.postimg.cc/XNQkS8hV/norwegianbreakaway-indestination-st-luciaaerial.jpg" },
+        { "name": "Norwegian Dawn", "video": "https://www.youtube.com/watch?v=mHw-Gxxe4FA", "image": "https://i.postimg.cc/9QT9Mtxw/norwegiandawn-aerial.jpg" },
+        { "name": "Norwegian Encore", "video": "https://www.youtube.com/watch?v=87Ri0lawr_U", "image": "https://i.postimg.cc/bvmwNZj2/norwegianencore-birdseyeview.jpg" },
+        { "name": "Norwegian Epic", "video": "https://www.youtube.com/watch?v=Syk85jAwues", "image": "https://i.postimg.cc/XvrYqVNH/norwegianepic-aerial.jpg" },
+        { "name": "Norwegian Escape", "video": "https://www.youtube.com/watch?v=09YP6AhVAVA", "image": "https://i.postimg.cc/LsxjK4Cx/norwegianescape-tortola-9.jpg" },
+        { "name": "Norwegian Getaway", "video": "https://www.youtube.com/watch?v=DW9UgPpeXv0", "image": "https://i.postimg.cc/d3wtNyxh/ncl-gtwy-aerials-nassau019.jpg" },
+        { "name": "Norwegian Jade", "video": "https://www.youtube.com/watch?v=HQ-X6Vr0Pu4", "image": "https://i.postimg.cc/mDh7dKsz/norwegianjade-aerial.jpg" },
+        { "name": "Norwegian Jewel", "video": "https://www.youtube.com/watch?v=DKwxb8UHJq8", "image": "https://i.postimg.cc/sgR8t41D/norwegianjewel-indestinationjuneaualaska.jpg" },
+        { "name": "Norwegian Joy", "video": "https://www.youtube.com/watch?v=HoKjNrNww0o", "image": "https://i.postimg.cc/ZnmmVzk4/norwegianjoy.jpg" },
+        { "name": "Norwegian Luna", "video": "https://www.youtube.com/watch?v=uK2uUAHEs3Q", "image": "https://i.postimg.cc/0NSh3X0Q/norwegianlunaoverhead.jpg" },
+        { "name": "Norwegian Pearl", "video": "https://www.youtube.com/watch?v=bV977mnd8FY", "image": "https://i.postimg.cc/nr3W7ypd/norwegianpearl-aerial.jpg" },
+        { "name": "Norwegian Prima", "video": "https://www.youtube.com/watch?v=ugOF9hHC5U0", "image": "https://i.postimg.cc/7h53sdSt/norwegianprima-aerial-stern.jpg" },
+        { "name": "Norwegian Sky", "video": "https://www.youtube.com/watch?v=3k_inYuoEho", "image": "https://i.postimg.cc/zfPSCqgH/norwegiansky-aerial.jpg" },
+        { "name": "Norwegian Spirit", "video": "https://www.youtube.com/watch?v=-GPrS81xEkE", "image": "https://i.postimg.cc/gJZR38p1/norwegianspirit-aerial-1.jpg" },
+        { "name": "Norwegian Star", "video": "", "image": "https://i.postimg.cc/pX6sQYML/norwegianstar-aerial.jpg" },
+        { "name": "Norwegian Sun", "video": "", "image": "https://i.postimg.cc/bN7QN6jk/norwegiansun-aerial.jpg" },
+        { "name": "Norwegian Viva", "video": "https://www.youtube.com/watch?v=LDCkEPw9cvk", "image": "https://i.postimg.cc/FFfprkLt/ncl-viva-aerial-sanjuan-0910.jpg" },
+        { "name": "Norwegian Gem", "video": "", "image": "https://i.postimg.cc/Z5LF7r1N/norwegiangem-aerial.jpg" },
+        { "name": "Pride of America", "video": "", "image": "https://i.postimg.cc/SNF6mT48/prideofamerica-aerial.jpg" }
+    ],
+    "Royal Caribbean": [
+        { "name": "Adventure of the Seas", "video": "", "image": "https://i.postimg.cc/3wBSGMKP/1623457762-DJI-0713.jpg" },
+        { "name": "Allure of the Seas", "video": "https://www.youtube.com/watch?v=KbH0tBNGu5Y", "image": "https://i.postimg.cc/pLYbs6WB/1722900416-RCI-AL-CGI-ALT-201911-MVerdure-OA19-Aerial-FLL1-027-RT-EXT-LR.jpg" },
+        { "name": "Anthem of the Seas", "video": "", "image": "https://i.postimg.cc/mDFGy2tP/1446674152-image002.jpg" },
+        { "name": "Brilliance of the Seas", "video": "", "image": "https://i.postimg.cc/1XGhbC0P/1697834102-RCI-Brilliance-Exterior-Side-4-UR.jpg" },
+        { "name": "Enchantment of the Seas", "video": "", "image": "https://i.postimg.cc/hPsNx7pC/image-2301.avif" },
+        { "name": "Explorer of the Seas", "video": "https://www.youtube.com/watch?v=DTi1YCmpAa4", "image": "https://i.postimg.cc/VkYb65NB/ew0-KICAi-Yn-Vja2-V0-Ijog-In-Byb2-Qtc2-Vydmlj-ZS1pd-HJhdm-Vs-Y2-Ru-LWVua-GFu-Y2-Vid-WNr-ZXQt-Y2-Y0c-TZkc-XY9dj-I4-Iiw-NCi-Ag-Imtl.jpg" },
+        { "name": "Freedom of the Seas", "video": "https://www.youtube.com/watch?v=348M1LSXFHA", "image": "https://i.postimg.cc/MKwnPX12/1624145764-IMG-0571.jpg" },
+        { "name": "Grandeur of the Seas", "video": "", "image": "https://i.postimg.cc/02Vk0Tth/1610490210-Grandeur-of-the-Seas-exterior.jpg" },
+        { "name": "Harmony of the Seas", "video": "https://www.youtube.com/watch?v=mYuY5b88bZU", "image": "https://i.postimg.cc/nVPdqbmD/1473174759-HM-Aft.jpg" },
+        { "name": "Icon of the Seas", "video": "https://www.youtube.com/watch?v=E66ugm_xhr4", "image": "https://i.postimg.cc/gJJ0F6Nr/1708378767-RCI-PDC-202401-CC-JGraham-Icon-Arrival-DJI-A003-0044-RT-EXT.jpg" },
+        { "name": "Independence of the Seas", "video": "https://www.youtube.com/watch?v=sZEigiftcII", "image": "https://i.postimg.cc/bY0qCgzL/1600881251-RCI-ID-June2018-Portugal-Heli-Jordan-Dani-Sunrise-Ship-01-0012-RET-CMYK.jpg" },
+        { "name": "Jewel of the Seas", "video": "", "image": "https://i.postimg.cc/wjyPPxXH/1616633882-jewel-of-the-seas-grenada-docked-harbor-21.jpg" },
+        { "name": "Legend of the Seas", "video": "", "image": "https://i.postimg.cc/Cx3ZHzSd/1759346577-RCI-LE-Aft-Day-CGI01-RT.jpg" },
+        { "name": "Liberty of the Seas", "video": "https://www.youtube.com/watch?v=uKTrVQSQVwo", "image": "https://i.postimg.cc/PJBCB73c/1614176494-RCI-LB-Liberty-AP-0141-4-S-3.jpg" },
+        { "name": "Mariner of the Seas", "video": "", "image": "https://i.postimg.cc/2SYQyqTr/1530649053-MA18-Aerials-FL641.jpg" },
+        { "name": "Navigator of the Seas", "video": "", "image": "https://i.postimg.cc/ncprQv82/1655474745-RCI-NV-OOH-JD-032019-DP-1-Aerial-5782-RET-CMYK.jpg" },
+        { "name": "Oasis of the Seas", "video": "https://www.youtube.com/watch?v=GUN6KVvFlYE", "image": "https://i.postimg.cc/prfYqcFs/1627996078-RCI-OA-LABADEE-122019-CC-Youth-Fam-LISIEWSKI-DRONE-089-RET-CMYK1.jpg" },
+        { "name": "Odyssey of the Seas", "video": "", "image": "https://i.postimg.cc/ncprQv82/1655474745-RCI-NV-OOH-JD-032019-DP-1-Aerial-5782-RET-CMYK.jpg" },
+        { "name": "Ovation of the Seas", "video": "", "image": "https://i.postimg.cc/wj2VJrXF/1683126646-369-Port-Vila-Vanuatu.jpg" },
+        { "name": "Quantum of the Seas", "video": "", "image": "https://i.postimg.cc/8cG4Lg06/1602097549-RCI-QN-Aerials-NY089.jpg" },
+        { "name": "Radiance of the Seas", "video": "", "image": "https://i.postimg.cc/W3mN505d/New-10.jpg" },
+        { "name": "Rhapsody of the Seas", "video": "", "image": "https://i.postimg.cc/MGKNCV63/1645580961-RCI-RH-092013-080-F-RET.jpg" },
+        { "name": "Serenade of the Seas", "video": "", "image": "https://i.postimg.cc/RZvDtKHf/1722432053-RCI-SR-Aerial-Exterior-Side.jpg" },
+        { "name": "Spectrum of the Seas", "video": "", "image": "https://i.postimg.cc/vBnzkZnG/1559228142-201905-HK-RC-Spectrum-06-Uden.jpg" },
+        { "name": "Star of the Seas", "video": "https://www.youtube.com/watch?v=Dzy3kbEqXXQ", "image": "https://i.postimg.cc/Sx8xX0cM/1752847327-star-departure-17072025-037.jpg" },
+        { "name": "Symphony of the Seas", "video": "https://www.youtube.com/watch?v=GOPIRTWBNMc", "image": "https://i.postimg.cc/HLqKVK0F/1684771879-RCI-SY-Europe-April2018-Dana-Neibert-Aerial-Mullen-4196-RET-V1.jpg" },
+        { "name": "Utopia of the Seas", "video": "https://www.youtube.com/watch?v=dEQsBIA0jnE", "image": "https://i.postimg.cc/Z5bQ1pjM/1721752604-UT24r-0082.jpg" },
+        { "name": "Wonder of the Seas", "video": "", "image": "https://i.postimg.cc/3Rcn3J9d/1645411086-WN22-Drone-Cadiz208R.jpg" }
+    ],
+    "CELEBRITY": [
+        { "name": "Celebrity Apex", "video": "https://www.youtube.com/watch?v=tP2rwE33VlU", "image": "https://i.postimg.cc/XvnySv66/1727383416-Celebrity-Cruises-Deployment-2026-27-Norway.jpg" },
+        { "name": "Celebrity Ascent", "video": "", "image": "https://i.postimg.cc/T1BCCDSY/1696341244-CEL-ASCENT-SHIPYARD-10-1.jpg" },
+        { "name": "Celebrity Beyond", "video": "", "image": "https://i.postimg.cc/hjTLc5ZH/1670260994-CEL-BY-Drone-Aerial-3-2.jpg" },
+        { "name": "Celebrity Constellation", "video": "", "image": "https://i.postimg.cc/8kbv4W2R/1692052717-Celebrity-Constellation.jpg" },
+        { "name": "Celebrity Eclipse", "video": "", "image": "https://i.postimg.cc/65mybhY4/1666618068-Celebrity-Eclipse-arrives-in-Sydney.jpg" },
+        { "name": "Celebrity Edge", "video": "https://www.youtube.com/watch?v=pZnY58nFJZA", "image": "https://i.postimg.cc/x1mTxVkc/1676465705-Celebrity-Edge.jpg" },
+        { "name": "Celebrity Equinox", "video": "", "image": "https://i.postimg.cc/zvL1yTK3/1733170644-Celebrity-Cruises-to-set-sail-from-Port-Canaveral-for-the-first-time-offering-even-more-w.jpg" },
+        { "name": "Celebrity Flora", "video": "", "image": "https://i.postimg.cc/zGkXZSk4/1676465707-Celebrity-Flora.jpg" },
+        { "name": "Celebrity Infinity", "video": "", "image": "https://i.postimg.cc/MKmb4NgD/1643213565-Celebrity-Infinity-md.png" },
+        { "name": "Celebrity Millennium", "video": "", "image": "https://i.postimg.cc/Rhf4PcFn/1676465707-Celebrity-Millennium.jpg" },
+        { "name": "Celebrity Reflection", "video": "", "image": "https://i.postimg.cc/8PD2Q8XK/Celebrity-Reflection-at-night-Sept-2012.jpg" },
+        { "name": "Celebrity Silhouette", "video": "", "image": "https://i.postimg.cc/tC3VJ65C/1616980338-CEL-SI-Exterior-Water-Blue-Hull-v31-CMYK.jpg" },
+        { "name": "Celebrity Solstice", "video": "", "image": "https://i.postimg.cc/R0y0XCd4/CEL-SL-Blue-Hull-Aerial-Miami.jpg" },
+        { "name": "Celebrity Summit", "video": "https://www.youtube.com/watch?v=9_pogpg6sVc", "image": "https://i.postimg.cc/8C0GNyfK/1676465708-Celebrity-Summit.jpg" },
+        { "name": "Celebrity Xcel", "video": "", "image": "https://i.postimg.cc/KjJSpJbQ/1700138273-Xcel-Destination-Caribbean.jpg" }
+    ],
+    "COSTA": [
+        { "name": "Costa Deliziosa", "video": "", "image": "https://i.postimg.cc/c4xhmF29/DE-Aerial.jpg" },
+        { "name": "Costa Diadema", "video": "", "image": "https://i.postimg.cc/GmZSqkkF/00018070.jpg" },
+        { "name": "Costa Fascinosa", "video": "https://www.youtube.com/watch?v=Drd_TRoAHYs", "image": "https://i.postimg.cc/B6Np9D1g/00016701.jpg" },
+        { "name": "Costa Favolosa", "video": "", "image": "https://i.postimg.cc/D0Hqncfs/00016299.jpg" },
+        { "name": "Costa Fortuna", "video": "https://www.youtube.com/watch?v=YCmi6a04q80", "image": "https://i.postimg.cc/5NGJvK2f/00017033.jpg" },
+        { "name": "Costa Pacifica", "video": "", "image": "https://i.postimg.cc/pL8wj2Sw/00014882.jpg" },
+        { "name": "Costa Serena", "video": "", "image": "https://i.postimg.cc/SR2TpdbF/00012297.jpg" },
+        { "name": "Costa Smeralda", "video": "https://www.youtube.com/watch?v=YV1XNNUfcrg", "image": "https://i.postimg.cc/cCLmscpP/2027-ae143f64968.jpg" },
+        { "name": "Costa Toscana", "video": "", "image": "https://i.postimg.cc/28pyN54r/00020846.jpg" },
+        { "name": "Costa Firenze", "video": "", "image": "https://i.postimg.cc/9Xb8v439/1140-X428-1.png" }
+    ],
+    "Carnival": [
+        { "name": "Carnival Adventure", "video": "", "image": "" },
+        { "name": "Carnival Breeze", "video": "", "image": "" },
+        { "name": "Carnival Celebration", "video": "", "image": "" },
+        { "name": "Carnival Conquest", "video": "", "image": "" },
+        { "name": "Carnival Dream", "video": "", "image": "" },
+        { "name": "Carnival Elation", "video": "", "image": "" },
+        { "name": "Carnival Encounter", "video": "", "image": "" },
+        { "name": "Carnival Festivale", "video": "", "image": "" },
+        { "name": "Carnival Firenze", "video": "", "image": "" },
+        { "name": "Carnival Freedom", "video": "", "image": "" },
+        { "name": "Carnival Glory", "video": "", "image": "" },
+        { "name": "Carnival Horizon", "video": "", "image": "" },
+        { "name": "Carnival Jubilee", "video": "", "image": "" },
+        { "name": "Carnival Legend", "video": "", "image": "" },
+        { "name": "Carnival Liberty", "video": "", "image": "" },
+        { "name": "Carnival Luminosa", "video": "", "image": "" },
+        { "name": "Carnival Magic", "video": "", "image": "" },
+        { "name": "Carnival Miracle", "video": "", "image": "" },
+        { "name": "Carnival Panorama", "video": "", "image": "" },
+        { "name": "Carnival Paradise", "video": "", "image": "" },
+        { "name": "Carnival Pride", "video": "", "image": "" },
+        { "name": "Carnival Radiance", "video": "", "image": "" },
+        { "name": "Carnival Spirit", "video": "", "image": "" },
+        { "name": "Carnival Splendor", "video": "", "image": "" },
+        { "name": "Carnival Sunrise", "video": "", "image": "" },
+        { "name": "Carnival Sunshine", "video": "", "image": "" },
+        { "name": "Carnival Valor", "video": "", "image": "" },
+        { "name": "Carnival Venezia", "video": "", "image": "" },
+        { "name": "Carnival Vista", "video": "", "image": "" },
+        { "name": "Mardi Gras", "video": "", "image": "" }
+    ],
+    "Azamara": [
+        { "name": "Azamara Journey", "video": "", "image": "" },
+        { "name": "Azamara Onward", "video": "", "image": "" },
+        { "name": "Azamara Pursuit", "video": "", "image": "" },
+        { "name": "Azamara Quest", "video": "", "image": "" }
+    ],
+    "Virgin Voyages": [
+        { "name": "Brilliant Lady", "video": "", "image": "" },
+        { "name": "Resilient Lady", "video": "", "image": "" },
+        { "name": "Scarlet Lady", "video": "", "image": "" },
+        { "name": "Valiant Lady", "video": "", "image": "" }
+    ],
+    "Seabourn": [
+        { "name": "Seabourn Encore", "video": "", "image": "" },
+        { "name": "Seabourn Ovation", "video": "", "image": "" },
+        { "name": "Seabourn Pursuit", "video": "", "image": "" },
+        { "name": "Seabourn Quest", "video": "", "image": "" },
+        { "name": "Seabourn Sojourn", "video": "", "image": "" },
+        { "name": "Seabourn Venture", "video": "", "image": "" }
+    ],
+    "Regent Seven Seas": [
+        { "name": "Seven Seas Explorer", "video": "", "image": "" },
+        { "name": "Seven Seas Grandeur", "video": "", "image": "" },
+        { "name": "Seven Seas Mariner", "video": "", "image": "" },
+        { "name": "Seven Seas Navigator", "video": "", "image": "" },
+        { "name": "Seven Seas Prestige", "video": "", "image": "" },
+        { "name": "Seven Seas Splendor", "video": "", "image": "" },
+        { "name": "Seven Seas Voyager", "video": "", "image": "" }
+    ],
+    "Ponant": [
+        { "name": "L'Austral", "video": "", "image": "" },
+        { "name": "Le Bellot", "video": "", "image": "" },
+        { "name": "Le Boreal", "video": "", "image": "" },
+        { "name": "Le Bougainville", "video": "", "image": "" },
+        { "name": "Le Champlain", "video": "", "image": "" },
+        { "name": "Le Commandant Charcot", "video": "", "image": "" },
+        { "name": "Le Dumont D'urville", "video": "", "image": "" },
+        { "name": "Le Jacques Cartier", "video": "", "image": "" },
+        { "name": "Le Laperouse", "video": "", "image": "" },
+        { "name": "Le Lyrial", "video": "", "image": "" },
+        { "name": "Le Ponant", "video": "", "image": "" },
+        { "name": "Le Soleal", "video": "", "image": "" },
+        { "name": "Spirit of Ponant", "video": "", "image": "" }
+    ],
+    "P&O Cruises": [
+        { "name": "Arcadia", "video": "", "image": "" },
+        { "name": "Arvia", "video": "", "image": "" },
+        { "name": "Aurora", "video": "", "image": "" },
+        { "name": "Azura", "video": "", "image": "" },
+        { "name": "Britannia", "video": "", "image": "" },
+        { "name": "Iona", "video": "", "image": "" },
+        { "name": "Ventura", "video": "", "image": "" }
+    ],
+    "Oceania Cruises": [
+        { "name": "Oceania Allura", "video": "", "image": "" },
+        { "name": "Oceania Insignia", "video": "", "image": "" },
+        { "name": "Oceania Marina", "video": "", "image": "" },
+        { "name": "Oceania Nautica", "video": "", "image": "" },
+        { "name": "Oceania Regatta", "video": "", "image": "" },
+        { "name": "Oceania Riviera", "video": "", "image": "" },
+        { "name": "Oceania Sirena", "video": "", "image": "" },
+        { "name": "Oceania Vista", "video": "", "image": "" }
+    ],
+    "Holland America": [
+        { "name": "Eurodam", "video": "", "image": "" },
+        { "name": "Koningsdam", "video": "", "image": "" },
+        { "name": "Nieuw Amsterdam", "video": "", "image": "" },
+        { "name": "Nieuw Statendam", "video": "", "image": "" },
+        { "name": "Noordam", "video": "", "image": "" },
+        { "name": "Oosterdam", "video": "", "image": "" },
+        { "name": "Rotterdam", "video": "", "image": "" },
+        { "name": "Volendam", "video": "", "image": "" },
+        { "name": "Westerdam", "video": "", "image": "" },
+        { "name": "Zaandam", "video": "", "image": "" },
+        { "name": "Zuiderdam", "video": "", "image": "" }
+    ],
+    "Disney Cruise Line": [
+        { "name": "Disney Adventure", "video": "https://www.youtube.com/watch?v=hCXJl5f87es", "image": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Disney_Adventure_final_outfitting_in_Wismar_02.jpg" },
+        { "name": "Disney Destiny", "video": "https://www.youtube.com/watch?v=ShYCuwpBiQY", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1680/840/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/destiny/overview/DCL_Destiny_5x2.jpg?2024-07-24T21:44:12+00:00" },
+        { "name": "Disney Dream", "video": "https://www.youtube.com/watch?v=qIHcNpP2l80", "image": "https://www.cruisemapper.com/images/ships/548-large-8d34201a5b85900908db6cae92723617.jpg" },
+        { "name": "Disney Fantasy", "video": "https://www.youtube.com/watch?v=Xbux3Z9vHcw", "image": "https://i0.wp.com/magicguides.com/wp-content/uploads/2023/01/DCL-Disney-Fantasy-Cruise-Ship.jpg" },
+        { "name": "Disney Magic", "video": "https://www.youtube.com/watch?v=LpDiL8-Io7Y", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/fleet-overview/magic/1205ZX_2167MS-16x9.jpg?2024-06-28T19:14:24+00:00" },
+        { "name": "Disney Treasure", "video": "https://www.youtube.com/watch?v=3qoOC42WpLU", "image": "https://cdn1.abcotvs.com/dip/images/15563544_112024-cc-disney-ship-img.jpg" },
+        { "name": "Disney Wish", "video": "https://www.youtube.com/watch?v=I6s0N6pKhyg", "image": "https://www.disneyholidays.co.uk/disney-cruise-line/images/ships/mobile/disney-wish-header.jpg" },
+        { "name": "Disney Wonder", "video": "https://www.youtube.com/watch?v=6Fx1eBg7RX0", "image": "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1000/1000/75/vision-dam/digital/parks-platform/parks-global-assets/disney-cruise-line/ships/wonder/959939327_0505ZZ_0333DZ-16x9.jpg?2022-03-23T05:13:12+00:00" }
+    ],
+    "Cunard": [
+        { "name": "Queen Mary 2", "video": "https://www.youtube.com/watch?v=jHvzphIxT2o", "image": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Queen_Mary_2_Boston_July_2015_01_%28cropped%29.jpg" },
+        { "name": "Queen Anne", "video": "https://www.youtube.com/watch?v=5xYs4Xdx378", "image": "https://upload.wikimedia.org/wikipedia/commons/a/a7/MS_Queen_Anne_at_Carbo_San_Lucas%2C_Mexico_on_January_31%2C_2025.jpg" },
+        { "name": "Queen Elizabeth", "video": "https://www.youtube.com/watch?v=9nP2NB8D7x0", "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Queen_Elizabeth_%28ship%2C_2010%29_in_Sydney%2C_December_2022%2C_10.jpg" },
+        { "name": "Queen Victoria", "video": "https://www.youtube.com/watch?v=odjCWV6z78Y", "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/Queen_Victoria_%2852322173455%29.jpg" }
+    ],
+    "Crystal": [
+        { "name": "Crystal Serenity", "video": "https://www.youtube.com/watch?v=ycLSSVmXHUo", "image": "https://cdn1.crystalcruises.com/images/scp71evy/production/205f8dcfa8befa3a419bb0982bfe43289801f4a2-2720x1710.jpg?auto=format" },
+        { "name": "Crystal Symphony", "video": "https://www.youtube.com/watch?v=4i1CTMJW6l4", "image": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Crystal_Symphony%2C_Fremantle%2C_2018_%2803%29.jpg" }
+    ],
+    "Princess": [
+        { "name": "Caribbean Princess", "video": "", "image": "" },
+        { "name": "Coral Princess", "video": "", "image": "" },
+        { "name": "Crown Princess", "video": "", "image": "" },
+        { "name": "Diamond Princess", "video": "", "image": "" },
+        { "name": "Discovery Princess", "video": "", "image": "" },
+        { "name": "Emerald Princess", "video": "", "image": "" },
+        { "name": "Enchanted Princess", "video": "", "image": "" },
+        { "name": "Grand Princess", "video": "", "image": "" },
+        { "name": "Island Princess", "video": "", "image": "" },
+        { "name": "Majestic Princess", "video": "", "image": "" },
+        { "name": "Regal Princess", "video": "", "image": "" },
+        { "name": "Royal Princess", "video": "", "image": "" },
+        { "name": "Ruby Princess", "video": "", "image": "" },
+        { "name": "Sapphire Princess", "video": "", "image": "" },
+        { "name": "Sky Princess", "video": "", "image": "" },
+        { "name": "Star Princess", "video": "", "image": "" },
+        { "name": "Sun Princess", "video": "", "image": "" }
+    ],
+    "Mano": [
+        { "name": "CROWN IRIS", "video": "", "image": "" }
+    ],
+    "Explora Journeys": [
+        { "name": "EXPLORA I", "video": "", "image": "" },
+        { "name": "EXPLORA II", "video": "", "image": "" },
+        { "name": "EXPLORA III", "video": "", "image": "" },
+        { "name": "EXPLORA IV", "video": "", "image": "" },
+        { "name": "EXPLORA V", "video": "", "image": "" }
+    ]
+};
+
+// =====================
+// 2. משתנים גלובליים והגדרות
+// =====================
+
+// פרטי היועצים
+const advisors = {
+    "lior": { name: "ליאור דובינובסקי", email: "lior@balicruise.co.il", pass: "lior1234", details: "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il" },
+    "tatiana": { name: "טטיאנה לאונוב", email: "tatiana@balicruise.co.il", pass: "tatiana1234", details: "טטיאנה לאונוב/Tatyana Leonov | יועצת שייט | 03-3106454 | tatiana@balicruise.co.il" },
+    "koren": { name: "קורן אבסעיד", email: "koren@balicruise.co.il", pass: "koren1234", details: "קורן אבסעיד | Koren avsaid | מנהל מחלקת שייט | 03-3106454 | Koren@balicruise.co.il" },
+    "yarden": { name: "ירדן שקד", email: "yarden@balicruise.co.il", pass: "yarden1234", details: "ירדן שקד | Yarden shaked | יועץ שייט  | 03-3106454 | Yarden@balicruise.co.il" },
+    "nir": { name: "ניר", email: "nir@balicruise.co.il", pass: "nir1234", details: "ניר | Nir | יועץ שייט | 03-3106454 | nir@balicruise.co.il" },
+    "natan": { name: "נתן", email: "natan@balicruise.co.il", pass: "natan1234", details: "נתן | Natan | 03-3106454 | יועץ שייט | natan@balicruise.co.il" },
+    "aviv": { name: "אביב", email: "aviv@balicruise.co.il", pass: "aviv1234", details: "אביב | Aviv | 03-3106454 | יועץ שייט | aviv@balicruise.co.il" },
+    "adi": { name: "עדי", email: "adi@balicruise.co.il", pass: "adi1234", details: "עדי | Adi | 03-3106454 | יועצת שייט | adi@balicruise.co.il" }
+};
+
+// סמלי מטבעות
+const currencies = {
+    'COSTA': '€',
+    'P&O Cruises': '£',
+    'Mano': '€',
+    'Cunard': '£'
+};
+
+const guaranteeMessage = "מיקום החדר ייקבע על ידי חברת השייט";
+const detailRoomTypes = [
+    "פנימי עם בחירת מיקום", "חלון עם בחירת מיקום", "מרפסת לים עם בחירת מיקום",
+    "מרפסת לפנים האונייה עם בחירת מיקום", "סוויטה"
+];
+
+// ======== התיקון המבוקש: ימי ביטול מעודכנים ========
+const cancelDays = {
+    'MSC': 100,
+    'Royal Caribbean': 80,
+    'Norwegian Cruise Line': 100,
+    'CELEBRITY': 80,
+    'COSTA': 90,
+    'Carnival': 90,
+    'Azamara': 150,
+    'Virgin Voyages': 120,
+    'Seabourn': 120,
+    'Regent Seven Seas': 150,
+    'Ponant': 150,
+    'P&O Cruises': 120,
+    'Oceania Cruises': 120,
+    'Holland America': 120,
+    'Disney Cruise Line': 100,
+    'Cunard': 90,
+    'Crystal': 120,
+    'Princess': 120,
+    'Mano': 90,
+    'Explora Journeys': 100
+};
+
+// ======== חישוב מקדמות ========
+const depositAmounts = {
+    'MSC': () => '500$ בעבור כל חדר',
+    'Norwegian Cruise Line': () => '350$ בעבור כל חדר',
+    'Virgin Voyages': () => '500$ בעבור כל חדר',
+    'Oceania Cruises': () => '250$ בעבור כל חדר (דמי טיפול)',
+    'Azamara': () => '550$ בעבור כל חדר',
+    'Royal Caribbean': (duration, passengers, rooms) => duration <= 5 ? (passengers * 105 + rooms * 100) + '$' : (passengers * 170 + rooms * 100) + '$',
+    'CELEBRITY': (duration, passengers, rooms) => duration <= 5 ? (passengers * 105 + rooms * 100) + '$' : (duration <= 14 ? (passengers * 170 + rooms * 100) + '$' : (passengers * 490 + rooms * 100) + '$'),
+    'Carnival': (duration) => duration <= 5 ? '300$ לאדם' : '500$ לאדם',
+    // תיקון קוסטה לפי נוסחה קודמת:
+    'COSTA': (duration, passengers, rooms) => (passengers * 100 + rooms * 100) + '€',
+    'Disney Cruise Line': () => '20% מעלות ההפלגה',
+    'Ponant': () => '25% מעלות ההפלגה',
+    'Explora Journeys': () => '25% מעלות ההפלגה',
+    'Crystal': () => '20% מעלות ההפלגה',
+    'Regent Seven Seas': () => '15% מעלות ההפלגה',
+    'Seabourn': (duration, passengers, rooms, cruiseTotal) => `${(0.1 * cruiseTotal).toFixed(0)}$ (כ-10%)`,
+    'P&O Cruises': (duration, passengers, rooms, cruiseTotal) => `${(0.15 * cruiseTotal).toFixed(0)}$ (כ-15%)`,
+    'Cunard': (duration, passengers, rooms, cruiseTotal) => `${(0.2 * cruiseTotal).toFixed(0)}$ (כ-20%)`,
+    'Princess': (duration, passengers, rooms, cruiseTotal) => `${(0.1 * cruiseTotal).toFixed(0)}$ (כ-10%)`,
+    'Holland America': () => 'מקדמה משתנה לפי אורך ההפלגה',
+    'Mano': () => 'מקדמה כחוק (5% או 100₪ הנמוך מביניהם)'
+};
+
+let currentQuoteId = null;
+let totalPassengers = 0;
+let totalRooms = 0;
+let cruiseTotal = 0;
+
+// הפניות ל-DOM
+const DOMElements = {
+    loginScreen: document.getElementById('loginScreen'),
+    mainContent: document.getElementById('mainContent'),
+    loginBtn: document.getElementById('loginBtn'),
+    emailInput: document.getElementById('email'),
+    passwordInput: document.getElementById('password'),
+    loginError: document.getElementById('loginError'),
+    loggedInAdvisor: document.getElementById('loggedInAdvisor'),
+    currentQuoteNumber: document.getElementById('currentQuoteNumber'),
+    inputForm: document.getElementById('inputForm'),
+    clientName: document.getElementById('clientName'),
+    clientPhone: document.getElementById('clientPhone'),
+    offerDate: document.getElementById('offerDate'),
+    advisor: document.getElementById('advisor'),
+    cruiseLine: document.getElementById('cruiseLine'),
+    shipName: document.getElementById('shipName'),
+    shipVideo: document.getElementById('shipVideo'),
+    cruiseDuration: document.getElementById('cruiseDuration'),
+    cruiseStartDate: document.getElementById('cruiseStartDate'),
+    departurePort: document.getElementById('departurePort'),
+    arrivalPort: document.getElementById('arrivalPort'),
+    itineraryPasteTarget: document.getElementById('itineraryPasteTarget'),
+    roomsContainer: document.getElementById('roomsContainer'),
+    addRoomBtn: document.getElementById('addRoomBtn'),
+    hideTotal: document.getElementById('hideTotal'),
+    hideCruise: document.getElementById('hideCruise'),
+    cruiseFields: document.getElementById('cruiseFields'),
+    cruiseSectionContainer: document.getElementById('cruiseSectionContainer'),
+    customInclusions: document.getElementById('customInclusions'),
+    hideMealInclusion: document.getElementById('hideMealInclusion'),
+    flightsContainer: document.getElementById('flightsContainer'),
+    addFlightBtn: document.getElementById('addFlightBtn'),
+    flightIncludes: document.getElementById('flightIncludes'),
+    flightFreeText: document.getElementById('flightFreeText'),
+    passengerTypesContainer: document.getElementById('passengerTypesContainer'),
+    addPassengerTypeBtn: document.getElementById('addPassengerTypeBtn'),
+    flightNoCancel: document.getElementById('flightNoCancel'),
+    flightCancellable: document.getElementById('flightCancellable'),
+    flightCancelDetails: document.getElementById('flightCancelDetails'),
+    flightCancelCheck: document.getElementById('flightCancelCheck'),
+    flightChangeCheck: document.getElementById('flightChangeCheck'),
+    flightCancelFee: document.getElementById('flightCancelFee'),
+    flightChangeFee: document.getElementById('flightChangeFee'),
+    transfersContainer: document.getElementById('transfersContainer'),
+    addTransferBtn: document.getElementById('addTransferBtn'),
+    transfersCost: document.getElementById('transfersCost'),
+    transfersNoCancel: document.getElementById('transfersNoCancel'),
+    transfersCancellable: document.getElementById('transfersCancellable'),
+    transfersCancelDetails: document.getElementById('transfersCancelDetails'),
+    transfersCancelDate: document.getElementById('transfersCancelDate'),
+    transfersCancelFee: document.getElementById('transfersCancelFee'),
+    hotelsContainer: document.getElementById('hotelsContainer'),
+    addHotelBtn: document.getElementById('addHotelBtn'),
+    generatePDFBtn: document.getElementById('generatePDFBtn'),
+    newQuoteBtn: document.getElementById('newQuoteBtn'),
+    previewClientName: document.getElementById('previewClientName'),
+    previewClientPhone: document.getElementById('previewClientPhone'),
+    previewDate: document.getElementById('previewDate'),
+    previewQuoteNumber: document.getElementById('previewQuoteNumber'),
+    previewDocTitle: document.getElementById('previewDocTitle'),
+    previewOpeningLine: document.getElementById('previewOpeningLine'),
+    previewCruiseDetails: document.getElementById('previewCruiseDetails'),
+    previewCruiseLine: document.getElementById('previewCruiseLine'),
+    previewShipName: document.getElementById('previewShipName'),
+    previewCruiseDuration: document.getElementById('previewCruiseDuration'),
+    previewCruiseDate: document.getElementById('previewCruiseDate'),
+    previewPorts: document.getElementById('previewPorts'),
+    previewItinerarySection: document.getElementById('previewItinerarySection'),
+    previewItineraryImage: document.getElementById('previewItineraryImage'),
+    previewRoomsSection: document.getElementById('previewRoomsSection'),
+    previewRoomsContainer: document.getElementById('previewRoomsContainer'),
+    previewGuaranteeNote: document.getElementById('previewGuaranteeNote'),
+    previewCruiseInclusions: document.getElementById('previewCruiseInclusions'),
+    previewCruiseInclusionsList: document.getElementById('previewCruiseInclusionsList'),
+    previewInclusions: document.getElementById('previewInclusions'),
+    previewFlightsContainer: document.getElementById('previewFlightsContainer'),
+    previewFlightsList: document.getElementById('previewFlightsList'),
+    previewFlightIncludesContainer: document.getElementById('previewFlightIncludesContainer'),
+    previewFlightIncludes: document.getElementById('previewFlightIncludes'),
+    previewFlightFreeText: document.getElementById('previewFlightFreeText'),
+    previewFlightCost: document.getElementById('previewFlightCost'),
+    previewFlightConditions: document.getElementById('previewFlightConditions'),
+    previewHotelsSection: document.getElementById('previewHotelsSection'),
+    previewHotelsContainer: document.getElementById('previewHotelsContainer'),
+    previewTransfersContainer: document.getElementById('previewTransfersContainer'),
+    previewTransfersList: document.getElementById('previewTransfersList'),
+    previewTransfersCost: document.getElementById('previewTransfersCost'),
+    previewTransfersConditions: document.getElementById('previewTransfersConditions'),
+    previewTotalContainer: document.getElementById('previewTotalContainer'),
+    previewShipImageSection: document.getElementById('previewShipImageSection'),
+    previewShipImage: document.getElementById('previewShipImage'),
+    previewShipVideo: document.getElementById('previewShipVideo'),
+    previewAdvisor: document.getElementById('previewAdvisor'),
+    previewElement: document.getElementById('preview'),
+    importantNote: document.getElementById('importantNote'),
+    noAmexNote: document.getElementById('noAmexNote'),
+    previewInternalNumber: document.getElementById('previewInternalNumber'),
+    savedQuotesModal: document.getElementById('savedQuotesModal'),
+    showSavedQuotesBtn: document.getElementById('showSavedQuotesBtn'),
+    closeModalBtn: document.getElementById('closeModalBtn'),
+    savedQuotesList: document.getElementById('savedQuotesList'),
+    previewShipVideoUrl: document.getElementById('previewShipVideoUrl'),
+    previewConfirmationTerms: document.getElementById('previewConfirmationTerms'),
+    previewCancelDays: document.getElementById('previewCancelDays'),
+    previewDepositAmount: document.getElementById('previewDepositAmount'),
+    previewPaymentSummary: document.getElementById('previewPaymentSummary'),
+    previewTotalCost: document.getElementById('previewTotalCost'),
+    previewDownPayment: document.getElementById('previewDownPayment'),
+    previewFinalPaymentDate: document.getElementById('previewFinalPaymentDate')
+};
+
+// =====================
+// 3. אתחול ואירועים
+// =====================
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
+    if (loggedInUser) {
+        showMainContent(loggedInUser);
+    }
+});
+
+function setupEventListeners() {
+    DOMElements.loginBtn.addEventListener('click', handleLogin);
+    DOMElements.passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+
+    const debouncedUpdate = debounce(updateStateAndPreview, 300);
+    DOMElements.inputForm.addEventListener('input', debouncedUpdate);
+    DOMElements.inputForm.addEventListener('change', debouncedUpdate);
+
+    DOMElements.addRoomBtn.addEventListener('click', () => { addRoom(); debouncedUpdate(); });
+    DOMElements.addFlightBtn.addEventListener('click', () => { addFlight(); debouncedUpdate(); });
+    DOMElements.addHotelBtn.addEventListener('click', () => { addHotel(); debouncedUpdate(); });
+    DOMElements.addTransferBtn.addEventListener('click', () => { addTransfer(); debouncedUpdate(); });
+    DOMElements.addPassengerTypeBtn.addEventListener('click', () => { addPassengerType(); debouncedUpdate(); });
+
+    DOMElements.cruiseLine.addEventListener('change', () => {
+        populateShips();
+        updateCurrencyLabels();
+        debouncedUpdate();
+    });
+    DOMElements.shipName.addEventListener('change', () => {
+        const cruiseLine = DOMElements.cruiseLine.value;
+        const shipName = DOMElements.shipName.value;
+        const ship = cruiseData[cruiseLine]?.find(s => s.name === shipName);
+        DOMElements.shipVideo.value = ship?.video || '';
+        debouncedUpdate();
+    });
+
+    DOMElements.itineraryPasteTarget.addEventListener('paste', handlePaste);
+    DOMElements.generatePDFBtn.addEventListener('click', generatePDF);
+    DOMElements.newQuoteBtn.addEventListener('click', startNewQuote);
+
+    DOMElements.flightCancellable.addEventListener('change', toggleFlightCancelDetails);
+    DOMElements.flightNoCancel.addEventListener('change', toggleFlightCancelDetails);
+    DOMElements.transfersCancellable.addEventListener('change', toggleTransfersCancelDetails);
+    DOMElements.transfersNoCancel.addEventListener('change', toggleTransfersCancelDetails);
+    
+    DOMElements.showSavedQuotesBtn.addEventListener('click', showSavedQuotes);
+    DOMElements.closeModalBtn.addEventListener('click', () => DOMElements.savedQuotesModal.style.display = 'none');
+    window.addEventListener('click', (event) => {
+        if (event.target == DOMElements.savedQuotesModal) {
+            DOMElements.savedQuotesModal.style.display = 'none';
+        }
+    });
+}
+
+function debounce(func, delay) {
+  let timeout;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, arguments), delay);
+  };
+}
+
+// =====================
+// 4. לוגיקת התחברות
+// =====================
+function handleLogin() {
+    const email = DOMElements.emailInput.value.toLowerCase();
+    const password = DOMElements.passwordInput.value;
+    const advisorKey = Object.keys(advisors).find(key => advisors[key].email === email);
+
+    if (advisorKey && advisors[advisorKey].pass === password) {
+        sessionStorage.setItem('loggedInAdvisor', advisorKey);
+        showMainContent(advisorKey);
+    } else {
+        DOMElements.loginError.classList.remove('hidden');
+    }
+}
+
+function showMainContent(advisorKey) {
+    DOMElements.loginScreen.classList.add('hidden');
+    DOMElements.mainContent.classList.remove('hidden');
+    DOMElements.loggedInAdvisor.textContent = advisors[advisorKey].name;
+    DOMElements.advisor.value = advisorKey;
+    populateShips();
+    startNewQuote();
+}
+
+// =====================
+// 5. ניהול הצעות (שמירה/טעינה/מספור)
+// =====================
+function getNextQuoteNumber() {
+    const advisorKey = sessionStorage.getItem('loggedInAdvisor');
+    const initialBases = { 
+        lior: 2000, tatiana: 3000, koren: 1000, yarden: 4000, nir: 5000,
+        natan: 6000, aviv: 7000, adi: 8000 
+    };
+    const storageKey = `lastQuoteNumber_${advisorKey}`;
+    let lastNumber = parseInt(localStorage.getItem(storageKey) || '');
+    
+    if (isNaN(lastNumber) || lastNumber < initialBases[advisorKey]) {
+        lastNumber = initialBases[advisorKey] || 0;
+    }
+    
+    lastNumber++;
+    localStorage.setItem(storageKey, lastNumber);
+    return lastNumber;
+}
+
+function saveQuote() {
+    try {
+        const state = getFormState();
+        if (!state.clientName) return; 
+
+        const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+        const advisorKey = sessionStorage.getItem('loggedInAdvisor');
+        const now = new Date().toUTCString();
+
+        if (currentQuoteId) {
+            const quoteIndex = allQuotes.findIndex(q => q.id === currentQuoteId);
+            if (quoteIndex > -1) {
+                const quote = allQuotes[quoteIndex];
+                if (!quote.versions) {
+                    quote.versions = [{date: quote.date, state: quote.state || state}];
+                    delete quote.state;
+                }
+                state.quoteNumber = quote.quoteNumber;
+                quote.versions.push({date: now, state: state});
+                quote.date = now;
+                quote.clientName = state.clientName;
+            } else {
+                currentQuoteId = null; 
+            }
+        } 
+        
+        if (!currentQuoteId) {
+            const quoteNumber = getNextQuoteNumber();
+            currentQuoteId = `Q${quoteNumber}-${Date.now()}`;
+            state.quoteNumber = quoteNumber;
+            
+            allQuotes.push({
+                id: currentQuoteId,
+                quoteNumber: quoteNumber,
+                advisor: advisorKey,
+                clientName: state.clientName,
+                date: now,
+                versions: [{date: now, state: state}]
+            });
+        }
+        
+        DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${state.quoteNumber}`;
+        localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
+    } catch (e) {
+        console.error("Save failed", e);
+    }
+}
+
+function loadQuote(quoteId, versionIndex = -1) {
+    const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+    const quote = allQuotes.find(q => q.id === quoteId);
+    if (quote) {
+        currentQuoteId = quote.id;
+        DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
+        
+        if (!quote.versions) {
+            quote.versions = [{date: quote.date, state: quote.state}];
+        }
+        
+        const vi = versionIndex === -1 ? quote.versions.length - 1 : versionIndex;
+        const versionToLoad = quote.versions[vi];
+
+        if (versionToLoad && versionToLoad.state) {
+            loadState(versionToLoad.state);
+        } else {
+            console.error('State not found for this version, loading empty.');
+            startNewQuote();
+            DOMElements.clientName.value = quote.clientName;
+            DOMElements.currentQuoteNumber.textContent = `מספר הצעה: ${quote.quoteNumber}`;
+            currentQuoteId = quote.id;
+        }
+        
+        DOMElements.savedQuotesModal.style.display = 'none';
+    }
+}
+
+function deleteQuote(quoteId) {
+    if (confirm('האם אתה בטוח שברצונך למחוק הצעה זו?')) {
+        let allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+        allQuotes = allQuotes.filter(q => q.id !== quoteId);
+        localStorage.setItem('savedQuotes', JSON.stringify(allQuotes));
+        showSavedQuotes();
+    }
+}
+
+function startNewQuote() {
+    currentQuoteId = null;
+    DOMElements.currentQuoteNumber.textContent = 'הצעה חדשה';
+    DOMElements.inputForm.reset();
+    
+    DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
+    DOMElements.flightsContainer.innerHTML = '';
+    DOMElements.transfersContainer.innerHTML = '';
+    DOMElements.hotelsContainer.innerHTML = '';
+    DOMElements.passengerTypesContainer.innerHTML = '';
+    
+    DOMElements.previewItineraryImage.src = 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול';
+    DOMElements.itineraryPasteTarget.innerHTML = '<span>הדבק תמונה כאן (Ctrl+V)</span>';
+
+    DOMElements.offerDate.valueAsDate = new Date();
+    const loggedInUser = sessionStorage.getItem('loggedInAdvisor');
+    if (loggedInUser) {
+        DOMElements.advisor.value = loggedInUser;
+    }
+    
+    addRoom();
+    addFlight();
+    addHotel();
+    addTransfer();
+    addPassengerType();
+    
+    updateStateAndPreview();
+}
+
+function showSavedQuotes() {
+    const advisorKey = sessionStorage.getItem('loggedInAdvisor');
+    const allQuotes = JSON.parse(localStorage.getItem('savedQuotes') || '[]');
+    const advisorQuotes = allQuotes.filter(q => q.advisor === advisorKey).sort((a, b) => b.quoteNumber - a.quoteNumber);
+
+    DOMElements.savedQuotesList.innerHTML = '';
+    
+    if (advisorQuotes.length === 0) {
+        DOMElements.savedQuotesList.innerHTML = '<p class="text-center text-gray-500">לא נמצאו הצעות שמורות.</p>';
+    } else {
+        advisorQuotes.forEach(quote => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-3 border rounded hover:bg-gray-50 transition';
+            div.innerHTML = `
+                <div>
+                    <p class="font-bold">הצעה #${quote.quoteNumber} - ${quote.clientName}</p>
+                    <p class="text-sm text-gray-500">${new Date(quote.date).toLocaleDateString('he-IL')}</p>
+                </div>
+                <div>
+                    <button data-id="${quote.id}" class="load-quote-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm ml-2">טען</button>
+                    <button data-id="${quote.id}" class="delete-quote-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">מחק</button>
+                </div>
+            `;
+            
+            if (quote.versions && quote.versions.length > 1) {
+                const historyBtn = document.createElement('button');
+                historyBtn.textContent = 'היסטוריה';
+                historyBtn.className = 'bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm ml-2';
+                historyBtn.addEventListener('click', () => showHistory(quote));
+                div.querySelector('div:last-child').appendChild(historyBtn);
+            }
+            DOMElements.savedQuotesList.appendChild(div);
+        });
+
+        DOMElements.savedQuotesList.querySelectorAll('.load-quote-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => loadQuote(e.target.dataset.id));
+        });
+        DOMElements.savedQuotesList.querySelectorAll('.delete-quote-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deleteQuote(e.target.dataset.id));
+        });
+    }
+    DOMElements.savedQuotesModal.style.display = 'flex';
+}
+
+function showHistory(quote) {
+    DOMElements.savedQuotesList.innerHTML = `<h3 class="font-bold mb-2 text-center">היסטוריה: ${quote.clientName} (#${quote.quoteNumber})</h3>`;
+    
+    const sortedVersions = [...quote.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    sortedVersions.forEach((version) => {
+        const originalIndex = quote.versions.findIndex(v => v.date === version.date);
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center p-2 border rounded hover:bg-gray-50';
+        div.innerHTML = `
+            <div>
+                <p class="font-bold">${new Date(version.date).toLocaleDateString('he-IL')} ${new Date(version.date).toLocaleTimeString('he-IL')}</p>
+            </div>
+            <button data-id="${quote.id}" data-version="${originalIndex}" class="load-version-btn bg-blue-500 text-white px-3 py-1 rounded text-sm ml-2">טען גרסה זו</button>
+        `;
+        DOMElements.savedQuotesList.appendChild(div);
+    });
+
+    DOMElements.savedQuotesList.querySelectorAll('.load-version-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const qid = e.target.dataset.id;
+            const vi = parseInt(e.target.dataset.version);
+            loadQuote(qid, vi);
+        });
+    });
+
+    const backBtn = document.createElement('button');
+    backBtn.textContent = 'חזור לרשימה';
+    backBtn.className = 'w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mt-4';
+    backBtn.addEventListener('click', showSavedQuotes);
+    DOMElements.savedQuotesList.appendChild(backBtn);
+}
+
+// =====================
+// 6. ניהול STATE
+// =====================
+function getFormState() {
+    const state = {};
+    
+    const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry')) return;
+
+        if (input.type === 'radio') {
+            if (input.checked) state[input.name] = input.value;
+        } else if (input.type === 'checkbox') {
+            state[input.id] = input.checked;
+        } else {
+            state[input.id] = input.value;
+        }
+    });
+
+    state.itineraryImageSrc = DOMElements.previewItineraryImage.src;
+    state.quoteNumber = DOMElements.currentQuoteNumber.textContent.replace('מספר הצעה: ', '');
+
+    const dynamicFields = {
+        rooms: [], flights: [], transfers: [], hotels: [], passengerTypes: []
+    };
+
+    DOMElements.roomsContainer.querySelectorAll('.room-entry').forEach(div => {
+        const data = {};
+        div.querySelectorAll('input, select, textarea').forEach(input => {
+            data[input.name] = input.value;
+        });
+        dynamicFields.rooms.push(data);
+    });
+
+    DOMElements.flightsContainer.querySelectorAll('.flight-entry').forEach(div => {
+        const data = {};
+        div.querySelectorAll('input').forEach(input => {
+            data[input.name] = input.value;
+        });
+        dynamicFields.flights.push(data);
+    });
+
+    DOMElements.transfersContainer.querySelectorAll('.transfer-entry').forEach(div => {
+        const data = {};
+        div.querySelectorAll('select, textarea').forEach(input => {
+            data[input.name] = input.value;
+        });
+        dynamicFields.transfers.push(data);
+    });
+
+    DOMElements.hotelsContainer.querySelectorAll('.hotel-entry').forEach(div => {
+        const data = {};
+        div.querySelectorAll('input, select, textarea').forEach(input => {
+            const baseName = input.name.replace(/_\d+$/, '');
+            if (input.type === 'radio') {
+                if (input.checked) data[baseName] = input.value;
+            } else {
+                data[baseName] = input.value;
+            }
+        });
+        dynamicFields.hotels.push(data);
+    });
+
+    DOMElements.passengerTypesContainer.querySelectorAll('.passenger-type-entry').forEach(div => {
+        const data = {};
+        div.querySelectorAll('input, select').forEach(input => {
+            data[input.name] = input.value;
+        });
+        dynamicFields.passengerTypes.push(data);
+    });
+
+    state.dynamicFields = dynamicFields;
+    return state;
+}
+
+function loadState(state) {
+    const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry')) return;
+        
+        if (input.type === 'radio') {
+            input.checked = (state[input.name] === input.value);
+        } else if (input.type === 'checkbox') {
+            input.checked = state[input.id] || false;
+        } else if (input.id) {
+            input.value = state[input.id] || '';
+        }
+    });
+
+    DOMElements.previewItineraryImage.src = state.itineraryImageSrc || 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול';
+    if (state.itineraryImageSrc && !state.itineraryImageSrc.includes('placehold.co')) {
+         DOMElements.itineraryPasteTarget.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה!</span>`;
+    } else {
+         DOMElements.itineraryPasteTarget.innerHTML = `<span>הדבק תמונה כאן (Ctrl+V)</span>`;
+    }
+
+    DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
+    DOMElements.flightsContainer.innerHTML = '';
+    DOMElements.transfersContainer.innerHTML = '';
+    DOMElements.hotelsContainer.innerHTML = '';
+    DOMElements.passengerTypesContainer.innerHTML = '';
+
+    populateShips(state.shipName);
+
+    state.dynamicFields.rooms.forEach(data => addRoom(data));
+    state.dynamicFields.flights.forEach(data => addFlight(data));
+    state.dynamicFields.transfers.forEach(data => addTransfer(data));
+    if (state.dynamicFields.hotels) {
+        state.dynamicFields.hotels.forEach(data => addHotel(data));
+    }
+    if (state.dynamicFields.passengerTypes) {
+        state.dynamicFields.passengerTypes.forEach(data => addPassengerType(data));
+    }
+
+    if (state.dynamicFields.rooms.length === 0) addRoom();
+    if (state.dynamicFields.flights.length === 0) addFlight();
+    if (!state.dynamicFields.hotels || state.dynamicFields.hotels.length === 0) addHotel();
+    if (state.dynamicFields.transfers.length === 0) addTransfer();
+    if (!state.dynamicFields.passengerTypes || state.dynamicFields.passengerTypes.length === 0) addPassengerType();
+
+    toggleFlightCancelDetails();
+    toggleTransfersCancelDetails();
+
+    updateStateAndPreview();
+}
+
+function updateStateAndPreview() {
+    try {
+        updatePreview();
+    } catch (e) {
+        console.error("Update failed", e);
+    }
+}
+
+// =====================
+// 7. לוגיקת ממשק דינאמית
+// =====================
+function populateShips(selectedShip) {
+    const cruiseLine = DOMElements.cruiseLine.value;
+    const shipSelect = DOMElements.shipName;
+    const currentVal = selectedShip || shipSelect.value;
+    
+    shipSelect.innerHTML = '';
+    const ships = cruiseData[cruiseLine] || [];
+    
+    ships.forEach(ship => {
+        const option = document.createElement('option');
+        option.value = ship.name;
+        option.textContent = ship.name;
+        shipSelect.appendChild(option);
+    });
+
+    if (currentVal) shipSelect.value = currentVal;
+}
+
+function updateCurrencyLabels() {
+    const cruiseLine = DOMElements.cruiseLine.value;
+    const symbol = currencies[cruiseLine] || '$';
+    document.querySelectorAll('.room-cost-label').forEach(label => {
+        label.textContent = `עלות (${symbol})`;
+    });
+}
+
+function toggleRoomDetails(roomEntry) {
+    const detailsDiv = roomEntry.querySelector('.room-details');
+    const roomType = roomEntry.querySelector('select[name="roomType"]').value;
+    detailsDiv.classList.toggle('hidden', !detailRoomTypes.includes(roomType));
+}
+
+// --- הוספת שדות דינאמיים ---
+function addRoom(initialData = {}) {
+    const template = document.getElementById('roomTemplate');
+    const clone = template.content.cloneNode(true);
+    const roomDiv = clone.querySelector('.room-entry');
+    
+    if (Object.keys(initialData).length > 0) {
+        for (const key in initialData) {
+            const input = roomDiv.querySelector(`[name="${key}"]`);
+            if (input) input.value = initialData[key];
+        }
+    }
+    
+    DOMElements.roomsContainer.appendChild(roomDiv);
+
+    roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => { roomDiv.remove(); updateStateAndPreview(); });
+    roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
+    
+    toggleRoomDetails(roomDiv);
+    updateCurrencyLabels();
+}
+
+function addFlight(initialData = {}) {
+    const template = document.getElementById('flightTemplate');
+    const clone = template.content.cloneNode(true);
+    const flightDiv = clone.querySelector('.flight-entry');
+    
+    if (Object.keys(initialData).length > 0) {
+        for (const key in initialData) {
+            const input = flightDiv.querySelector(`[name="${key}"]`);
+            if (input) input.value = initialData[key];
+        }
+    } else {
+        const existingFlights = DOMElements.flightsContainer.querySelectorAll('.flight-entry');
+        if (existingFlights.length > 0) {
+            const prevFlight = existingFlights[existingFlights.length - 1];
+            const prevFrom = prevFlight.querySelector('input[name="from"]').value;
+            const prevTo = prevFlight.querySelector('input[name="to"]').value;
+            const prevAirline = prevFlight.querySelector('input[name="airline"]').value;
+            flightDiv.querySelector('input[name="airline"]').value = prevAirline;
+            flightDiv.querySelector('input[name="from"]').value = prevTo;
+            flightDiv.querySelector('input[name="to"]').value = prevFrom;
+        }
+    }
+    
+    DOMElements.flightsContainer.appendChild(flightDiv);
+    flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => { flightDiv.remove(); updateStateAndPreview(); });
+}
+
+function addPassengerType(initialData = {}) {
+    const template = document.getElementById('passengerTypeTemplate');
+    const clone = template.content.cloneNode(true);
+    const passengerDiv = clone.querySelector('.passenger-type-entry');
+    
+    if (Object.keys(initialData).length > 0) {
+        for (const key in initialData) {
+            const input = passengerDiv.querySelector(`[name="${key}"]`);
+            if (input) input.value = initialData[key];
+        }
+    }
+    
+    DOMElements.passengerTypesContainer.appendChild(passengerDiv);
+    passengerDiv.querySelector('.remove-passenger-type-btn').addEventListener('click', () => { passengerDiv.remove(); updateStateAndPreview(); });
+}
+
+function addTransfer(initialData = {}) {
+    const template = document.getElementById('transferTemplate');
+    const clone = template.content.cloneNode(true);
+    const transferDiv = clone.querySelector('.transfer-entry');
+    
+    if (Object.keys(initialData).length > 0) {
+        for (const key in initialData) {
+            const input = transferDiv.querySelector(`[name="${key}"]`);
+            if (input) input.value = initialData[key];
+        }
+    }
+    
+    DOMElements.transfersContainer.appendChild(transferDiv);
+    transferDiv.querySelector('.remove-transfer-btn').addEventListener('click', () => { transferDiv.remove(); updateStateAndPreview(); });
+}
+
+function addHotel(initialData = {}) {
+    const template = document.getElementById('hotelTemplate');
+    const clone = template.content.cloneNode(true);
+    const hotelDiv = clone.querySelector('.hotel-entry');
+    DOMElements.hotelsContainer.appendChild(hotelDiv); 
+    
+    const hotelEntries = DOMElements.hotelsContainer.querySelectorAll('.hotel-entry');
+    const hotelIndex = hotelEntries.length - 1;
+
+    const cancelTypeRadios = hotelDiv.querySelectorAll('input[name="hotelCancelType"]');
+    cancelTypeRadios.forEach(radio => {
+        radio.name = `hotelCancelType_${hotelIndex}`;
+    });
+
+    if (Object.keys(initialData).length > 0) {
+        for (const key in initialData) {
+            if (key === 'hotelCancelType') {
+                const radioToSelect = hotelDiv.querySelector(`input[name="hotelCancelType_${hotelIndex}"][value="${initialData[key]}"]`);
+                if (radioToSelect) radioToSelect.checked = true;
+            } else {
+                const input = hotelDiv.querySelector(`[name="${key}"]`);
+                if (input) input.value = initialData[key];
+            }
+        }
+    }
+
+    const cancelDetails = hotelDiv.querySelector('.hotel-cancel-details');
+    const radioGroup = hotelDiv.querySelectorAll(`input[name="hotelCancelType_${hotelIndex}"]`);
+    radioGroup.forEach(radio => {
+        radio.addEventListener('change', () => {
+            cancelDetails.classList.toggle('hidden', radio.value !== 'cancellable');
+        });
+    });
+
+    const selected = hotelDiv.querySelector(`input[name="hotelCancelType_${hotelIndex}"]:checked`);
+    cancelDetails.classList.toggle('hidden', !selected || selected.value !== 'cancellable');
+    
+    hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => { 
+        hotelDiv.remove(); 
+        updateStateAndPreview(); 
+    });
+}
+
+// לוגיקת הצגה/הסתרה
+function toggleTransfersCancelDetails() {
+    DOMElements.transfersCancelDetails.classList.toggle('hidden', !DOMElements.transfersCancellable.checked);
+}
+
+function toggleFlightCancelDetails() {
+    DOMElements.flightCancelDetails.classList.toggle('hidden', !DOMElements.flightCancellable.checked);
+}
+
+function handlePaste(event) {
+    event.preventDefault();
+    const items = (event.clipboardData || window.clipboardData).items;
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            const blob = item.getAsFile();
+            if (blob) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    DOMElements.previewItineraryImage.src = e.target.result;
+                    DOMElements.itineraryPasteTarget.innerHTML = `<span class="text-green-600 font-semibold">תמונה הועלתה!</span>`;
+                    updateStateAndPreview();
+                };
+                reader.readAsDataURL(blob);
+            }
+            return;
+        }
+    }
+}
+
+function validateForm(state) {
+  let errors = [];
+  if (!state.clientName) errors.push('שם לקוח');
+  if (!state.hideCruise && !state.cruiseLine) errors.push('חברת שייט');
+  
+  if (errors.length) {
+    alert('חובה למלא: ' + errors.join(', '));
+    return false;
+  }
+  return true;
+}
+
+// =====================
+// 8. עדכון התצוגה המקדימה
+// =====================
+function updatePreview() {
+    const state = getFormState();
+    const docType = state.docType || 'quote';
+
+    const parseLocalDate = (dateStr) => {
+        if (!dateStr) return null;
+        const parts = dateStr.split('-').map(p => parseInt(p, 10));
+        const year = parts[0] < 100 ? 2000 + parts[0] : parts[0];
+        return new Date(year, parts[1] - 1, parts[2]);
+    };
+
+    // 1. כותרות ופרטים אישיים
+    DOMElements.noAmexNote.classList.toggle('hidden', docType !== 'confirmation');
+    if (docType === 'quote') {
+        DOMElements.previewDocTitle.textContent = 'לכבוד';
+        DOMElements.previewOpeningLine.textContent = 'בהמשך לשיחתנו, מצורפת הצעה:';
+        const quoteNum = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? state.quoteNumber : '';
+        DOMElements.previewQuoteNumber.textContent = quoteNum ? `#${quoteNum}` : '';
+        
+        DOMElements.importantNote.classList.remove('hidden');
+        DOMElements.previewConfirmationTerms.classList.add('hidden');
+        DOMElements.previewPaymentSummary.classList.add('hidden');
+        DOMElements.previewClientPhone.textContent = '';
+    } else {
+        DOMElements.previewDocTitle.textContent = 'אישור הזמנה עבור';
+        DOMElements.previewOpeningLine.textContent = 'מצורפים טפסי אישור הזמנה. אנא קרא/י ואשר/י בהודעה חוזרת.';
+        DOMElements.previewQuoteNumber.textContent = ''; 
+        DOMElements.importantNote.classList.add('hidden');
+        DOMElements.previewConfirmationTerms.classList.add('hidden'); 
+        
+        // -- FIX 2: הסתרת סיכום תשלומים אם מסתירים שייט --
+        if (!state.hideCruise) {
+            DOMElements.previewPaymentSummary.classList.remove('hidden');
+        } else {
+            DOMElements.previewPaymentSummary.classList.add('hidden');
+        }
+        // ------------------------------------------------
+        DOMElements.previewClientPhone.textContent = state.clientPhone ? ` (${state.clientPhone})` : '';
+    }
+
+    DOMElements.previewClientName.textContent = state.clientName || '___';
+    const offerDate = parseLocalDate(state.offerDate);
+    DOMElements.previewDate.textContent = offerDate ? `תאריך: ${offerDate.toLocaleDateString('he-IL')}` : '';
+    DOMElements.previewAdvisor.textContent = advisors[state.advisor]?.details || '';
+
+    // 2. פרטי שייט
+    const isCruiseHidden = state.hideCruise;
+    DOMElements.cruiseFields.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewCruiseDetails.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewCruiseInclusions.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewItinerarySection.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewRoomsSection.classList.toggle('hidden', isCruiseHidden);
+    DOMElements.previewShipImageSection.classList.toggle('hidden', isCruiseHidden);
+
+    DOMElements.previewCruiseLine.textContent = state.cruiseLine;
+    DOMElements.previewShipName.textContent = state.shipName;
+    DOMElements.previewCruiseDuration.textContent = state.cruiseDuration || '7';
+
+    const cruiseStartDate = parseLocalDate(state.cruiseStartDate);
+    if (cruiseStartDate) {
+        const endDate = new Date(cruiseStartDate.getTime());
+        endDate.setDate(endDate.getDate() + parseInt(state.cruiseDuration || 7));
+        DOMElements.previewCruiseDate.textContent = `${cruiseStartDate.toLocaleDateString('he-IL')} - ${endDate.toLocaleDateString('he-IL')}`;
+    } else {
+        DOMElements.previewCruiseDate.textContent = '___';
+    }
+
+    DOMElements.previewPorts.textContent = (state.departurePort && state.arrivalPort) ? `${state.departurePort} - ${state.arrivalPort}` : '___';
+
+    const ship = cruiseData[state.cruiseLine]?.find(s => s.name === state.shipName);
+    DOMElements.previewShipImage.src = (ship && ship.image) ? ship.image : 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+האונייה';
+    
+    DOMElements.previewShipVideo.classList.toggle('hidden', !state.shipVideo);
+    if (state.shipVideo) {
+        DOMElements.previewShipVideo.querySelector('a').href = state.shipVideo;
+        DOMElements.previewShipVideoUrl.textContent = `(${state.shipVideo})`;
+    } else {
+         DOMElements.previewShipVideoUrl.textContent = '';
+    }
+
+    // 3. חישוב חדרים ועלויות שייט
+    DOMElements.previewRoomsContainer.innerHTML = '';
+    cruiseTotal = 0;
+    let hasGuarantee = false;
+    const cruiseCurrency = currencies[state.cruiseLine] || '$';
+    totalPassengers = 0;
+    totalRooms = 0;
+
+    state.dynamicFields.rooms.forEach((room, index) => {
+        const costValue = parseFloat(room.roomCost) || 0;
+        if (room.composition || room.roomType || costValue > 0) {
+            totalRooms++;
+            const passengersInRoom = { 'נוסע יחיד': 1, 'זוג': 2, 'זוג + 1': 3, 'זוג + 2': 4, 'זוג + 3': 5, 'זוג + 4': 6, 'מבוגר + ילד': 2, 'מבוגר + 2 ילדים': 3, 'מבוגר + 3 ילדים': 4, 'מבוגר + 4 ילדים': 5, 'מבוגר + 5 ילדים': 6, '3 מבוגרים': 3, '3 מבוגרים + 1': 4, '3 מבוגרים + 2': 5, '3 מבוגרים + 3': 6, '4 מבוגרים': 4, '4 מבוגרים + 1': 5, '4 מבוגרים + 2': 6, '5 מבוגרים': 5, '5 מבוגרים + 1': 6, '6 מבוגרים': 6 }[room.composition] || 0;
+            totalPassengers += passengersInRoom;
+            
+            if (room.roomType && room.roomType.includes('גרנטי')) hasGuarantee = true;
+            cruiseTotal += costValue;
+            
+            let details = [];
+            if (room.composition) details.push(`<strong>הרכב:</strong> ${room.composition}`);
+            if (room.roomType) {
+                let typeText = `<strong>תיאור:</strong> ${room.roomType}`;
+                if (room.roomType.includes('גרנטי')) {
+                    typeText += ` - ${guaranteeMessage}`;
+                } else {
+                    let location = [];
+                    if (room.floor) location.push(`קומה: ${room.floor}`);
+                    if (room.roomNumber) location.push(`חדר: ${room.roomNumber}`);
+                    if (location.length > 0) typeText += ` (${location.join(', ')})`;
+                }
+                details.push(typeText);
+            }
+            if (room.extraDesc) details.push(room.extraDesc.replace(/\n/g, '<br>'));
+            
+            const roomDiv = document.createElement('div');
+            roomDiv.className = 'border p-3 rounded-lg bg-white no-split';
+            roomDiv.innerHTML = `<p><strong>חדר ${index + 1}:</strong></p>
+                                     <p class="space-y-1 my-2">${details.join(' | ')}</p>
+                                     <p class="font-semibold text-right">עלות: ${cruiseCurrency}${costValue.toLocaleString()}</p>`;
+            DOMElements.previewRoomsContainer.appendChild(roomDiv);
+        }
+    });
+    DOMElements.previewGuaranteeNote.classList.toggle('hidden', !hasGuarantee);
+
+    // 4. הכללות שייט
+    const cruiseInclusionsList = DOMElements.previewCruiseInclusionsList;
+    cruiseInclusionsList.innerHTML = '';
+    if (!isCruiseHidden) {
+        if (!state.hideMealInclusion) {
+            addInclusionItem(cruiseInclusionsList, 'כולל 3 ארוחות מלאות ביום, מיסים ובופה עשיר לאורך היום.');
+        }
+        if (state.cruiseLine === 'MSC') {
+            addInclusionItem(cruiseInclusionsList, '<strong>כולל תשלום טיפים מראש.</strong>');
+        } else {
+            addInclusionItem(cruiseInclusionsList, 'לא כולל תשלום טיפים מראש.');
+        }
+    }
+    const inclusionsList = DOMElements.previewInclusions;
+    inclusionsList.innerHTML = '';
+    if (state.customInclusions) {
+        state.customInclusions.split('\n').filter(line => line.trim()).forEach(line => addInclusionItem(inclusionsList, line.trim()));
+    }
+
+    // 5. טיסות, מלונות והעברות
+    let additionalTotal = 0;
+    let flightCostValue = 0;
+    
+    // --- טיסות ---
+    const hasFlightEntries = state.dynamicFields.flights.some(f => f.airline || f.from || f.to);
+    const hasPassengerPricing = state.dynamicFields.passengerTypes.some(p => (parseInt(p.passengerCount) || 0) > 0 && (parseFloat(p.passengerPrice) || 0) > 0);
+    const hasFlights = hasFlightEntries || hasPassengerPricing;
+    
+    DOMElements.previewFlightsContainer.classList.toggle('hidden', !hasFlights);
+    
+    if (hasFlights) {
+        DOMElements.previewFlightsList.innerHTML = '';
+        state.dynamicFields.flights.forEach(flight => {
+            if (flight.airline || flight.from || flight.to) {
+                const date = parseLocalDate(flight.date)?.toLocaleDateString('he-IL') || '___';
+                const p = document.createElement('p');
+                p.innerHTML = `טיסה בחברת ${flight.airline || '___'} | ${flight.from || '___'} &larr; ${flight.to || '___'} | ${date} | המראה: ${flight.takeoff || '___'} | נחיתה: ${flight.landing || '___'}`;
+                DOMElements.previewFlightsList.appendChild(p);
+            }
+        });
+
+        const includesList = DOMElements.previewFlightIncludes;
+        includesList.innerHTML = '';
+        const includesText = state.flightIncludes.trim();
+        DOMElements.previewFlightIncludesContainer.classList.toggle('hidden', !includesText);
+        if (includesText) {
+            includesText.split('\n').forEach(line => {
+                if (line.trim()) addInclusionItem(includesList, line.trim());
+            });
+        }
+        DOMElements.previewFlightFreeText.textContent = state.flightFreeText;
+
+        const costContainer = DOMElements.previewFlightCost;
+        costContainer.innerHTML = '';
+        const costDetailsDiv = document.createElement('div');
+        costDetailsDiv.className = 'space-y-1';
+        
+        state.dynamicFields.passengerTypes.forEach(passenger => {
+            const count = parseInt(passenger.passengerCount) || 0;
+            const price = parseFloat(passenger.passengerPrice) || 0;
+            const typeLabel = { adult: 'מבוגרים', child: 'ילדים', infant: 'תינוקות' }[passenger.passengerType] || 'נוסעים';
+            const subtotal = count * price;
+            flightCostValue += subtotal;
+            if (count > 0) {
+                 costDetailsDiv.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>${typeLabel}: ${count} x $${price.toLocaleString()}</span>
+                        <span>$${(subtotal).toLocaleString()}</span>
+                    </div>`;
+            }
+        });
+
+        if (flightCostValue > 0) {
+            costContainer.innerHTML = '<p class="font-semibold mb-2 text-base">עלות:</p>';
+            costContainer.appendChild(costDetailsDiv);
+            const hr = document.createElement('hr');
+            hr.className = 'my-2 border-gray-300';
+            costContainer.appendChild(hr);
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'flex justify-between font-bold text-base';
+            totalDiv.innerHTML = `
+                <span>סה"כ טיסות:</span>
+                <span>$${flightCostValue.toLocaleString()}</span>`;
+            costContainer.appendChild(totalDiv);
+        } else if (hasPassengerPricing) {
+             costContainer.innerHTML = '<p class="font-semibold mb-2 text-base">עלות:</p>';
+             costContainer.appendChild(costDetailsDiv);
+        }
+        
+        additionalTotal += flightCostValue;
+
+        let conditionsText = '';
+        if (state.flightCancelType === 'noCancel') {
+            conditionsText = '<p>ללא אפשרות ביטול / שינוי מרגע אישור ההזמנה.</p>';
+        } else if (state.flightCancelType === 'cancellable') {
+            let parts = [];
+            if (state.flightCancelCheck && state.flightCancelFee) {
+                parts.push(`ביטול – ניתן לביטול עד 72 שעות לפני ההמראה ב ${state.flightCancelFee} לנוסע.`);
+            }
+            if (state.flightChangeCheck && state.flightChangeFee) {
+                parts.push(`שינוי – ניתן לשינוי עד 72 שעות לפני ההמראה ב ${state.flightChangeFee} לנוסע ומותנה באותה מחלקת שירות.`);
+            }
+            conditionsText = parts.map(p => `<p>${p}</p>`).join('');
+        }
+        DOMElements.previewFlightConditions.innerHTML = conditionsText;
+    }
+
+    // --- מלונות ---
+    DOMElements.previewHotelsContainer.innerHTML = '';
+    const hasHotels = state.dynamicFields.hotels.some(h => h.hotelName || (parseFloat(h.hotelCost) || 0) > 0);
+    DOMElements.previewHotelsSection.classList.toggle('hidden', !hasHotels);
+    let hotelsTotal = 0;
+    
+    if (hasHotels) {
+        state.dynamicFields.hotels.forEach(hotel => {
+            const cost = parseFloat(hotel.hotelCost) || 0;
+            if (hotel.hotelName || cost > 0) {
+                const numRooms = parseInt(hotel.hotelNumRooms) || 1;
+                hotelsTotal += cost;
+                
+                let conditionsText = '';
+                if (hotel.hotelCancelType === 'noCancel') {
+                    conditionsText = '<p>ללא אפשרות ביטול/שינוי.</p>';
+                } else if (hotel.hotelCancelType === 'cancellable') {
+                    let date = '___';
+                    if (hotel.hotelCancelDate) {
+                        date = parseLocalDate(hotel.hotelCancelDate)?.toLocaleDateString('he-IL') || '___';
+                    }
+                    const fee = hotel.hotelCancelFee || '___';
+                    conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
+                }
+
+                let dateRange = '___';
+                const hotelStartDate = parseLocalDate(hotel.hotelStartDate);
+                if (hotelStartDate && hotel.hotelNights) {
+                    const endDate = new Date(hotelStartDate.getTime());
+                    endDate.setDate(endDate.getDate() + parseInt(hotel.hotelNights));
+                    dateRange = `${hotelStartDate.toLocaleDateString('he-IL')} - ${endDate.toLocaleDateString('he-IL')}`;
+                }
+
+                let costText = `<p class="font-semibold text-right">עלות: $${cost.toLocaleString()}</p>`;
+                if (numRooms > 1 && cost > 0) {
+                    const perRoom = (cost / numRooms).toLocaleString();
+                    costText = `<p class="font-semibold text-right">עלות לחדר: $${perRoom} | סה"כ: $${cost.toLocaleString()}</p>`;
+                }
+                
+                const hotelDiv = document.createElement('div');
+                hotelDiv.className = 'border border-gray-300 p-3 rounded-lg bg-white space-y-2 no-split';
+                hotelDiv.innerHTML = `
+                    <h4 class="font-bold text-md">${hotel.hotelName}</h4>
+                    <p>${hotel.hotelNights || '___'} לילות מתאריך ${dateRange}</p>
+                    <p>סוג חדר: ${hotel.hotelRoomDesc || '___'} | פנסיון: ${hotel.hotelPension || '___'}</p>
+                    ${costText}
+                    <p class="text-sm text-gray-600">מס עירוני במלונות לא כלול במחיר.</p>
+                    <div class="text-sm">${conditionsText}</div>`;
+                DOMElements.previewHotelsContainer.appendChild(hotelDiv);
+            }
+        });
+        additionalTotal += hotelsTotal;
+    }
+
+    // --- העברות ---
+    const transfersCost = parseFloat(state.transfersCost) || 0;
+    const hasTransfers = state.dynamicFields.transfers.some(t => t.transferType) || transfersCost > 0;
+    DOMElements.previewTransfersContainer.classList.toggle('hidden', !hasTransfers);
+    
+    if (hasTransfers) {
+        DOMElements.previewTransfersList.innerHTML = '';
+        state.dynamicFields.transfers.forEach((t, i) => {
+            if (t.transferType || t.transferFreeText) {
+                const p = document.createElement('p');
+                p.textContent = `${i + 1}. ${t.transferType}${t.transferFreeText ? ` - ${t.transferFreeText}` : ''}`;
+                DOMElements.previewTransfersList.appendChild(p);
+            }
+        });
+        
+        DOMElements.previewTransfersCost.textContent = `עלות: $${transfersCost.toLocaleString()}`;
+        
+        let conditionsText = '';
+        if (state.transfersCancelType === 'noCancel') {
+            conditionsText = '<p>ללא אפשרות ביטול / שינוי.</p>';
+        } else if (state.transfersCancelType === 'cancellable') {
+            let date = '___';
+            if (state.transfersCancelDate) { 
+                date = parseLocalDate(state.transfersCancelDate)?.toLocaleDateString('he-IL') || '___';
+            }
+            const fee = state.transfersCancelFee || '___';
+            conditionsText = `<p>דמי ביטול/שינוי בעלות ${fee} עד לתאריך ${date} - לאחר מכן דמי ביטול בגובה של 100%</p>`;
+        }
+        DOMElements.previewTransfersConditions.innerHTML = conditionsText;
+        additionalTotal += transfersCost;
+    }
+
+    // 6. סה"כ עלות עליון
+    DOMElements.previewTotalContainer.classList.toggle('hidden', state.hideTotal);
+    if (!state.hideTotal) {
+        DOMElements.previewTotalContainer.innerHTML = '';
+        const effectiveCruiseTotal = isCruiseHidden ? 0 : cruiseTotal;
+
+        if (cruiseCurrency === '$' || additionalTotal === 0) {
+            const grandTotal = effectiveCruiseTotal + additionalTotal;
+            DOMElements.previewTotalContainer.innerHTML = `סה"כ עלות: ${cruiseCurrency}${grandTotal.toLocaleString()}`;
+        } else if (effectiveCruiseTotal === 0) {
+            DOMElements.previewTotalContainer.innerHTML = `סה"כ עלות: $${additionalTotal.toLocaleString()}`;
+        } else {
+            DOMElements.previewTotalContainer.innerHTML = `סה"כ שייט: ${cruiseCurrency}${effectiveCruiseTotal.toLocaleString()}<br>סה"כ תוספות: $${additionalTotal.toLocaleString()}`;
+        }
+    }
+
+    DOMElements.previewInternalNumber.textContent = state.quoteNumber && state.quoteNumber !== 'הצעה חדשה' ? state.quoteNumber : '';
+
+    // 7. לוגיקת אישור הזמנה
+    if (docType === 'confirmation') {
+        const cruiseVal = isCruiseHidden ? 0 : cruiseTotal;
+        const duration = parseInt(state.cruiseDuration) || 7;
+        const line = state.cruiseLine;
+
+        // עלות כוללת לסיכום תשלומים
+        let totalDisplay = "";
+        if (cruiseCurrency !== '$' && additionalTotal > 0 && cruiseVal > 0) {
+            totalDisplay = `${cruiseCurrency}${cruiseVal.toLocaleString()} + $${additionalTotal.toLocaleString()}`;
+        } else {
+            let sum = cruiseVal + additionalTotal;
+            totalDisplay = `${cruiseCurrency}${sum.toLocaleString()}`;
+        }
+
+        if (DOMElements.previewTotalCost) {
+            DOMElements.previewTotalCost.textContent = totalDisplay;
+        }
+
+        // חישוב ימי ביטול
+        let cancelDaysCount = 0;
+        const daysConfig = cancelDays[line];
+        if (typeof daysConfig === 'function') {
+            cancelDaysCount = daysConfig(duration);
+        } else {
+            cancelDaysCount = daysConfig || 90;
+        }
+
+        let finalPaymentDateObj = null;
+        const departure = parseLocalDate(state.cruiseStartDate);
+
+        if (departure) {
+            finalPaymentDateObj = new Date(departure.getTime());
+            finalPaymentDateObj.setDate(finalPaymentDateObj.getDate() - cancelDaysCount);
+        }
+
+        const offerDateObj = parseLocalDate(state.offerDate) || new Date();
+        const isLastMinute = finalPaymentDateObj && finalPaymentDateObj <= offerDateObj;
+
+        // חישוב מקדמה
+        let numericCruiseDeposit = 0;
+        if (line === 'MSC' || line === 'Virgin Voyages') numericCruiseDeposit = totalRooms * 500;
+        else if (line === 'Norwegian Cruise Line') numericCruiseDeposit = totalRooms * 350;
+        else if (line === 'COSTA') numericCruiseDeposit = (totalPassengers * 100) + (totalRooms * 100);
+        else if (line === 'Royal Caribbean' || line === 'CELEBRITY') { 
+             if (duration <= 5) numericCruiseDeposit = (totalPassengers * 105) + (totalRooms * 100); 
+             else if (duration <= 14) numericCruiseDeposit = (totalPassengers * 170) + (totalRooms * 100); 
+             else numericCruiseDeposit = (totalPassengers * 490) + (totalRooms * 100);
+        } else if (line === 'Carnival') numericCruiseDeposit = duration <= 5 ? (totalPassengers * 300) : (totalPassengers * 500);
+        else if (line === 'Azamara') numericCruiseDeposit = totalRooms * 550;
+        else numericCruiseDeposit = cruiseVal * 0.20; 
+
+        let totalDepositString = ""; 
+
+        if (!isLastMinute) {
+            // מצב רגיל
+            if (cruiseCurrency !== '$' && additionalTotal > 0 && numericCruiseDeposit > 0) {
+                totalDepositString = `${cruiseCurrency}${numericCruiseDeposit.toLocaleString()} + $${additionalTotal.toLocaleString()}`;
+            } else {
+                let sumDeposit = numericCruiseDeposit + additionalTotal;
+                totalDepositString = `${cruiseCurrency}${sumDeposit.toLocaleString()}`;
+            }
+
+            let depositTextBase = "";
+            const depositDef = depositAmounts[line];
+            if (typeof depositDef === 'function') {
+                depositTextBase = depositDef(duration, totalPassengers, totalRooms, cruiseTotal);
+            } else {
+                depositTextBase = depositDef || '';
+            }
+            if (!isNaN(parseFloat(depositTextBase)) && !depositTextBase.includes(cruiseCurrency)) {
+                depositTextBase = `${cruiseCurrency}${depositTextBase}`;
+            }
+
+            let extrasText = "";
+            if (additionalTotal > 0) {
+                extrasText = ` + תשלום מלא עבור התוספות להזמנה בסך $${additionalTotal.toLocaleString()}`;
+            }
+
+            if (DOMElements.previewDownPayment) {
+                DOMElements.previewDownPayment.innerHTML = `
+                    ${depositTextBase} מקדמה על הקרוז${extrasText}<br>
+                    <span style="color: #c00; font-weight: bold;">סה"כ לתשלום מקדמה כעת = ${totalDepositString}</span>
+                `;
+            }
+
+            if (finalPaymentDateObj && DOMElements.previewFinalPaymentDate) {
+                const finalBalance = cruiseVal - numericCruiseDeposit;
+                const finalDate = finalPaymentDateObj.toLocaleDateString('he-IL');
+                const finalBalanceString = `${cruiseCurrency}${Math.max(0, finalBalance).toLocaleString()}`;
+
+                DOMElements.previewFinalPaymentDate.innerHTML = `
+                    <span style="color: #008000; font-weight: bold;">תשלום סופי בסך ${finalBalanceString} יש להסדיר עד לתאריך ${finalDate}</span>
+                `;
+            }
+
+        } else {
+            // דקה 90
+            if (DOMElements.previewDownPayment) {
+                DOMElements.previewDownPayment.innerHTML = `
+                    <span style="color: #c00; font-weight: bold;">יש לשלם את מלוא סכום ההזמנה.</span>
+                `;
+            }
+            if (DOMElements.previewFinalPaymentDate) {
+                DOMElements.previewFinalPaymentDate.innerHTML = "";
+            }
+            totalDepositString = totalDisplay;
+        }
+
+        if (DOMElements.previewCancelDays) {
+            DOMElements.previewCancelDays.textContent = cancelDaysCount;
+        }
+        if (DOMElements.previewDepositAmount) {
+            DOMElements.previewDepositAmount.textContent = totalDepositString;
+        }
+    }
+}
+
+function addInclusionItem(list, text) {
+    const li = document.createElement('li');
+    li.innerHTML = text;
+    list.appendChild(li);
+}
+
+// =====================
+// 9. יצירת PDF עם "חיתוך חכם" (Smart Page Break)
+// =====================
+async function generatePDF() {
+    try {
+        const state = getFormState();
+        if (!validateForm(state)) return;
+
+        // הכנה: ביטול צל ואיפוס גלילה
+        DOMElements.previewElement.classList.remove('shadow-lg');
+        window.scrollTo(0,0);
+
+        const { jsPDF } = window.jspdf;
+        
+        // 1. יצירת עותק נסתר של האלמנט לצורך צילום
+        const clone = DOMElements.previewElement.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.width = '794px'; // רוחב A4 בפיקסלים
+        clone.style.height = 'auto';
+        document.body.appendChild(clone);
+
+        // 2. חישוב חיתוך דפים חכם (Smart Page Break Logic)
+        // ----------------------------------------------------
+        // מטרת החלק הזה היא לזהות אלמנטים שייחתכו באמצע עמוד A4
+        // ו"לדחוף" אותם למטה לתחילת העמוד הבא באמצעות Spacer Div.
+        
+        const content = clone.querySelector('#preview-main');
+        const children = Array.from(content.children);
+        const pageHeight = 1122; // גובה A4 בפיקסלים (מותאם לרוחב 794px)
+        
+        // חישוב הגובה ההתחלתי (כולל ה-Header של המסמך)
+        const headerElement = clone.querySelector('header');
+        let currentHeight = headerElement ? headerElement.offsetHeight + 40 : 40; 
+
+        children.forEach(child => {
+            // דילוג על אלמנטים מוסתרים
+            if (child.classList.contains('hidden') || child.style.display === 'none') return;
+
+            const elementHeight = child.offsetHeight;
+            // בדיקה כמה מקום נשאר בדף הנוכחי
+            const remainingSpace = pageHeight - (currentHeight % pageHeight);
+
+            // אם האלמנט גדול מהמקום שנשאר, והוא לא ענק (גדול מדף שלם)
+            if (elementHeight > remainingSpace && elementHeight < pageHeight) {
+                // יצירת אלמנט רווח לבן כדי למלא את שארית הדף
+                const spacer = document.createElement('div');
+                spacer.className = 'pdf-spacer';
+                spacer.style.height = `${remainingSpace + 10}px`; // +10 ליתר ביטחון
+                
+                // הוספת הרווח לפני האלמנט הנוכחי
+                content.insertBefore(spacer, child);
+                
+                // עדכון הגובה המצטבר
+                currentHeight += remainingSpace + 10;
+            }
+
+            // הוספת גובה האלמנט לחישוב הכללי
+            currentHeight += elementHeight;
+        });
+        // ----------------------------------------------------
+
+        // 3. וידוא טעינת תמונות לפני הצילום
+        const images = clone.querySelectorAll('img');
+        const promises = Array.from(images).map(img => new Promise((resolve) => {
+            if (img.complete) resolve();
+            else { img.onload = resolve; img.onerror = resolve; }
+        }));
+        await Promise.all(promises);
+
+        // 4. יצירת התמונה (Canvas) באמצעות html2canvas
+        const canvas = await html2canvas(clone, {
+            scale: 3, // איכות גבוהה מאוד לטקסט חד
+            useCORS: true, 
+            logging: false,
+            windowWidth: 794,
+            scrollY: 0
+        });
+
+        // 5. המרה ל-PDF
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new window.jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        const imgWidth = 210; // רוחב A4 במ"מ
+        const pageHeightMm = 297; // גובה A4 במ"מ
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // הוספת הדף הראשון
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeightMm;
+
+        // הוספת דפים נוספים אם התוכן ארוך
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeightMm;
+        }
+
+        // 6. שמירת הקובץ
+        const docTypeName = state.docType === 'confirmation' ? 'Confirmation' : 'Quote';
+        const safeClientName = (state.clientName || 'Client').replace(/[^a-z0-9א-ת\s]/gi, '');
+        const fileName = `${docTypeName}_${safeClientName}_${state.quoteNumber || Date.now()}.pdf`;
+
+        pdf.save(fileName);
+
+        // ניקוי
+        document.body.removeChild(clone);
+        DOMElements.previewElement.classList.add('shadow-lg');
+
+        saveQuote();
+
+    } catch (error) {
+        console.error('PDF Generation Error:', error);
+        alert('אירעה שגיאה ביצירת ה-PDF. אנא נסה שנית.');
+        
+        // ניקוי במקרה שגיאה
+        const clone = document.querySelector('body > div[style*="position: absolute"]');
+        if (clone) document.body.removeChild(clone);
+        DOMElements.previewElement.classList.add('shadow-lg');
+    }
+}
+
+})(); 
+</script>
+
+<footer class="text-center mt-8 text-xs text-gray-500 no-print">
+    פותח על ידי ליאור דובינובסקי
+</footer>
+
+</body>
+</html>
