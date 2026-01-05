@@ -75,6 +75,8 @@
             border-radius: 10px;
             position: relative;
             top: 10%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         .close-btn {
             color: #aaa;
@@ -84,6 +86,27 @@
             cursor: pointer;
         }
         .close-btn:hover { color: black; }
+        
+        /* עיצוב בחירת נוסעים */
+        .passenger-selector-container {
+            background: #f0f9ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border: 1px solid #bae6fd;
+            display: none; /* מוסתר כברירת מחדל */
+        }
+        .passenger-checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .passenger-checkbox-label input {
+            margin-left: 8px;
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
@@ -236,11 +259,21 @@
                                 <span>הדבק תמונה כאן (Ctrl+V)</span>
                             </div>
                         </div>
-                        <div id="roomsContainer">
-                            <h3 class="text-xl font-bold mb-3">חדרים</h3>
-                        </div>
-                        <button id="addRoomBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
                     </div>
+                </div>
+
+                <div id="passengerPoolSection" class="mt-6 border-t pt-4 bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold mb-3 text-blue-900">מאגר נוסעים (להזנה מרוכזת)</h3>
+                    <p class="text-sm text-gray-600 mb-2">הזן כאן את שמות הנוסעים כדי לשייך אותם בקלות בחדרים/טיסות.</p>
+                    <div id="passengerPoolContainer" class="space-y-2"></div>
+                    <button id="addPoolPassengerBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף נוסע למאגר</button>
+                </div>
+
+                <div class="mt-6 border-t pt-4">
+                    <div id="roomsContainer">
+                        <h3 class="text-xl font-bold mb-3">חדרים</h3>
+                    </div>
+                    <button id="addRoomBtn" type="button" class="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-800">+ הוסף חדר</button>
                 </div>
 
                 <div class="mt-6 border-t pt-4">
@@ -461,6 +494,8 @@
                                 <h4 class="font-bold text-lg">תנאי תשלום וביטול:</h4>
                                 <p><strong>אפשרויות תשלום:</strong></p>
                                 <ul class="list-disc list-inside">
+                                    <li>חיוב אחד בדולר</li>
+                                    <li>אמריקן אקספרס / דיינרס</li>
                                     <li>כרטיס אשראי עד 3 תשלומים ללא ריבית – עד 6 תשלומים עם ריבית 3% - מעל 6 ועד 18 בקרדיט.</li>
                                     <li>העברה בנקאית שקל/דולר/יורו</li>
                                     <li>מזומן לפי חוק המזומן במשרדנו</li>
@@ -493,6 +528,13 @@
             </div>
         </div>
     </div>
+    
+    <template id="passengerPoolInputTemplate">
+        <div class="flex items-center gap-2 mb-2 pool-entry">
+            <input type="text" class="pool-name-input block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="שם נוסע (באנגלית)">
+            <button type="button" class="remove-pool-btn text-red-500 hover:text-red-700 font-bold px-2">X</button>
+        </div>
+    </template>
 
     <template id="roomTemplate">
         <div class="room-entry border p-4 rounded-lg mt-2 bg-gray-50 relative border-gray-200">
@@ -500,7 +542,11 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שמות הנוסעים</label>
-                    <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli, Ploni Almoni" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    <div class="flex gap-2">
+                        <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli, Ploni Almoni" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <button type="button" class="select-passengers-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded mt-1 text-sm border border-blue-300">בחר נוסעים</button>
+                    </div>
+                    <div class="passenger-selector-container"></div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">הרכב</label>
@@ -572,7 +618,11 @@
             <div class="space-y-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שמות הנוסעים</label>
-                    <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    <div class="flex gap-2">
+                        <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <button type="button" class="select-passengers-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded mt-1 text-sm border border-blue-300">בחר נוסעים</button>
+                    </div>
+                    <div class="passenger-selector-container"></div>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -632,7 +682,11 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שמות הנוסעים</label>
-                    <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    <div class="flex gap-2">
+                        <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <button type="button" class="select-passengers-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded mt-1 text-sm border border-blue-300">בחר נוסעים</button>
+                    </div>
+                    <div class="passenger-selector-container"></div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">סוג העברה</label>
@@ -659,7 +713,11 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שמות הנוסעים</label>
-                    <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    <div class="flex gap-2">
+                        <input type="text" name="passengerNames" placeholder="לדוגמה: Israel Israeli" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                        <button type="button" class="select-passengers-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded mt-1 text-sm border border-blue-300">בחר נוסעים</button>
+                    </div>
+                    <div class="passenger-selector-container"></div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">שם המלון</label>
@@ -724,11 +782,6 @@
             </div>
         </div>
     </template>
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-<script>
-(function() { 
-'use strict';
-
 // =====================
 // 1. נתוני קרוזים (Data)
 // =====================
@@ -2438,3 +2491,4 @@ async function generatePDF() {
 
 </body>
 </html>
+
