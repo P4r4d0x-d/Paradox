@@ -1328,25 +1328,22 @@ function debounce(func, delay) {
 // 4. לוגיקת התחברות
 // =====================
 function handleLogin() {
-    const email = DOMElements.emailInput.value.toLowerCase();
-    const password = DOMElements.passwordInput.value;
+    // קריאת הערכים והסרת רווחים מיותרים (trim) והמרה לאותיות קטנות לאימייל
+    const email = DOMElements.emailInput.value.trim().toLowerCase();
+    const password = DOMElements.passwordInput.value.trim();
+
+    // חיפוש היועץ ברשימה
     const advisorKey = Object.keys(advisors).find(key => advisors[key].email === email);
 
+    // בדיקה אם המשתמש קיים והסיסמה תואמת
     if (advisorKey && advisors[advisorKey].pass === password) {
         sessionStorage.setItem('loggedInAdvisor', advisorKey);
         showMainContent(advisorKey);
     } else {
+        // הצגת הודעת שגיאה אם הפרטים לא נכונים
         DOMElements.loginError.classList.remove('hidden');
+        console.error("Login failed for:", email); // לוג לדיבוג
     }
-}
-
-function showMainContent(advisorKey) {
-    DOMElements.loginScreen.classList.add('hidden');
-    DOMElements.mainContent.classList.remove('hidden');
-    DOMElements.loggedInAdvisor.textContent = advisors[advisorKey].name;
-    DOMElements.advisor.value = advisorKey;
-    populateShips();
-    startNewQuote();
 }
 
 // =====================
@@ -2620,3 +2617,4 @@ async function generatePDF() {
         DOMElements.previewElement.classList.add('shadow-lg');
     }
 }
+
