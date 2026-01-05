@@ -1054,12 +1054,16 @@ const cruiseData = {
 };
 
 // =====================
+// =====================
 // 2. משתנים גלובליים והגדרות
 // =====================
 
+// משתנה גלובלי למאגר הנוסעים
+let passengerPool = [];
+
 // פרטי היועצים
 const advisors = {
-    "lior": { name: "ליאור דובינובסקי", email: "lior@balicruise.co.il", pass: "lior1234", details: "ליאור דובינובסקי / Lior Dovinovsky| יועץ שייט | 03-3106454 | lior@balicruise.co.il" },
+    "lior": { name: "ליאור דובינובסקי", email: "lior@balicruise.co.il", pass: "lior1234", details: "ליאור דובינובסקי / Lior Dubinovski | מנהל מחלקת שייט | 052-8758833 | lior@balicruise.co.il" },
     "tatiana": { name: "טטיאנה לאונוב", email: "tatiana@balicruise.co.il", pass: "tatiana1234", details: "טטיאנה לאונוב/Tatyana Leonov | יועצת שייט | 03-3106454 | tatiana@balicruise.co.il" },
     "koren": { name: "קורן אבסעיד", email: "koren@balicruise.co.il", pass: "koren1234", details: "קורן אבסעיד | Koren avsaid | מנהל מחלקת שייט | 03-3106454 | Koren@balicruise.co.il" },
     "yarden": { name: "ירדן שקד", email: "yarden@balicruise.co.il", pass: "yarden1234", details: "ירדן שקד | Yarden shaked | יועץ שייט  | 03-3106454 | Yarden@balicruise.co.il" },
@@ -1245,7 +1249,10 @@ const DOMElements = {
     previewPaymentSummary: document.getElementById('previewPaymentSummary'),
     previewTotalCost: document.getElementById('previewTotalCost'),
     previewDownPayment: document.getElementById('previewDownPayment'),
-    previewFinalPaymentDate: document.getElementById('previewFinalPaymentDate')
+    previewFinalPaymentDate: document.getElementById('previewFinalPaymentDate'),
+    // Passenger Pool Elements
+    passengerPoolContainer: document.getElementById('passengerPoolContainer'),
+    addPoolPassengerBtn: document.getElementById('addPoolPassengerBtn')
 };
 
 // =====================
@@ -1304,6 +1311,9 @@ function setupEventListeners() {
             DOMElements.savedQuotesModal.style.display = 'none';
         }
     });
+
+    // חיבור לוגיקת מאגר הנוסעים
+    setupPassengerPoolListeners();
 }
 
 function debounce(func, delay) {
@@ -1340,7 +1350,110 @@ function showMainContent(advisorKey) {
 }
 
 // =====================
-// 5. ניהול הצעות (שמירה/טעינה/מספור)
+// 5. ניהול מאגר נוסעים (Pool Logic)
+// =====================
+
+function setupPassengerPoolListeners() {
+    if(DOMElements.addPoolPassengerBtn) {
+        DOMElements.addPoolPassengerBtn.addEventListener('click', () => {
+             const template = document.getElementById('passengerPoolInputTemplate');
+             const clone = template.content.cloneNode(true);
+             const div = clone.querySelector('.pool-entry');
+             
+             div.querySelector('.remove-pool-btn').addEventListener('click', () => {
+                 div.remove();
+                 updatePassengerPoolData();
+             });
+
+             div.querySelector('.pool-name-input').addEventListener('input', () => {
+                 updatePassengerPoolData();
+             });
+
+             DOMElements.passengerPoolContainer.appendChild(div);
+        });
+    }
+}
+
+function updatePassengerPoolData() {
+    passengerPool = [];
+    document.querySelectorAll('.pool-name-input').forEach(input => {
+        if (input.value.trim() !== '') {
+            passengerPool.push(input.value.trim());
+        }
+    });
+    
+    document.querySelectorAll('.passenger-selector-container').forEach(container => {
+        renderPassengerSelector(container);
+    });
+}
+
+function renderPassengerSelector(container) {
+    container.innerHTML = ''; 
+    if (passengerPool.length === 0) {
+        container.innerHTML = '<span class="text-xs text-gray-500">אין נוסעים במאגר</span>';
+        return;
+    }
+
+    passengerPool.forEach(name => {
+        const label = document.createElement('label');
+        label.className = 'passenger-checkbox-label text-sm';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = name;
+        
+        const parentSection = container.closest('.room-entry, .flight-entry, .hotel-entry, .transfer-entry');
+        const inputField = parentSection ? parentSection.querySelector('input[name="passengerNames"]') : null;
+        
+        if (inputField && inputField.value.includes(name)) {
+            checkbox.checked = true;
+        }
+
+        checkbox.addEventListener('change', () => {
+            syncSelectionToInput(container);
+            updateStateAndPreview();
+        });
+
+        label.appendChild(document.createTextNode(name));
+        label.appendChild(checkbox);
+        container.appendChild(label);
+    });
+}
+
+function syncSelectionToInput(container) {
+    const parentSection = container.closest('.room-entry, .flight-entry, .hotel-entry, .transfer-entry');
+    const inputField = parentSection.querySelector('input[name="passengerNames"]');
+    
+    const selected = [];
+    container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        selected.push(cb.value);
+    });
+    
+    inputField.value = selected.join(', ');
+}
+
+function attachPassengerSelectorEvents(element) {
+    const btn = element.querySelector('.select-passengers-btn');
+    const container = element.querySelector('.passenger-selector-container');
+    
+    if (btn && container) {
+        btn.addEventListener('click', () => {
+            if (container.innerHTML === '' || container.innerHTML === '<span class="text-xs text-gray-500">אין נוסעים במאגר</span>') {
+                renderPassengerSelector(container);
+            }
+            
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                renderPassengerSelector(container); 
+            } else {
+                container.style.display = 'none';
+            }
+        });
+    }
+}
+
+// =====================
+// 6. ניהול הצעות (שמירה/טעינה/מספור)
 // =====================
 function getNextQuoteNumber() {
     const advisorKey = sessionStorage.getItem('loggedInAdvisor');
@@ -1455,7 +1568,9 @@ function startNewQuote() {
     DOMElements.transfersContainer.innerHTML = '';
     DOMElements.hotelsContainer.innerHTML = '';
     DOMElements.passengerTypesContainer.innerHTML = '';
-    
+    DOMElements.passengerPoolContainer.innerHTML = ''; // Clear Pool UI
+    passengerPool = []; // Clear Pool Data
+
     DOMElements.previewItineraryImage.src = 'https://placehold.co/800x300/e2e8f0/adb5bd?text=תמונת+המסלול';
     DOMElements.itineraryPasteTarget.innerHTML = '<span>הדבק תמונה כאן (Ctrl+V)</span>';
 
@@ -1551,14 +1666,14 @@ function showHistory(quote) {
 }
 
 // =====================
-// 6. ניהול STATE
+// 7. ניהול STATE
 // =====================
 function getFormState() {
     const state = {};
     
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
     formInputs.forEach(input => {
-        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry')) return;
+        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry, .pool-entry')) return;
 
         if (input.type === 'radio') {
             if (input.checked) state[input.name] = input.value;
@@ -1573,7 +1688,7 @@ function getFormState() {
     state.quoteNumber = DOMElements.currentQuoteNumber.textContent.replace('מספר הצעה: ', '');
 
     const dynamicFields = {
-        rooms: [], flights: [], transfers: [], hotels: [], passengerTypes: []
+        rooms: [], flights: [], transfers: [], hotels: [], passengerTypes: [], pool: []
     };
 
     DOMElements.roomsContainer.querySelectorAll('.room-entry').forEach(div => {
@@ -1620,6 +1735,9 @@ function getFormState() {
         });
         dynamicFields.passengerTypes.push(data);
     });
+    
+    // שמירת מצב מאגר הנוסעים
+    state.passengerPool = passengerPool;
 
     state.dynamicFields = dynamicFields;
     return state;
@@ -1628,7 +1746,7 @@ function getFormState() {
 function loadState(state) {
     const formInputs = DOMElements.inputForm.querySelectorAll('input, select, textarea');
     formInputs.forEach(input => {
-        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry')) return;
+        if (input.closest('.room-entry, .flight-entry, .transfer-entry, .hotel-entry, .passenger-type-entry, .pool-entry')) return;
         
         if (input.type === 'radio') {
             input.checked = (state[input.name] === input.value);
@@ -1645,6 +1763,25 @@ function loadState(state) {
     } else {
          DOMElements.itineraryPasteTarget.innerHTML = `<span>הדבק תמונה כאן (Ctrl+V)</span>`;
     }
+
+    // שחזור מאגר הנוסעים
+    passengerPool = state.passengerPool || [];
+    DOMElements.passengerPoolContainer.innerHTML = '';
+    passengerPool.forEach(name => {
+        const template = document.getElementById('passengerPoolInputTemplate');
+        const clone = template.content.cloneNode(true);
+        const div = clone.querySelector('.pool-entry');
+        div.querySelector('.pool-name-input').value = name;
+        
+        div.querySelector('.remove-pool-btn').addEventListener('click', () => {
+             div.remove();
+             updatePassengerPoolData();
+        });
+        div.querySelector('.pool-name-input').addEventListener('input', () => {
+             updatePassengerPoolData();
+        });
+        DOMElements.passengerPoolContainer.appendChild(div);
+    });
 
     DOMElements.roomsContainer.innerHTML = ' <h3 class="text-xl font-bold mb-3">חדרים</h3>';
     DOMElements.flightsContainer.innerHTML = '';
@@ -1685,7 +1822,7 @@ function updateStateAndPreview() {
 }
 
 // =====================
-// 7. לוגיקת ממשק דינאמית
+// 8. לוגיקת ממשק דינאמית
 // =====================
 function populateShips(selectedShip) {
     const cruiseLine = DOMElements.cruiseLine.value;
@@ -1733,6 +1870,9 @@ function addRoom(initialData = {}) {
     }
     
     DOMElements.roomsContainer.appendChild(roomDiv);
+    
+    // Attach Passenger Selector Logic
+    attachPassengerSelectorEvents(roomDiv);
 
     roomDiv.querySelector('.remove-room-btn').addEventListener('click', () => { roomDiv.remove(); updateStateAndPreview(); });
     roomDiv.querySelector('select[name="roomType"]').addEventListener('change', () => toggleRoomDetails(roomDiv));
@@ -1765,6 +1905,7 @@ function addFlight(initialData = {}) {
     }
     
     DOMElements.flightsContainer.appendChild(flightDiv);
+    attachPassengerSelectorEvents(flightDiv);
     flightDiv.querySelector('.remove-flight-btn').addEventListener('click', () => { flightDiv.remove(); updateStateAndPreview(); });
 }
 
@@ -1797,6 +1938,7 @@ function addTransfer(initialData = {}) {
     }
     
     DOMElements.transfersContainer.appendChild(transferDiv);
+    attachPassengerSelectorEvents(transferDiv);
     transferDiv.querySelector('.remove-transfer-btn').addEventListener('click', () => { transferDiv.remove(); updateStateAndPreview(); });
 }
 
@@ -1837,6 +1979,8 @@ function addHotel(initialData = {}) {
     const selected = hotelDiv.querySelector(`input[name="hotelCancelType_${hotelIndex}"]:checked`);
     cancelDetails.classList.toggle('hidden', !selected || selected.value !== 'cancellable');
     
+    attachPassengerSelectorEvents(hotelDiv);
+
     hotelDiv.querySelector('.remove-hotel-btn').addEventListener('click', () => { 
         hotelDiv.remove(); 
         updateStateAndPreview(); 
@@ -1885,7 +2029,7 @@ function validateForm(state) {
 }
 
 // =====================
-// 8. עדכון התצוגה המקדימה
+// 9. עדכון התצוגה המקדימה
 // =====================
 function updatePreview() {
     const state = getFormState();
@@ -2353,7 +2497,7 @@ function addInclusionItem(list, text) {
 }
 
 // =====================
-// 9. יצירת PDF עם "חיתוך חכם" (Smart Page Break)
+// 10. יצירת PDF עם "חיתוך חכם" (Smart Page Break)
 // =====================
 async function generatePDF() {
     try {
@@ -2375,10 +2519,6 @@ async function generatePDF() {
         document.body.appendChild(clone);
 
         // 2. חישוב חיתוך דפים חכם (Smart Page Break Logic)
-        // ----------------------------------------------------
-        // מטרת החלק הזה היא לזהות אלמנטים שייחתכו באמצע עמוד A4
-        // ו"לדחוף" אותם למטה לתחילת העמוד הבא באמצעות Spacer Div.
-        
         const content = clone.querySelector('#preview-main');
         const children = Array.from(content.children);
         const pageHeight = 1122; // גובה A4 בפיקסלים (מותאם לרוחב 794px)
@@ -2412,7 +2552,6 @@ async function generatePDF() {
             // הוספת גובה האלמנט לחישוב הכללי
             currentHeight += elementHeight;
         });
-        // ----------------------------------------------------
 
         // 3. וידוא טעינת תמונות לפני הצילום
         const images = clone.querySelectorAll('img');
@@ -2424,7 +2563,7 @@ async function generatePDF() {
 
         // 4. יצירת התמונה (Canvas) באמצעות html2canvas
         const canvas = await html2canvas(clone, {
-            scale: 3, // איכות גבוהה מאוד לטקסט חד
+            scale: 2, 
             useCORS: true, 
             logging: false,
             windowWidth: 794,
@@ -2481,14 +2620,3 @@ async function generatePDF() {
         DOMElements.previewElement.classList.add('shadow-lg');
     }
 }
-
-})(); 
-</script>
-
-<footer class="text-center mt-8 text-xs text-gray-500 no-print">
-    פותח על ידי ליאור דובינובסקי
-</footer>
-
-</body>
-</html>
-
